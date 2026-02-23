@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Legacy of the Abyss: Echoes of the Lost King</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Mai&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -42,7 +45,7 @@
                     </div>
                     <div id="battle-menu">
                         <button class="btn battle-btn" onclick="game.battleAction('attack')">攻撃 (A)</button>
-                        <button class="btn battle-btn" onclick="game.battleAction('magic')">魔法 (S)</button>
+                        <button class="btn battle-btn" onclick="game.battleAction('skill')">スキル (S)</button>
                         <button class="btn battle-btn" onclick="game.battleAction('guard')">防御 (D)</button>
                         <button class="btn battle-btn" onclick="game.battleAction('run')">逃走 (F)</button>
                     </div>
@@ -61,6 +64,16 @@
                     <button class="btn" id="btn-reroll" style="border-color:#55f;">パーティ再抽選</button>
                     <button class="btn" id="btn-start" style="border-color:#f55; color:#f55;">冒険開始 (タイマー始動)</button>
                 </div>
+            </div>
+
+            <!-- STORY SCREEN -->
+            <div id="story-screen" class="overlay-screen" style="display: none;">
+                <h1 style="color:#ffcc00; margin-bottom: 20px;">プロローグ</h1>
+                <div id="story-content"
+                    style="max-width: 600px; width: 100%; text-align: left; line-height: 1.8; margin-bottom: 30px; font-size: 16px; min-height: 150px;">
+                </div>
+                <button class="btn" id="btn-story-next" style="border-color:#ffcc00; color:#ffcc00; display: none;">次へ
+                    ▼</button>
             </div>
 
             <!-- ENDING SCREEN -->

@@ -1,9 +1,10 @@
 :root {
     --bg-color: #050505;
-    --text-color: #00ff41;
+    --text-color: #d3d3d3;
+    /* Light Gray instead of Green */
     --accent-color: #ff00ff;
     --border-color: #444;
-    --font-main: 'Courier New', Courier, monospace;
+    --font-main: 'Yuji Mai', serif;
 }
 
 html,
@@ -21,8 +22,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: calc(100% - 130px);
-    /* 広告と重ならないよう下部130pxを空ける */
+    height: 100%;
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: var(--font-main);
@@ -70,7 +70,8 @@ body {
     gap: 10px;
     padding: 10px;
     border: 2px solid var(--border-color);
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+    box-shadow: 0 0 20px rgba(211, 211, 211, 0.15);
+    /* Match light gray */
     position: relative;
     z-index: 10000;
     background-color: var(--bg-color);
@@ -134,7 +135,7 @@ canvas#view-canvas {
 
 .party-member.active {
     border-color: var(--text-color);
-    background: rgba(0, 255, 65, 0.1);
+    background: rgba(211, 211, 211, 0.1);
 }
 
 .stat-bar {
@@ -335,4 +336,20 @@ canvas#view-canvas {
     justify-content: space-between;
     border-bottom: 1px dotted #444;
     padding: 5px 0;
+}
+
+@keyframes story-fadein {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.story-anim {
+    animation: story-fadein 0.8s ease-out forwards;
 }

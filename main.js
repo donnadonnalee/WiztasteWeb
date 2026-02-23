@@ -6,12 +6,12 @@ const MAP_SIZE = 16;
 
 const CLASSES = {
     WARRIOR: { name: '戦士', hp: 30, mp: 0, str: 15, int: 5, vit: 15, agi: 8, luk: 5 },
-    THIEF: { name: '盗賊', hp: 20, mp: 0, str: 10, int: 8, vit: 8, agi: 15, luk: 15 },
+    THIEF: { name: '盗賊', hp: 20, mp: 10, str: 10, int: 8, vit: 8, agi: 15, luk: 15 },
     CLERIC: { name: '僧侶', hp: 22, mp: 12, str: 8, int: 12, vit: 10, agi: 10, luk: 10 },
     MAGE: { name: '魔術師', hp: 15, mp: 25, str: 5, int: 18, vit: 5, agi: 12, luk: 8 },
-    SAMURAI: { name: '侍', hp: 25, mp: 5, str: 16, int: 8, vit: 12, agi: 14, luk: 8 },
-    MONK: { name: '武闘家', hp: 28, mp: 5, str: 14, int: 6, vit: 14, agi: 16, luk: 6 },
-    ARCHER: { name: '狩人', hp: 20, mp: 5, str: 12, int: 8, vit: 10, agi: 18, luk: 12 }
+    SAMURAI: { name: '侍', hp: 25, mp: 12, str: 16, int: 8, vit: 12, agi: 14, luk: 8 },
+    MONK: { name: '武闘家', hp: 28, mp: 0, str: 14, int: 6, vit: 14, agi: 16, luk: 6 },
+    ARCHER: { name: '狩人', hp: 20, mp: 10, str: 12, int: 8, vit: 10, agi: 18, luk: 12 }
 };
 
 const ITEMS = [
@@ -257,7 +257,8 @@ class Game {
         window.addEventListener('resize', () => this.resize());
 
         document.getElementById('btn-reroll').onclick = () => this.rollParty();
-        document.getElementById('btn-start').onclick = () => this.startGame();
+        document.getElementById('btn-start').onclick = () => this.startStory();
+        document.getElementById('btn-story-next').onclick = () => this.displayNextStory();
 
         this.rollParty();
 
@@ -356,10 +357,59 @@ class Game {
         this.renderCharCreate();
     }
 
+    startStory() {
+        document.getElementById('char-create-screen').style.display = 'none';
+        document.getElementById('story-screen').style.display = 'flex';
+        this.storyIndex = 0;
+        this.storyMessages = [
+            "酒場にて...<br>薄暗い店内に、冒険者たちの喧騒が響いている。",
+            "バーテンダー<br>「地下迷宮の話は知っているかい？<br>どうやらあそこには『アビスロード』という強大な魔物が<br>潜んでいて、最近起きている災いの元になっているらしい。」",
+            "バーテンダー<br>「これまで多くの冒険者がアビスロードを狩るべく<br>迷宮に入ったが、大多数が帰らぬ者となっている...」",
+            "バーテンダー<br>「ヤツには多額の懸賞金がかけられている。<br>倒せば一定期間平和が訪れるが、時が経てばまた復活する<br>厄介な存在だそうだ。」",
+            "誰からともなく、名乗りをあげる声があった。",
+            `${this.party[0].name}<br>「...なるほどな。<br>この酒場には腕利きが集まってるんだろ？」`,
+            "そう言うと、周囲にいた者たちが次々に立ち上がった。",
+            `${this.party[1].name}<br>「面白そうじゃないか。<br>ふふ、私も一口乗るよ。」`,
+            `${this.party[2].name}<br>「迷宮か...強敵との戦い、悪くないな。<br>私も行こう。」`,
+            `${this.party[3].name}<br>「よし、じゃあこの4人で決まりだな！<br>早速迷宮へ乗り込もうぜ！」`,
+            "こうして、彼らはその場の勢いで<br>恐るべき迷宮へと足を踏み入れることになった——"
+        ];
+        this.displayNextStory();
+    }
+
+    displayNextStory() {
+        const storyContent = document.getElementById('story-content');
+        const nextBtn = document.getElementById('btn-story-next');
+
+        if (this.storyIndex >= this.storyMessages.length) {
+            document.getElementById('story-screen').style.display = 'none';
+            this.startGame();
+            return;
+        }
+
+        const msg = this.storyMessages[this.storyIndex];
+        storyContent.innerHTML = `<div class="story-anim">${msg}</div>`;
+        this.storyIndex++;
+
+        nextBtn.style.display = 'none';
+        setTimeout(() => {
+            nextBtn.style.display = 'inline-block';
+            if (this.storyIndex >= this.storyMessages.length) {
+                nextBtn.textContent = '迷宮へ向かう';
+                nextBtn.style.color = '#f55';
+                nextBtn.style.borderColor = '#f55';
+            } else {
+                nextBtn.textContent = '次へ ▼';
+                nextBtn.style.color = '#ffcc00';
+                nextBtn.style.borderColor = '#ffcc00';
+            }
+        }, 800);
+    }
+
     startGame() {
         this.state = 'EXPLORE';
         this.startTime = Date.now();
-        document.getElementById('char-create-screen').style.display = 'none';
+        document.getElementById('story-screen').style.display = 'none';
         this.addLog("深淵の迷宮へようこそ。B10Fのボス討伐を目指せ。");
         this.updateTimer();
     }
@@ -411,7 +461,7 @@ class Game {
         } else if (this.state === 'BATTLE' && this.currentBattle?.phase === 'INPUT') {
             switch (e.key.toLowerCase()) {
                 case 'a': this.battleAction('attack'); break;
-                case 's': this.battleAction('magic'); break;
+                case 's': this.battleAction('skill'); break;
                 case 'd': this.battleAction('guard'); break;
                 case 'f': this.battleAction('run'); break;
             }
@@ -638,15 +688,88 @@ class Game {
                     monster.currentHp -= dmg;
                     this.addLog(`${action.actor.name}の攻撃！ ${monster.name}に${dmg}のダメージ！`);
                     this.flashEffect();
-                } else if (action.type === 'magic') {
-                    if (action.actor.mp >= 5) {
-                        action.actor.mp -= 5;
-                        const dmg = Math.max(8, action.actor.int + 5);
-                        monster.currentHp -= dmg;
-                        this.addLog(`${action.actor.name}の魔法！ ${monster.name}に${dmg}のダメージ！`);
-                        this.flashEffect();
-                    } else {
-                        this.addLog(`${action.actor.name}はMPが足りない！`);
+                } else if (action.type === 'skill') {
+                    const job = action.actor.job;
+                    if (job === '戦士') {
+                        if (action.actor.hp > 5) {
+                            action.actor.hp -= 5;
+                            const wpnAtk = (action.actor.equipment.weapon?.atk || 0) + (action.actor.equipment.accessory?.atk || 0);
+                            const dmg = Math.floor(((action.actor.str + wpnAtk) + Math.random() * 5) * 1.5);
+                            monster.currentHp -= dmg;
+                            this.addLog(`${action.actor.name}の全力斬り！(HP-5) ${monster.name}に${dmg}の大ダメージ！`);
+                            this.flashEffect();
+                        } else {
+                            this.addLog(`${action.actor.name}は体力が足りない！`);
+                        }
+                    } else if (job === '武闘家') {
+                        if (action.actor.hp > 4) {
+                            action.actor.hp -= 4;
+                            const dmg = Math.floor(action.actor.str * 1.5 + action.actor.agi * 0.5);
+                            monster.currentHp -= dmg;
+                            this.addLog(`${action.actor.name}の気功波！(HP-4) ${monster.name}に防御無視の${dmg}ダメージ！`);
+                            this.flashEffect();
+                        } else {
+                            this.addLog(`${action.actor.name}は体力が足りない！`);
+                        }
+                    } else if (job === '盗賊') {
+                        if (action.actor.mp >= 3) {
+                            action.actor.mp -= 3;
+                            const dmg = Math.floor(action.actor.agi * 1.8 + Math.random() * 5);
+                            monster.currentHp -= dmg;
+                            this.addLog(`${action.actor.name}の不意打ち！(MP-3) ${monster.name}に${dmg}のダメージ！`);
+                            this.flashEffect();
+                        } else {
+                            this.addLog(`${action.actor.name}はMPが足りない！`);
+                        }
+                    } else if (job === '僧侶') {
+                        if (action.actor.mp >= 4) {
+                            action.actor.mp -= 4;
+                            let target = action.actor;
+                            let minHpPct = target.hp / target.maxHp;
+                            this.party.forEach(p => {
+                                if (p.hp > 0 && (p.hp / p.maxHp) < minHpPct) {
+                                    target = p;
+                                    minHpPct = p.hp / p.maxHp;
+                                }
+                            });
+                            const heal = Math.max(15, action.actor.int + 10);
+                            target.hp = Math.min(target.maxHp, target.hp + heal);
+                            this.addLog(`${action.actor.name}のヒール！(MP-4) ${target.name}のHPが${heal}回復！`);
+                        } else {
+                            this.addLog(`${action.actor.name}はMPが足りない！`);
+                        }
+                    } else if (job === '魔術師') {
+                        if (action.actor.mp >= 5) {
+                            action.actor.mp -= 5;
+                            const dmg = Math.max(10, Math.floor(action.actor.int * 1.5 + 5));
+                            monster.currentHp -= dmg;
+                            this.addLog(`${action.actor.name}のファイヤーボール！(MP-5) ${monster.name}に${dmg}の大ダメージ！`);
+                            this.flashEffect();
+                        } else {
+                            this.addLog(`${action.actor.name}はMPが足りない！`);
+                        }
+                    } else if (job === '侍') {
+                        if (action.actor.mp >= 4) {
+                            action.actor.mp -= 4;
+                            const wpnAtk = (action.actor.equipment.weapon?.atk || 0) + (action.actor.equipment.accessory?.atk || 0);
+                            const dmg1 = Math.floor((action.actor.str + wpnAtk) * 0.8 + Math.random() * 3);
+                            const dmg2 = Math.floor((action.actor.str + wpnAtk) * 0.8 + Math.random() * 3);
+                            monster.currentHp -= (dmg1 + dmg2);
+                            this.addLog(`${action.actor.name}の燕返し！(MP-4) ${monster.name}に${dmg1}と${dmg2}の連続ダメージ！`);
+                            this.flashEffect();
+                        } else {
+                            this.addLog(`${action.actor.name}はMPが足りない！`);
+                        }
+                    } else if (job === '狩人') {
+                        if (action.actor.mp >= 3) {
+                            action.actor.mp -= 3;
+                            const dmg = Math.floor(action.actor.str + action.actor.agi * 1.2);
+                            monster.currentHp -= dmg;
+                            this.addLog(`${action.actor.name}の狙い撃ち！(MP-3) 急所を突いて${monster.name}に${dmg}のダメージ！`);
+                            this.flashEffect();
+                        } else {
+                            this.addLog(`${action.actor.name}はMPが足りない！`);
+                        }
                     }
                 } else if (action.type === 'run') {
                     if (Math.random() > 0.4) {
@@ -909,7 +1032,7 @@ class Game {
                                 <span style="color:#888; font-size:12px;">EQ: [${wpn}] [${arm}] [${acc}]</span>
                             </div>
                             <div class="camp-char-actions">
-                                ${p.maxMp > 0 ? `<button class="btn" style="padding:4px; font-size:10px; margin-bottom:2px;" onclick="game.castCampMagic(${idx})">回復魔法(3MP)</button>` : ''}
+                                ${p.job === '僧侶' ? `<button class="btn" style="padding:4px; font-size:10px; margin-bottom:2px;" onclick="game.castCampMagic(${idx})">回復魔法(3MP)</button>` : ''}
                                 ${p.equipment.weapon ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'weapon')">武器外す</button>` : ''}
                                 ${p.equipment.armor ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'armor')">鎧外す</button>` : ''}
                                 ${p.equipment.accessory ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'accessory')">装飾外す</button>` : ''}
@@ -950,6 +1073,7 @@ class Game {
 
     castCampMagic(casterIdx) {
         const caster = this.party[casterIdx];
+        if (caster.job !== '僧侶') return;
         if (caster.hp <= 0) {
             this.addLog(`${caster.name}は倒れている...`);
             return;
@@ -1335,7 +1459,7 @@ class Game {
 
                 const mc = map[y][x];
                 if (mc === 1 || mc === 4) { // Wall or hidden door
-                    ctx.fillStyle = '#00ff41';
+                    ctx.fillStyle = '#d3d3d3'; // Light Gray
                 } else if (mc === 3) {
                     ctx.fillStyle = '#ff00ff';
                 } else if (mc === 2) {
