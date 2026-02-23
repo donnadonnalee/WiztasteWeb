@@ -840,7 +840,14 @@ class Game {
             let rank = 1;
             snapshot.forEach((childSnapshot) => {
                 const data = childSnapshot.val();
-                html += `<div class="rank-item"><span>${rank}. ${data.name}</span> <span style="color:#ffcc00;">${data.timeStr}</span></div>`;
+
+                // XSS対策：HTMLタグのエスケープ処理
+                const safeName = typeof data.name === 'string' ?
+                    data.name.replace(/[&<>'"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[m])) : '名無し';
+                const safeTime = typeof data.timeStr === 'string' ?
+                    data.timeStr.replace(/[&<>'"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[m])) : '';
+
+                html += `<div class="rank-item"><span>${rank}. ${safeName}</span> <span style="color:#ffcc00;">${safeTime}</span></div>`;
                 rank++;
             });
             document.getElementById('ranking-container').innerHTML = html || 'まだ記録がありません。';
