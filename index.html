@@ -40,8 +40,8 @@
                         <button class="btn" onclick="game.move('forward')">前進</button>
                         <button class="btn" onclick="game.move('right')">右回転</button>
                         <button class="btn" onclick="game.move('backward')">後退</button>
-                        <button class="btn" onclick="game.toggleCamp()"
-                            style="color:#ffcc00; border-color:#ffcc00">CAMP</button>
+                        <button class="btn" onclick="game.toggleCamp()" style="color:#ffcc00; border-color:#ffcc00">CAMP
+                            (C)</button>
                     </div>
                     <div id="battle-menu">
                         <button class="btn battle-btn" onclick="game.battleAction('attack')">攻撃 (A)</button>
@@ -67,13 +67,17 @@
             </div>
 
             <!-- STORY SCREEN -->
-            <div id="story-screen" class="overlay-screen" style="display: none;">
-                <h1 style="color:#ffcc00; margin-bottom: 20px;">プロローグ</h1>
+            <div id="story-screen" class="overlay-screen"
+                style="display: none; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('assets/intro.jpg') center/cover no-repeat;">
+                <h1 style="color:#ffcc00; margin-bottom: 20px; text-shadow: 2px 2px 4px #000;">プロローグ</h1>
                 <div id="story-content"
-                    style="max-width: 600px; width: 100%; text-align: left; line-height: 1.8; margin-bottom: 30px; font-size: 16px; min-height: 150px;">
+                    style="max-width: 600px; width: 100%; text-align: left; line-height: 1.8; margin-bottom: 30px; font-size: 16px; min-height: 150px; text-shadow: 1px 1px 2px #000;">
                 </div>
-                <button class="btn" id="btn-story-next" style="border-color:#ffcc00; color:#ffcc00; display: none;">次へ
-                    ▼</button>
+                <div style="display: flex; gap: 20px;">
+                    <button class="btn" id="btn-story-skip" style="border-color:#888; color:#888;">SKIP</button>
+                    <button class="btn" id="btn-story-next"
+                        style="border-color:#ffcc00; color:#ffcc00; display: none;">次へ ▼</button>
+                </div>
             </div>
 
             <!-- ENDING SCREEN -->

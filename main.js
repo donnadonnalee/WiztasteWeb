@@ -228,6 +228,78 @@ const assets = {
 });
 
 /**
+ * AUDIO MANAGER
+ */
+class AudioManager {
+    constructor() {
+        this.sounds = {};
+        this.bgmAudio = null;
+        this.isMuted = false;
+        this.isAudioUnlocked = false;
+
+        this.loadSound('bgm_intro', 'assets/bgm_intro.mp3', true);
+        this.loadSound('bgm_explore', 'assets/bgm_explore.mp3', true);
+        this.loadSound('bgm_battle', 'assets/bgm_battle.mp3', true);
+        this.loadSound('bgm_boss', 'assets/bgm_boss.mp3', true);
+
+        this.loadSound('se_attack', 'assets/se_attack.mp3', false);
+        this.loadSound('se_magic', 'assets/se_magic.mp3', false);
+        this.loadSound('se_damage', 'assets/se_damage.mp3', false);
+        this.loadSound('se_dead', 'assets/se_dead.mp3', false);
+        this.loadSound('se_victory', 'assets/se_victory.mp3', false);
+    }
+
+    loadSound(name, url, isBgm) {
+        const audio = new Audio(url);
+        if (isBgm) audio.loop = true;
+        this.sounds[name] = audio;
+    }
+
+    unlockAudio() {
+        if (this.isAudioUnlocked) return;
+        // On first interaction, just load the audio tags to ensure the browser has permission
+        Object.values(this.sounds).forEach(audio => {
+            audio.load();
+        });
+        this.isAudioUnlocked = true;
+    }
+
+    playSE(name, vol = 1.0) {
+        if (this.isMuted || !this.sounds[name]) return;
+        try {
+            const se = this.sounds[name].cloneNode(); // Clone to allow overlapping sounds
+            se.volume = vol;
+            se.play().catch(e => { }); // Catch missing file/not interacted errors silently
+        } catch (e) { }
+    }
+
+    playBGM(name, vol = 0.5) {
+        if (this.isMuted) return;
+        this.stopBGM();
+        if (!this.sounds[name]) return;
+
+        try {
+            const bgm = this.sounds[name];
+            bgm.volume = vol;
+            bgm.currentTime = 0;
+            bgm.play().catch(e => {
+                console.warn(`Could not play ${name}:`, e);
+            });
+            this.bgmAudio = bgm;
+        } catch (e) { }
+    }
+
+    stopBGM() {
+        if (this.bgmAudio) {
+            this.bgmAudio.pause();
+            this.bgmAudio.currentTime = 0;
+            this.bgmAudio = null;
+        }
+    }
+}
+const audio = new AudioManager();
+
+/**
  * GAME ENGINE
  */
 class Game {
@@ -258,7 +330,23 @@ class Game {
 
         document.getElementById('btn-reroll').onclick = () => this.rollParty();
         document.getElementById('btn-start').onclick = () => this.startStory();
-        document.getElementById('btn-story-next').onclick = () => this.displayNextStory();
+        document.getElementById('btn-story-next').onclick = () => {
+            audio.unlockAudio();
+            this.displayNextStory();
+        };
+        document.getElementById('btn-story-skip').onclick = () => {
+            audio.unlockAudio();
+            this.startGame();
+        };
+
+        // Resume audio on ANY click, then play intro if we are still in START/STORY
+        document.addEventListener('click', () => {
+            audio.unlockAudio();
+            if (!this.introPlayed && (this.state === 'START' || this.state === 'STORY')) {
+                audio.playBGM('bgm_intro');
+                this.introPlayed = true;
+            }
+        });
 
         this.rollParty();
 
@@ -358,9 +446,17 @@ class Game {
     }
 
     startStory() {
+        audio.unlockAudio();
+
         document.getElementById('char-create-screen').style.display = 'none';
         document.getElementById('story-screen').style.display = 'flex';
         this.storyIndex = 0;
+
+        this.state = 'STORY';
+        if (!this.introPlayed) {
+            audio.playBGM('bgm_intro');
+            this.introPlayed = true;
+        }
         this.storyMessages = [
             "酒場にて...<br>薄暗い店内に、冒険者たちの喧騒が響いている。",
             "バーテンダー<br>「地下迷宮の話は知っているかい？<br>どうやらあそこには『アビスロード』という強大な魔物が<br>潜んでいて、最近起きている災いの元になっているらしい。」",
@@ -407,10 +503,12 @@ class Game {
     }
 
     startGame() {
+        audio.unlockAudio();
         this.state = 'EXPLORE';
         this.startTime = Date.now();
         document.getElementById('story-screen').style.display = 'none';
         this.addLog("深淵の迷宮へようこそ。B10Fのボス討伐を目指せ。");
+        audio.playBGM('bgm_explore');
         this.updateTimer();
     }
 
@@ -582,6 +680,45 @@ class Game {
         } else if (tile === 8) { // Boss Tile
             this.addLog("圧倒的な邪悪な気配を感じる...!!");
             this.startBossBattle();
+        } else if (tile === 4) { // Hidden Door
+            this.addLog("隠し扉から奥へ進んだ...");
+            floorData[this.playerPos.y][this.playerPos.x] = 0; // Remoe hidden door once stepped on
+
+            if (Math.random() < 0.7) {
+                // 70% chance of powerful item
+                this.addLog("誰も足を踏み入れていない部屋だ！宝箱を見つけた！");
+                const currentLvl = this.currentFloor + 1;
+                const minLevel = Math.max(1, currentLvl); // Base floor level
+                const maxLevel = Math.min(10, currentLvl + 4); // Up to +4 floor!
+                const pool = ITEMS.filter(i => (i.level || 1) >= minLevel && (i.level || 1) <= maxLevel);
+
+                if (pool.length > 0) {
+                    const baseDrop = pool[Math.floor(Math.random() * pool.length)];
+                    const drop = { ...baseDrop };
+
+                    if (drop.type !== 'consumable') {
+                        // Force a good prefix for hidden door loot
+                        const goodPrefixes = ITEM_PREFIXES.filter(p => p.mult >= 1.5);
+                        let prefix = goodPrefixes[Math.floor(Math.random() * goodPrefixes.length)] || ITEM_PREFIXES[2];
+                        drop.name = prefix.name + drop.name;
+
+                        let statArr = [];
+                        if (drop.atk !== undefined) { drop.atk = Math.round(drop.atk * prefix.mult); statArr.push(`ATK+${drop.atk}`); }
+                        if (drop.def !== undefined) { drop.def = Math.round(drop.def * prefix.mult); statArr.push(`DEF+${drop.def}`); }
+                        if (drop.int !== undefined) { drop.int = Math.round(drop.int * prefix.mult); statArr.push(`INT+${drop.int}`); }
+                        if (drop.agi !== undefined) { drop.agi = Math.round(drop.agi * prefix.mult); statArr.push(`AGI+${drop.agi}`); }
+                        if (drop.luk !== undefined) { drop.luk = Math.round(drop.luk * prefix.mult); statArr.push(`LUK+${drop.luk}`); }
+
+                        drop.desc = `${statArr.join(', ')} (元: ${baseDrop.name})`;
+                    }
+                    this.inventory.push(drop);
+                    this.addLog(`「${drop.name}」を手に入れた！`);
+                }
+            } else {
+                // 30% chance of powerful enemy
+                this.addLog("部屋の奥から強力な魔物が現れた！");
+                this.startBattle(true); // pass true for hidden door enemy
+            }
         } else {
             this.checkEncounter();
         }
@@ -607,22 +744,55 @@ class Game {
     /**
      * BATTLE SYSTEM
      */
-    startBattle() {
+    startBattle(isHard = false) {
         this.state = 'BATTLE';
-        const floorMonsters = MONSTERS.filter(m => m.level === this.currentFloor + 1);
-        const monsterData = floorMonsters.length > 0 ? floorMonsters[Math.floor(Math.random() * floorMonsters.length)] : MONSTERS[0];
+        let floorMonsters;
+
+        if (isHard) {
+            // Pick enemies from 2-3 floors deeper
+            const targetFloor = Math.min(10, this.currentFloor + 2 + Math.floor(Math.random() * 2));
+            floorMonsters = MONSTERS.filter(m => m.level === targetFloor);
+            if (floorMonsters.length === 0) floorMonsters = MONSTERS.filter(m => m.level === 10);
+        } else {
+            floorMonsters = MONSTERS.filter(m => m.level === this.currentFloor + 1);
+        }
+
+        let numMonsters = 1;
+        const r = Math.random();
+        if (r > 0.6) numMonsters = 2; // 40% chance of 2
+        if (r > 0.9) numMonsters = 3; // 10% chance of 3
+
         this.currentBattle = {
-            monster: { ...monsterData, currentHp: monsterData.hp },
+            monsters: [],
             turnOrder: [],
-            phase: 'INPUT'
+            phase: 'INPUT',
+            isBoss: false
         };
 
-        this.addLog(`${monsterData.name}が現れた！`);
+        let moHtml = '';
+        for (let i = 0; i < numMonsters; i++) {
+            const data = floorMonsters.length > 0 ? floorMonsters[Math.floor(Math.random() * floorMonsters.length)] : MONSTERS[0];
+            const mData = { ...data, currentHp: data.hp, id: `monster-${i}`, originalName: data.name };
+
+            // Rename if duplicates exist
+            const count = this.currentBattle.monsters.filter(m => m.originalName === mData.originalName).length;
+            if (count > 0) mData.name = mData.name + " " + String.fromCharCode(65 + count); // A, B, C...
+            else if (numMonsters > 1 && floorMonsters.filter(m => m.name === mData.name).length > 1) {
+                mData.name = mData.name + " A";
+            }
+
+            this.currentBattle.monsters.push(mData);
+            this.addLog(`${mData.name}が現れた！`);
+            moHtml += `<div class="monster-img-container" id="monster-img-${i}">${mData.svg}</div>`;
+        }
+
         document.getElementById('explore-menu').style.display = 'none';
         document.getElementById('battle-menu').style.display = 'flex';
-        document.getElementById('monster-overlay').innerHTML = monsterData.svg;
-        document.getElementById('monster-overlay').style.display = 'block';
+        const mo = document.getElementById('monster-overlay');
+        mo.innerHTML = moHtml;
+        mo.style.display = 'flex'; // Changed to flex over block for side-by-side multiple
 
+        audio.playBGM('bgm_battle');
         this.turnIndex = 0;
         this.updateUI();
     }
@@ -637,11 +807,12 @@ class Game {
             hp: 3000,
             atk: 60,
             exp: 10000,
-            level: 10
+            level: 10,
+            id: 'monster-0'
         };
 
         this.currentBattle = {
-            monster: { ...bossData, currentHp: bossData.hp },
+            monsters: [{ ...bossData, currentHp: bossData.hp }],
             turnOrder: [],
             phase: 'INPUT',
             isBoss: true
@@ -654,11 +825,15 @@ class Game {
         const bossImgStr = `<img src="assets/boss.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; transform-origin:bottom; image-rendering:pixelated;" onerror="this.onerror=null; this.src='assets/monster_9.png';" />`;
 
         const mo = document.getElementById('monster-overlay');
-        mo.innerHTML = bossImgStr;
-        mo.style.display = 'block';
-        mo.style.transform = 'translateX(-50%) scale(1.5)';
-        mo.style.filter = 'drop-shadow(0 0 10px red)';
+        mo.innerHTML = `<div class="monster-img-container" id="monster-img-0" style="flex: none; width: 300px;">${bossImgStr}</div>`;
+        mo.style.display = 'flex';
+        mo.style.justifyContent = 'center';
 
+        const imgCont = document.getElementById('monster-img-0');
+        imgCont.style.transform = 'scale(1.5)';
+        imgCont.style.filter = 'drop-shadow(0 0 10px red)';
+
+        audio.playBGM('bgm_boss');
         this.turnIndex = 0;
         this.updateUI();
     }
@@ -674,21 +849,37 @@ class Game {
 
     async executeBattleTurn() {
         this.currentBattle.phase = 'EXECUTE';
-        const monster = this.currentBattle.monster;
-        this.currentBattle.turnOrder.push({ actor: monster, type: 'attack', isPlayer: false });
+        const monsters = this.currentBattle.monsters;
+
+        monsters.forEach(m => {
+            if (m.currentHp > 0) {
+                this.currentBattle.turnOrder.push({ actor: m, type: 'attack', isPlayer: false });
+            }
+        });
+
         this.currentBattle.turnOrder.sort((a, b) => (b.actor.agi || 10) - (a.actor.agi || 10));
 
         for (let action of this.currentBattle.turnOrder) {
-            if (monster.currentHp <= 0) break;
+            const aliveMonsters = monsters.filter(m => m.currentHp > 0);
+            if (aliveMonsters.length === 0) break;
+
             if (action.isPlayer) {
                 if (action.actor.hp <= 0) continue;
+                audio.playSE('se_attack');
+
+                // Pick random live target for standard single-target attacks
+                let targetIdx = Math.floor(Math.random() * aliveMonsters.length);
+                let monster = aliveMonsters[targetIdx];
+                let monsterDOMId = monster.id;
+
                 if (action.type === 'attack') {
                     const wpnAtk = (action.actor.equipment.weapon?.atk || 0) + (action.actor.equipment.accessory?.atk || 0);
                     const dmg = Math.max(1, (action.actor.str + wpnAtk) + Math.floor(Math.random() * 5) - 2);
                     monster.currentHp -= dmg;
                     this.addLog(`${action.actor.name}の攻撃！ ${monster.name}に${dmg}のダメージ！`);
-                    this.flashEffect();
+                    this.showHitEffect(monsterDOMId, dmg);
                 } else if (action.type === 'skill') {
+                    audio.playSE('se_magic');
                     const job = action.actor.job;
                     if (job === '戦士') {
                         if (action.actor.hp > 5) {
@@ -697,7 +888,7 @@ class Game {
                             const dmg = Math.floor(((action.actor.str + wpnAtk) + Math.random() * 5) * 1.5);
                             monster.currentHp -= dmg;
                             this.addLog(`${action.actor.name}の全力斬り！(HP-5) ${monster.name}に${dmg}の大ダメージ！`);
-                            this.flashEffect();
+                            this.showHitEffect(monsterDOMId, dmg);
                         } else {
                             this.addLog(`${action.actor.name}は体力が足りない！`);
                         }
@@ -707,7 +898,7 @@ class Game {
                             const dmg = Math.floor(action.actor.str * 1.5 + action.actor.agi * 0.5);
                             monster.currentHp -= dmg;
                             this.addLog(`${action.actor.name}の気功波！(HP-4) ${monster.name}に防御無視の${dmg}ダメージ！`);
-                            this.flashEffect();
+                            this.showHitEffect(monsterDOMId, dmg);
                         } else {
                             this.addLog(`${action.actor.name}は体力が足りない！`);
                         }
@@ -717,7 +908,7 @@ class Game {
                             const dmg = Math.floor(action.actor.agi * 1.8 + Math.random() * 5);
                             monster.currentHp -= dmg;
                             this.addLog(`${action.actor.name}の不意打ち！(MP-3) ${monster.name}に${dmg}のダメージ！`);
-                            this.flashEffect();
+                            this.showHitEffect(monsterDOMId, dmg);
                         } else {
                             this.addLog(`${action.actor.name}はMPが足りない！`);
                         }
@@ -741,10 +932,13 @@ class Game {
                     } else if (job === '魔術師') {
                         if (action.actor.mp >= 5) {
                             action.actor.mp -= 5;
-                            const dmg = Math.max(10, Math.floor(action.actor.int * 1.5 + 5));
-                            monster.currentHp -= dmg;
-                            this.addLog(`${action.actor.name}のファイヤーボール！(MP-5) ${monster.name}に${dmg}の大ダメージ！`);
-                            this.flashEffect();
+                            this.addLog(`${action.actor.name}のファイヤーボール！(MP-5) 全体に炎が襲う！`);
+
+                            aliveMonsters.forEach(m => {
+                                const dmg = Math.max(10, Math.floor(action.actor.int * 1.5 + 5));
+                                m.currentHp -= dmg;
+                                this.showHitEffect(m.id, dmg);
+                            });
                         } else {
                             this.addLog(`${action.actor.name}はMPが足りない！`);
                         }
@@ -756,7 +950,7 @@ class Game {
                             const dmg2 = Math.floor((action.actor.str + wpnAtk) * 0.8 + Math.random() * 3);
                             monster.currentHp -= (dmg1 + dmg2);
                             this.addLog(`${action.actor.name}の燕返し！(MP-4) ${monster.name}に${dmg1}と${dmg2}の連続ダメージ！`);
-                            this.flashEffect();
+                            this.showHitEffect(monsterDOMId, dmg1 + dmg2);
                         } else {
                             this.addLog(`${action.actor.name}はMPが足りない！`);
                         }
@@ -766,7 +960,7 @@ class Game {
                             const dmg = Math.floor(action.actor.str + action.actor.agi * 1.2);
                             monster.currentHp -= dmg;
                             this.addLog(`${action.actor.name}の狙い撃ち！(MP-3) 急所を突いて${monster.name}に${dmg}のダメージ！`);
-                            this.flashEffect();
+                            this.showHitEffect(monsterDOMId, dmg);
                         } else {
                             this.addLog(`${action.actor.name}はMPが足りない！`);
                         }
@@ -774,28 +968,40 @@ class Game {
                 } else if (action.type === 'run') {
                     if (Math.random() > 0.4) {
                         this.addLog("逃げ出した！");
+                        audio.playBGM('bgm_explore');
                         this.endBattle(false);
                         return;
                     } else this.addLog("逃げられなかった！");
                 }
             } else {
+                if (action.actor.currentHp <= 0) continue; // Skip attacks if monster died before turn
                 const aliveParty = this.party.filter(p => p.hp > 0);
                 if (aliveParty.length === 0) break;
-                const target = aliveParty[Math.floor(Math.random() * aliveParty.length)];
+
+                const pIdx = this.party.findIndex(p => p === aliveParty[Math.floor(Math.random() * aliveParty.length)]);
+                const target = this.party[pIdx];
                 if (target) {
                     const armDef = (target.equipment.armor?.def || 0) + (target.equipment.accessory?.def || 0);
-                    const dmg = Math.max(1, monster.atk - Math.floor((target.vit + armDef) / 2) + Math.floor(Math.random() * 3));
+                    const dmg = Math.max(1, action.actor.atk - Math.floor((target.vit + armDef) / 2) + Math.floor(Math.random() * 3));
                     target.hp = Math.max(0, target.hp - dmg);
-                    this.addLog(`${monster.name}の攻撃！ ${target.name}は${dmg}のダメージ！`);
-                    this.flashEffect();
+                    this.addLog(`${action.actor.name}の攻撃！ ${target.name}は${dmg}のダメージ！`);
+                    this.showPartyHitEffect(pIdx, dmg);
+                    audio.playSE('se_damage');
                 }
             }
             this.updateUI();
+
+            // Re-check for remaining enemies after applying damage
+            const remain = monsters.filter(m => m.currentHp > 0);
+            if (remain.length === 0) break;
+
             await new Promise(r => setTimeout(r, 600));
         }
 
-        if (monster.currentHp <= 0) {
-            this.addLog(`${monster.name}を討伐した！`);
+        const remainMonsters = monsters.filter(m => m.currentHp > 0);
+        if (remainMonsters.length === 0) {
+            audio.playSE('se_dead');
+            this.addLog(`魔物たちを討伐した！`);
             this.endBattle(true);
         } else if (this.party.every(p => p.hp <= 0)) {
             const currentFloorNum = this.currentFloor + 1;
@@ -815,6 +1021,7 @@ class Game {
             this.currentFloor = 0;
             document.getElementById('floor-indicator').textContent = `B1F`;
             this.updateVisited();
+            audio.playBGM('bgm_explore');
             this.endBattle(false);
         } else {
             this.currentBattle.turnOrder = [];
@@ -830,17 +1037,57 @@ class Game {
         setTimeout(() => viewport.classList.remove('flash'), 200);
     }
 
+    showHitEffect(monsterId, dmgNum) {
+        audio.playSE('se_attack');
+        const mNode = document.getElementById(monsterId);
+        if (!mNode) return;
+        mNode.classList.remove('target-hit');
+        void mNode.offsetWidth; // trigger reflow
+        mNode.classList.add('target-hit');
+
+        const popup = document.createElement('div');
+        popup.className = 'damage-popup';
+        popup.textContent = dmgNum;
+        mNode.appendChild(popup);
+        setTimeout(() => { if (popup.parentNode) popup.remove(); }, 1000);
+
+        // Hide monster quickly if HP dropped to 0
+        const mData = this.currentBattle.monsters.find(m => m.id === monsterId.replace('monster-img-', 'monster-'));
+        if (mData && mData.currentHp <= 0) {
+            setTimeout(() => {
+                mNode.style.opacity = '0';
+                mNode.style.transition = 'opacity 0.5s';
+            }, 400);
+        }
+    }
+
+    showPartyHitEffect(partyIdx, dmgNum) {
+        const pNode = document.getElementById(`party-member-${partyIdx}`);
+        if (!pNode) return;
+        pNode.classList.remove('target-hit');
+        void pNode.offsetWidth; // trigger reflow
+        pNode.classList.add('target-hit');
+
+        const popup = document.createElement('div');
+        popup.className = 'damage-popup';
+        popup.textContent = dmgNum;
+        pNode.appendChild(popup);
+        setTimeout(() => { if (popup.parentNode) popup.remove(); }, 1000);
+    }
+
     endBattle(won) {
         const mo = document.getElementById('monster-overlay');
         mo.style.transform = '';
         mo.style.filter = '';
+        mo.innerHTML = '';
 
         if (won) {
+            audio.playSE('se_victory');
             if (this.currentBattle.isBoss) {
                 this.triggerEnding();
                 return;
             }
-            const exp = this.currentBattle.monster.exp;
+            const exp = this.currentBattle.monsters.reduce((sum, m) => sum + m.exp, 0);
             this.party.forEach(p => {
                 if (p.hp > 0) {
                     p.exp += exp;
@@ -912,6 +1159,9 @@ class Game {
         document.getElementById('battle-menu').style.display = 'none';
         document.getElementById('monster-overlay').style.display = 'none';
         this.currentBattle = null;
+        if (won && !this.currentBattle?.isBoss) {
+            audio.playBGM('bgm_explore');
+        }
         this.updateUI();
     }
 
@@ -1409,7 +1659,18 @@ class Game {
             const isSolid = oy >= 0 && oy < map.length && ox >= 0 && ox < map[oy].length && (map[oy][ox] === 1 || map[oy][ox] === 4);
 
             if (isSolid) {
+                // If it's a hidden door (4), make it darker to hint the player
+                const isHiddenDoor = (map[oy][ox] === 4);
+                if (isHiddenDoor) {
+                    ctx.globalAlpha = 0.6; // Darken the wall
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                }
+
                 fillWall(dist, offsetX, 'front');
+
+                if (isHiddenDoor) {
+                    ctx.globalAlpha = 1.0; // Reset
+                }
             } else {
                 const tile = (oy >= 0 && oy < map.length && ox >= 0 && ox < map[oy].length) ? map[oy][ox] : 0;
                 // 距離に応じた暗度（壁と同じ計算）
