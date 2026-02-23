@@ -871,8 +871,8 @@ class Game {
                     // Note: Ensure flag event4FDone remains true so standard interaction stops
 
                     const elixir = {
-                        name: '妖精の霊薬', type: 'consumable', infinite: true, desc: '何度でも使える全体回復薬',
-                        effect: (p) => { this.party.forEach(mbr => mbr.hp = Math.min(mbr.maxHp, mbr.hp + 50)); this.addLog(`${p.name}は妖精の霊薬を使った！全員のHPが50回復！`); }
+                        name: '妖精の霊薬', type: 'consumable', infinite: true, targetAll: true, desc: '何度でも使える全体回復薬',
+                        effect: () => { this.party.forEach(mbr => mbr.hp = Math.min(mbr.maxHp, mbr.hp + 50)); this.addLog(`妖精の霊薬を使った！全員のHPが50回復！`); }
                     };
                     this.inventory.push(elixir);
                     this.closeEvent();
@@ -1879,7 +1879,9 @@ class Game {
                                 <br>
                                 <div style="margin-top:5px; display:flex; gap:5px;">
                                     ${item.type === 'consumable'
-                        ? `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.showTargetSelection(${itemIdx}, 'use')">使う</button>`
+                        ? (item.targetAll
+                            ? `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.useItem(null, ${itemIdx})">使う</button>`
+                            : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.showTargetSelection(${itemIdx}, 'use')">使う</button>`)
                         : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.showTargetSelection(${itemIdx}, 'equip')">装備</button>`
                     }
                                     <button class="btn" style="padding:2px 5px; font-size:10px; border-color:#833;" onclick="game.dropItem(${itemIdx})">捨てる</button>
@@ -1989,21 +1991,29 @@ class Game {
 
     useItem(charIdx, itemIdx) {
         const item = this.inventory[itemIdx];
-        const target = this.party[charIdx];
-        if (target.hp <= 0) {
-            this.addLog(`${target.name}は倒れている...`);
-            return;
+        let target = null;
+        if (charIdx !== null && charIdx !== undefined) {
+            target = this.party[charIdx];
+            if (target && target.hp <= 0) {
+                this.addLog(`${target.name}は倒れている...`);
+                return;
+            }
         }
+
         if (item.type === 'consumable') {
-            if (item.hpRestore) {
-                target.hp = Math.min(target.maxHp, target.hp + item.hpRestore);
-                this.addLog(`${target.name}は${item.name}を使った。HPが回復した！`);
-            } else if (item.mpRestore) {
-                target.mp = Math.min(target.maxMp, target.mp + item.mpRestore);
-                this.addLog(`${target.name}は${item.name}を使った。MPが回復した！`);
-            } else if (item.recover) {
-                target.hp = Math.min(target.maxHp, target.hp + item.recover);
-                this.addLog(`${target.name}は${item.name}を使用！ ${target.name}のHPが${item.recover}回復した！`);
+            if (item.effect) {
+                item.effect(target); // Call custom effect (target might be null for targetAll items)
+            } else if (target) {
+                if (item.hpRestore) {
+                    target.hp = Math.min(target.maxHp, target.hp + item.hpRestore);
+                    this.addLog(`${target.name}は${item.name}を使った。HPが回復した！`);
+                } else if (item.mpRestore) {
+                    target.mp = Math.min(target.maxMp, target.mp + item.mpRestore);
+                    this.addLog(`${target.name}は${item.name}を使った。MPが回復した！`);
+                } else if (item.recover) {
+                    target.hp = Math.min(target.maxHp, target.hp + item.recover);
+                    this.addLog(`${target.name}は${item.name}を使用！ ${target.name}のHPが${item.recover}回復した！`);
+                }
             }
             if (!item.infinite) {
                 this.inventory.splice(this.inventory.indexOf(item), 1);
