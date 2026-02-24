@@ -85,13 +85,13 @@ const MONSTER_STATS_MULT = [
     { hp: 1.0, atk: 1.0, agi: 1.0 }, // 4: ゴブリン (Balanced)
     { hp: 0.8, atk: 1.2, agi: 0.8 }, // 5: スケルトン (High ATK, Low HP)
     { hp: 0.5, atk: 1.5, agi: 1.8 }, // 6: ファントム (Glass Cannon, Very Fast)
-    { hp: 1.8, atk: 1.5, agi: 0.6 }, // 7: オーガ (Tank, High ATK, Slow)
-    { hp: 1.5, atk: 1.3, agi: 1.2 }, // 8: デーモン (Strong all-rounder)
-    { hp: 2.0, atk: 2.0, agi: 1.0 }, // 9: ドラゴン (Boss level base)
-    { hp: 1.5, atk: 1.1, agi: 0.4 }, // 10: ゾンビ (High HP, Very Slow)
-    { hp: 0.7, atk: 1.8, agi: 0.9 }, // 11: メイジ (Low HP, Very High ATK)
+    { hp: 2.8, atk: 1.5, agi: 0.6 }, // 7: オーガ (Tank, High ATK, Slow)
+    { hp: 2.0, atk: 1.8, agi: 1.2 }, // 8: デーモン (Strong all-rounder)
+    { hp: 2.5, atk: 2.5, agi: 1.0 }, // 9: ドラゴン (Boss level base)
+    { hp: 3.5, atk: 1.1, agi: 0.4 }, // 10: ゾンビ (High HP, Very Slow)
+    { hp: 0.7, atk: 3.5, agi: 0.9 }, // 11: メイジ (Low HP, Very High ATK)
     { hp: 1.3, atk: 1.4, agi: 1.5 }, // 12: ヴァンパイア (Strong, Fast)
-    { hp: 1.2, atk: 2.0, agi: 1.1 }  // 13: デーモンメイジ (High ATK magic)
+    { hp: 1.2, atk: 5.0, agi: 1.1 }  // 13: デーモンメイジ (High ATK magic)
 ];
 
 const ENEMY_VARIANTS = [
@@ -2363,10 +2363,21 @@ class Game {
             const hpW = (p.hp / p.maxHp) * 100;
             const mpW = p.maxMp > 0 ? (p.mp / p.maxMp) * 100 : 0;
             div.innerHTML = `
-                <div style="display:flex; justify-content:space-between"><strong>${p.name}</strong> <span>Lv${p.level} ${p.job}</span></div>
-                <div class="stat-bar"><div class="stat-fill" style="width:${hpW}%; background:#ff4444;"></div></div>
-                <div class="stat-bar"><div class="stat-fill" style="width:${mpW}%; background:#4444ff;"></div></div>
-                <div style="font-size:10px">HP ${p.hp}/${p.maxHp}  MP ${p.mp}/${p.maxMp}</div>
+                <div style="display:flex; justify-content:space-between; margin-bottom: 2px;"><strong>${p.name}</strong> <span>Lv${p.level} ${p.job}</span></div>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <div class="stat-bar">
+                            <div class="stat-fill" style="width:${hpW}%; background:#ff4444;"></div>
+                            <div style="position:absolute; top:0; left:0; width:100%; text-align:center; font-size:10px; line-height:14px; text-shadow:1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; z-index:2;">HP ${p.hp}/${p.maxHp}</div>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <div class="stat-bar">
+                            <div class="stat-fill" style="width:${mpW}%; background:#4444ff;"></div>
+                            <div style="position:absolute; top:0; left:0; width:100%; text-align:center; font-size:10px; line-height:14px; text-shadow:1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; z-index:2;">MP ${p.mp}/${p.maxMp}</div>
+                        </div>
+                    </div>
+                </div>
             `;
             list.appendChild(div);
         });

@@ -189,9 +189,12 @@ canvas#view-canvas {
 
 .stat-bar {
     width: 100%;
-    height: 5px;
+    height: 14px;
     background: #222;
     margin-top: 3px;
+    position: relative;
+    border-radius: 2px;
+    overflow: hidden;
 }
 
 .stat-fill {
@@ -326,15 +329,73 @@ canvas#view-canvas {
     #game-container {
         max-width: 100%;
         max-height: none;
-        /* スマホではwrapperいっぱいに広げる */
         grid-template-areas: "view" "status" "log" "controls";
         grid-template-columns: 1fr;
-        /* スマホでは行の高さを相対的にし、画面内に収まるように縮める */
-        grid-template-rows: minmax(150px, 30vh) minmax(100px, 140px) minmax(80px, 1fr) 60px;
+        grid-template-rows: minmax(150px, 30vh) minmax(140px, auto) minmax(80px, 1fr) auto;
+    }
+
+    #status-area {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    #party-list {
+        flex: 1 1 50%;
+        margin-right: 10px;
+        margin-bottom: 10px;
     }
 
     #minimap-container {
-        display: none;
+        display: block;
+        width: 120px;
+        flex-shrink: 0;
+        margin-top: 0;
+    }
+
+    #explore-menu:not([style*="display: none"]) {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-areas:
+            ". forward . camp"
+            "left backward right .";
+        gap: 5px;
+        width: 100%;
+    }
+
+    #btn-move-forward {
+        grid-area: forward;
+    }
+
+    #btn-turn-left {
+        grid-area: left;
+    }
+
+    #btn-turn-right {
+        grid-area: right;
+    }
+
+    #btn-move-backward {
+        grid-area: backward;
+    }
+
+    #btn-camp {
+        grid-area: camp;
+        align-self: start;
+    }
+
+    #battle-menu:not([style*="display: none"]) {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+        width: 100%;
+    }
+
+    .btn {
+        padding: 12px 10px;
+        font-size: 14px;
     }
 }
 
