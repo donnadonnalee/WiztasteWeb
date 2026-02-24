@@ -33,10 +33,10 @@ const ITEMS = [
     { id: 18, name: 'グラディウス', type: 'weapon', level: 7, atk: 13, req: { agi: 12 }, desc: '暗殺者の短剣(ATK+13)' },
     { id: 19, name: 'バトルアックス', type: 'weapon', level: 8, atk: 15, req: { str: 15 }, desc: '重い斧(ATK+15)' },
     { id: 20, name: 'グレートソード', type: 'weapon', level: 9, atk: 18, req: { str: 18 }, desc: '巨大な両手剣(ATK+18)' },
-    { id: 21, name: 'フランベルジュ', type: 'weapon', level: 10, atk: 22, req: { str: 20 }, desc: '波打つ刀身(ATK+22)' },
-    { id: 22, name: '大賢者の杖', type: 'weapon', level: 10, atk: 8, int: 25, req: { int: 25 }, desc: '世界樹の枝(ATK+8, INT+25)' },
-    { id: 23, name: '妖刀ムラマサ', type: 'weapon', level: 10, atk: 35, agi: 15, req: { agi: 20 }, desc: '呪われし刀(ATK+35, AGI+15)' },
-    { id: 24, name: 'エクスカリバー', type: 'weapon', level: 10, atk: 40, req: { str: 30 }, desc: '伝説の聖剣(ATK+40)' },
+    { id: 21, name: 'フランベルジュ', type: 'weapon', level: 10, atk: 22, req: { str: 35 }, desc: '波打つ刀身(ATK+22)' },
+    { id: 22, name: '大賢者の杖', type: 'weapon', level: 10, atk: 8, int: 25, req: { int: 40 }, desc: '世界樹の枝(ATK+8, INT+25)' },
+    { id: 23, name: '妖刀ムラマサ', type: 'weapon', level: 10, atk: 35, agi: 15, req: { agi: 45 }, desc: '呪われし刀(ATK+35, AGI+15)' },
+    { id: 24, name: 'エクスカリバー', type: 'weapon', level: 10, atk: 40, req: { str: 50 }, desc: '伝説の聖剣(ATK+40)' },
 
     // Armors (30-45)
     { id: 30, name: 'ローブ', type: 'armor', level: 1, def: 2, desc: '布の服(DEF+2)' },
@@ -48,8 +48,8 @@ const ITEMS = [
     { id: 36, name: 'スケイルメイル', type: 'armor', level: 7, def: 11, req: { str: 18 }, desc: '鱗の鎧(DEF+11)' },
     { id: 37, name: 'プレートメイル', type: 'armor', level: 8, def: 15, req: { str: 20 }, desc: '重装甲(DEF+15)' },
     { id: 38, name: 'ミスリルメイル', type: 'armor', level: 9, def: 20, req: { str: 15 }, desc: '軽く硬い(DEF+20)' },
-    { id: 39, name: 'ドラゴンメイル', type: 'armor', level: 10, def: 28, req: { str: 25 }, desc: '竜の鱗で作られた(DEF+28)' },
-    { id: 40, name: 'イージスの盾', type: 'armor', level: 10, def: 35, req: { str: 30 }, desc: '神話の盾(DEF+35)' },
+    { id: 39, name: 'ドラゴンメイル', type: 'armor', level: 10, def: 28, req: { str: 40 }, desc: '竜の鱗で作られた(DEF+28)' },
+    { id: 40, name: 'イージスの盾', type: 'armor', level: 10, def: 35, req: { str: 55 }, desc: '神話の盾(DEF+35)' },
 
     // Accessories (50-60)
     { id: 50, name: '力の腕輪', type: 'accessory', level: 3, atk: 3, desc: '攻撃力アップ(ATK+3)' },
@@ -58,7 +58,34 @@ const ITEMS = [
     { id: 53, name: '賢者の石', type: 'accessory', level: 7, int: 10, desc: '魔力アップ(INT+10)' },
     { id: 54, name: '勇者の証', type: 'accessory', level: 9, atk: 5, def: 5, desc: '攻防アップ(ATK+5, DEF+5)' },
     { id: 55, name: '幸運の兎の足', type: 'accessory', level: 6, luk: 15, desc: '運気アップ(LUK+15)' },
-    { id: 56, name: '女神の指輪', type: 'accessory', level: 10, def: 10, int: 5, desc: '加護(DEF+10, INT+5)' }
+    { id: 56, name: '女神の指輪', type: 'accessory', level: 10, def: 10, int: 5, desc: '加護(DEF+10, INT+5)' },
+
+    // High-End Weapons (60+)
+    { id: 60, name: '方天画戟', type: 'weapon', level: 10, atk: 55, req: { str: 70 }, desc: '武神の長柄武器(ATK+55)' },
+    { id: 61, name: 'ゲイボルグ', type: 'weapon', level: 10, atk: 50, agi: 20, req: { agi: 65, str: 40 }, desc: '必中の魔槍(ATK+50, AGI+20)' },
+    { id: 62, name: '神魔の息吹', type: 'weapon', level: 10, atk: 15, int: 60, req: { int: 80 }, desc: '究極の魔導書(ATK+15, INT+60)' },
+    { id: 63, name: '天叢雲剣', type: 'weapon', level: 10, atk: 65, luk: 30, req: { str: 60, luk: 50 }, desc: '三種の神器の一つ(ATK+65, LUK+30)' },
+    { id: 64, name: 'レーヴァテイン', type: 'weapon', level: 10, atk: 75, req: { str: 90 }, desc: '世界を焼く魔剣(ATK+75)' },
+    { id: 65, name: 'ミョルニル', type: 'weapon', level: 10, atk: 85, req: { str: 110 }, desc: '雷神の鎚(ATK+85)' },
+    { id: 66, name: 'アポロンの弓', type: 'weapon', level: 10, atk: 45, agi: 40, req: { agi: 80 }, desc: '太陽神の弓(ATK+45, AGI+40)' },
+
+    // High-End Armors (70+)
+    { id: 70, name: '源氏の鎧', type: 'armor', level: 10, def: 45, req: { str: 65 }, desc: '東方の名将の鎧(DEF+45)' },
+    { id: 71, name: '天女の羽衣', type: 'armor', level: 10, def: 20, agi: 30, luk: 20, req: { agi: 50, int: 50 }, desc: '浮世離れした美しさ(DEF+20, AGI+30, LUK+20)' },
+    { id: 72, name: 'アダマンアーマー', type: 'armor', level: 10, def: 60, req: { str: 100 }, desc: '超硬度の鎧(DEF+60)' },
+    { id: 73, name: '七星のローブ', type: 'armor', level: 10, def: 35, int: 45, req: { int: 90 }, desc: '星の力を宿す法衣(DEF+35, INT+45)' },
+    { id: 74, name: '機神の装甲', type: 'armor', level: 10, def: 55, agi: -10, req: { str: 85, vit: 70 }, desc: '機械仕掛けの重装甲(DEF+55, AGI-10)' },
+    { id: 75, name: 'ドレッドノート', type: 'armor', level: 10, def: 80, agi: -20, req: { str: 120 }, desc: '絶対的な防御力(DEF+80, AGI-20)' },
+    { id: 76, name: '聖騎士の盾', type: 'armor', level: 10, def: 50, vit: 20, req: { str: 75, vit: 60 }, desc: '全てを弾く盾(DEF+50, VIT+20)' },
+
+    // High-End Accessories (80+)
+    { id: 80, name: 'オリハルコンの環', type: 'accessory', level: 10, atk: 15, def: 15, desc: '極限の硬度(ATK+15, DEF+15)' },
+    { id: 81, name: 'クロノスギア', type: 'accessory', level: 10, agi: 25, desc: '時を加速させる(AGI+25)' },
+    { id: 82, name: 'ソロモンの指輪', type: 'accessory', level: 10, int: 35, desc: '万物の叡智(INT+35)' },
+    { id: 83, name: 'ヘラクレスの帯', type: 'accessory', level: 10, str: 20, vit: 20, desc: '剛力と強靭(STR+20, VIT+20)' },
+    { id: 84, name: '幸運の七福神', type: 'accessory', level: 10, luk: 50, desc: '神がかり的な幸運(LUK+50)' },
+    { id: 85, name: 'カレイドスコープ', type: 'accessory', level: 10, int: 20, luk: 20, desc: '多種多様な魔力(INT+20, LUK+20)' },
+    { id: 86, name: '世界樹の種', type: 'accessory', level: 10, hp: 100, def: 10, desc: '生命の根源(HP+100, DEF+10)' }
 ];
 
 const ITEM_PREFIXES = [
@@ -236,8 +263,8 @@ for (let i = 0; i < 10; i++) {
         }
     }
 
-    // Seed fixed floor events for 3F(2), 4F(3), 5F(4), 6F(5), 7F(6), 8F(7), and 9F(8)
-    if (i >= 2 && i <= 8) {
+    // Seed fixed floor events for 2F(1), 3F(2), 4F(3), 5F(4), 6F(5), 7F(6), 8F(7), 9F(8)
+    if (i >= 1 && i <= 8) {
         let emptySpots = [];
         for (let r = 1; r < map.length - 1; r++) {
             for (let c = 1; c < map[r].length - 1; c++) {
@@ -757,7 +784,8 @@ class Game {
             this.addLog("圧倒的な邪悪な気配を感じる...!!");
             this.startBossBattle();
         } else if (tile === 9) { // Event NPC Tile
-            if ((this.currentFloor === 2 && !this.npcFlags.event3FDone) ||
+            if (this.currentFloor === 1 ||
+                (this.currentFloor === 2 && !this.npcFlags.event3FDone) ||
                 (this.currentFloor === 3 && (!this.npcFlags.event4FDone || (this.npcFlags.friendGoblin && !this.npcFlags.rewardedGoblin))) ||
                 (this.currentFloor === 4 && !this.npcFlags.event5FDone) ||
                 (this.currentFloor === 5 && !this.npcFlags.event6FDone) ||
@@ -765,7 +793,8 @@ class Game {
                 (this.currentFloor === 7 && !this.npcFlags.event8FDone) ||
                 (this.currentFloor === 8 && !this.npcFlags.event9FDone)) {
                 this.addLog("誰かがいるようだ...");
-                if (this.currentFloor === 2) this.triggerEvent(3);
+                if (this.currentFloor === 1) this.triggerEvent(2);
+                else if (this.currentFloor === 2) this.triggerEvent(3);
                 else if (this.currentFloor === 3) this.triggerEvent(4);
                 else if (this.currentFloor === 4) this.triggerEvent(5);
                 else if (this.currentFloor === 5) this.triggerEvent(6);
@@ -855,7 +884,38 @@ class Game {
         img.style.display = 'block';
         img.onerror = () => { img.style.display = 'none'; }; // Hide if image is missing
 
-        if (floor === 3) {
+        if (floor === 2) {
+            title.textContent = "老師";
+            const allHighLevel = this.party.every(p => p.level >= 50);
+
+            if (allHighLevel) {
+                desc.innerHTML = "静かに目を閉じた老人が、おもむろに口を開いた。<br><br>「汝、さらなる高みへ導こう。心して励むが良い。」<br><br>※現在のステータスがベースステータスとして固定されます。<br>これにより、強力な武器や防具の装備条件をクリアしやすくなります。";
+
+                const btnUpgrade = document.createElement('button');
+                btnUpgrade.className = 'btn';
+                btnUpgrade.textContent = '修行を受ける';
+                btnUpgrade.onclick = () => {
+                    this.party.forEach(p => {
+                        p.baseStr = p.str;
+                        p.baseInt = p.int;
+                        p.baseVit = p.vit;
+                        p.baseAgi = p.agi;
+                        p.baseLuk = p.luk;
+                    });
+                    this.addLog("老師の導きにより、真の力が呼び覚まされた！装備の制限が大幅に緩和された。");
+                    this.closeEvent();
+                };
+                options.appendChild(btnUpgrade);
+            } else {
+                desc.innerHTML = "静かに目を閉じた老人が、おもむろに口を開いた。<br><br>「汝、本当の絶望を知らぬようだ。」<br><br>※修行を受けるには全員がレベル50以上である必要があります。";
+                const btnLeave = document.createElement('button');
+                btnLeave.className = 'btn';
+                btnLeave.textContent = '立ち去る';
+                btnLeave.onclick = () => this.closeEvent();
+                options.appendChild(btnLeave);
+            }
+
+        } else if (floor === 3) {
             title.textContent = "気前のよい剣士『アルトリウス』";
             desc.innerHTML = "陽気な笑みを浮かべた見目麗しい剣士が、馴れ馴れしく話しかけてきた。<br><br>「やあ君たち、そんな装備でここに来たのかい？ははは、無茶をする！」<br><br>彼は気のいい男のようだ。自分のおさがりの武器を差し出してきた。<br>「ここでの掟は持ちつ持たれつさ。俺のおさがりだけど、持っていくといい。いつか恩返ししてくれよ？」";
 
@@ -1682,25 +1742,8 @@ class Game {
             this.addLog(`魔物たちを討伐した！`);
             this.endBattle(true);
         } else if (this.party.every(p => p.hp <= 0)) {
-            const currentFloorNum = this.currentFloor + 1;
-            const penaltySeconds = currentFloorNum * 30;
-            const penaltyMs = penaltySeconds * 1000;
-
-            this.addLog("パーティは全滅してしまった...");
-            this.addLog("謎の力によってB1Fまで戻された！");
-            this.addLog(`（ペナルティ: タイムが${penaltySeconds}秒加算された）`);
-
-            // Apply (floor * 30) seconds penalty to timer
-            this.startTime -= penaltyMs;
-
-            // Simple game over: restore health and return to start
-            this.party.forEach(p => p.hp = p.maxHp);
-            this.playerPos = { x: 1, y: 1, dir: 1 };
-            this.currentFloor = 0;
-            document.getElementById('floor-indicator').textContent = `B1F`;
-            this.updateVisited();
-            audio.playBGM('bgm_explore');
-            this.endBattle(false);
+            this.handleGameOver();
+            return;
         } else {
             this.currentBattle.turnOrder = [];
             this.currentBattle.phase = 'INPUT';
@@ -1784,6 +1827,79 @@ class Game {
         setTimeout(() => { if (popup.parentNode) popup.remove(); }, 1000);
     }
 
+    async showBlackout(message, duration = 3000, midCallback = null) {
+        const overlay = document.getElementById('fade-overlay');
+        const textNode = document.getElementById('fade-text');
+
+        overlay.style.display = 'flex';
+        overlay.classList.remove('fade-out');
+        overlay.classList.add('fade-in');
+
+        if (message) {
+            textNode.textContent = message;
+            textNode.style.opacity = 1;
+        }
+
+        // Wait for fade-in (approx 1s)
+        await new Promise(r => setTimeout(r, 1000));
+
+        // If there's a callback to run while black (e.g., teleportation)
+        if (midCallback) {
+            await midCallback();
+        }
+
+        // Wait the remaining time (considering the 1s fade-in)
+        const waitTime = Math.max(0, duration - 1000);
+        await new Promise(r => setTimeout(r, waitTime));
+
+        if (message) {
+            textNode.style.opacity = 0;
+        }
+
+        overlay.classList.remove('fade-in');
+        overlay.classList.add('fade-out');
+
+        await new Promise(r => setTimeout(r, 1000));
+        overlay.style.display = 'none';
+    }
+
+    async handleGameOver() {
+        const currentFloorNum = this.currentFloor + 1;
+        const penaltySeconds = currentFloorNum * 30;
+        const penaltyMs = penaltySeconds * 1000;
+
+        await this.showBlackout("全滅した", 2000, async () => {
+            // Restore health and return to start while the screen is black
+            this.party.forEach(p => {
+                p.hp = p.maxHp;
+                p.mp = p.maxMp;
+                p.deadLogged = false;
+            });
+
+            this.playerPos = { x: 1, y: 1, dir: 1 };
+            this.currentFloor = 0;
+            document.getElementById('floor-indicator').textContent = `B1F`;
+            this.updateVisited();
+
+            this.state = 'EXPLORE';
+            document.getElementById('explore-menu').style.display = 'flex';
+            document.getElementById('battle-menu').style.display = 'none';
+            document.getElementById('monster-overlay').style.display = 'none';
+            this.currentBattle = null;
+
+            audio.playBGM('bgm_explore');
+            this.render(); // Use render() instead of updateUI() to refresh canvas
+        });
+
+        this.addLog("謎の力によって迷宮の入り口に戻された…");
+        this.addLog(`（ペナルティ: タイムが${penaltySeconds}秒加算された）`);
+
+        // Apply (floor * 30) seconds penalty to timer
+        this.startTime -= penaltyMs;
+
+        this.addLog("気が付くと迷宮の入り口にいる。町には戻れない。アビスロードを倒すしかないようだ。");
+    }
+
     endBattle(won) {
         const mo = document.getElementById('monster-overlay');
         mo.style.transform = '';
@@ -1820,7 +1936,7 @@ class Game {
                         p.level++;
                         p.maxHp += 8;
                         p.maxMp += 4; p.mp = p.maxMp;
-                        p.str += 2; p.int += 2;
+                        p.str += 2; p.int += 2; p.vit += 2; p.agi += 2; p.luk += 2;
                         this.addLog(`${p.name}はレベル${p.level}に上がった！`);
                     }
                 }
@@ -1890,10 +2006,77 @@ class Game {
         this.updateUI();
     }
 
-    triggerEnding() {
+    async triggerEnding() {
         this.state = 'ENDING';
         this.clearTime = Date.now() - this.startTime;
 
+        await this.showBlackout("アビスロードの波動が消失した", 3000);
+
+        // Show ending story
+        this.startEndingStory();
+    }
+
+    startEndingStory() {
+        audio.playBGM('bgm_intro'); // Re-use intro music for ending
+        const storyScreen = document.getElementById('story-screen');
+        const storyContent = document.getElementById('story-content');
+        const nextBtn = document.getElementById('btn-story-next');
+        const skipBtn = document.getElementById('btn-story-skip');
+
+        storyScreen.style.display = 'flex';
+        skipBtn.style.display = 'none'; // No skipping the ending!
+
+        this.endingIndex = 0;
+        this.endingMessages = [
+            "迷宮の最深部...<br>アビスロードの巨躯が崩れ落ち、霧のように消えていく。",
+            "地上に戻ると、懐かしい酒場の明かりが見えた。",
+            "酒場にて...<br>死線を潜り抜けたパーティを、バーテンダーが温かく迎える。",
+            "バーテンダー<br>「よくやったな。お前たちならやってくれると信じていたよ。<br>これでしばらくはこの街も安泰だ。」",
+            `${this.party[0].name}<br>「ああ、なんとかなったな。<br>だが、アビスロードはまたいつか復活するんだろう？」`,
+            "バーテンダー<br>「フフ...その時はまた、新しい英雄が必要になるだろうな。<br>だが今は、勝利の美酒を味わうがいい。」",
+            `${this.party[1].name}<br>「私の魔法が大いに役立ったわね。<br>さて、私は自分の研究に戻るわ。また縁があれば。」`,
+            `${this.party[2].name}<br>「修行の成果を試すには十分な迷宮だった。<br>さらばだ。私はさらなる高みを目指す。」`,
+            `${this.party[3].name}<br>「おいおい、もう解散かよ？<br>まぁいいさ、俺も少しのんびりさせてもらうぜ！」`,
+            `${this.party[0].name}<br>「ああ...それぞれ別の道を行くってわけか。」`,
+            "バーテンダー<br>「一期一会、それが冒険者というものさ。<br>さぁ、最後の乾杯をしよう。街の平和に！」",
+            "こうして、臨時で組まれたパーティは解散し、<br>それぞれの物語へと帰っていった——"
+        ];
+
+        this.displayNextEndingStory();
+    }
+
+    displayNextEndingStory() {
+        const storyContent = document.getElementById('story-content');
+        const nextBtn = document.getElementById('btn-story-next');
+
+        if (this.endingIndex >= this.endingMessages.length) {
+            document.getElementById('story-screen').style.display = 'none';
+            this.showFinalRanking();
+            return;
+        }
+
+        const msg = this.endingMessages[this.endingIndex];
+        storyContent.innerHTML = `<div class="story-anim">${msg}</div>`;
+        this.endingIndex++;
+
+        nextBtn.style.display = 'none';
+        nextBtn.onclick = () => this.displayNextEndingStory(); // override for ending
+
+        setTimeout(() => {
+            nextBtn.style.display = 'inline-block';
+            if (this.endingIndex >= this.endingMessages.length) {
+                nextBtn.textContent = 'ランキングへ';
+                nextBtn.style.color = '#5f5';
+                nextBtn.style.borderColor = '#5f5';
+            } else {
+                nextBtn.textContent = '次へ ▼';
+                nextBtn.style.color = '#ffcc00';
+                nextBtn.style.borderColor = '#ffcc00';
+            }
+        }, 800);
+    }
+
+    showFinalRanking() {
         const elapsed = Math.floor(this.clearTime / 1000);
         const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
         const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
