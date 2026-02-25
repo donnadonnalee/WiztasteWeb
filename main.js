@@ -254,7 +254,7 @@ function generateMaze(size, depth = 0) {
     return map;
 }
 
-const LEVELS = [];
+let LEVELS = [];
 for (let i = 0; i < 10; i++) {
     const map = generateMaze(MAP_SIZE, i);
     if (i === 9) {
@@ -416,6 +416,8 @@ class Game {
             savedGoblin: false, friendGoblin: false, event4FDone: false, event6FDone: false,
             event8FDone: false
         };
+        this.elapsedTimeAtSave = 0;
+        this.discardingItemIdx = -1; // Added for in-game confirmation
 
         this.init();
     }
@@ -434,6 +436,9 @@ class Game {
             audio.unlockAudio();
             this.startGame();
         };
+
+        // Check for save data
+        this.checkSaveData();
 
         // Resume audio on ANY click, then play intro if we are still in START/STORY
         document.addEventListener('click', () => {
@@ -481,6 +486,30 @@ class Game {
             const char = this.createChar(name, job);
             char.bonusLeft = bonus;
             this.party.push(char);
+        }
+        this.renderCharCreate();
+    }
+
+    checkSaveData() {
+        const save = localStorage.getItem('wiztaste_save');
+        const screen = document.getElementById('char-create-screen');
+        if (save) {
+            const data = JSON.parse(save);
+            const menuArea = screen.querySelector('div:last-of-type');
+
+            // Add Continue button
+            const btnContinue = document.createElement('button');
+            btnContinue.className = 'btn';
+            btnContinue.id = 'btn-continue';
+            btnContinue.style.borderColor = '#5f5';
+            btnContinue.style.color = '#5f5';
+            btnContinue.style.marginRight = '10px';
+            btnContinue.textContent = `続きから (${data.floor + 1}F)`;
+            btnContinue.onclick = () => {
+                audio.unlockAudio();
+                this.loadGame(data);
+            };
+            menuArea.prepend(btnContinue);
         }
         this.renderCharCreate();
     }
@@ -625,7 +654,7 @@ class Game {
         if (this.state === 'START' || this.state === 'ENDING') return;
 
         const now = Date.now();
-        const elapsed = Math.floor((now - this.startTime) / 1000);
+        const elapsed = Math.floor((this.elapsedTimeAtSave + (now - this.startTime)) / 1000);
         const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
         const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
         const s = String(elapsed % 60).padStart(2, '0');
@@ -672,6 +701,12 @@ class Game {
                 case 's': this.battleAction('skill'); break;
                 case 'd': this.battleAction('guard'); break;
                 case 'f': this.battleAction('run'); break;
+            }
+        } else if (this.state === 'EVENT' || this.state === 'TREASURE') {
+            const index = ['a', 's', 'd', 'f'].indexOf(e.key.toLowerCase());
+            if (index !== -1) {
+                const buttons = document.getElementById('event-options').querySelectorAll('button');
+                if (buttons[index]) buttons[index].click();
             }
         }
     }
@@ -868,6 +903,7 @@ class Game {
 
         screen.style.display = 'flex';
         options.innerHTML = '';
+        this.currentEventOptionsCount = 0;
 
         // Determine event image name
         let imgName = `event_${floor}`;
@@ -1367,6 +1403,13 @@ class Game {
                 options.appendChild(btnLoot);
             }
         }
+
+        // Add keyboard hints to event options
+        const hints = ['(A)', '(S)', '(D)', '(F)'];
+        const buttons = options.querySelectorAll('button');
+        buttons.forEach((btn, idx) => {
+            if (hints[idx]) btn.textContent += hints[idx];
+        });
     }
 
     closeEvent() {
@@ -1952,6 +1995,7 @@ class Game {
 
             audio.playBGM('bgm_explore');
             this.render(); // Use render() instead of updateUI() to refresh canvas
+            this.saveGame();
         });
 
         this.addLog("謎の力によって迷宮の入り口に戻された…");
@@ -2062,8 +2106,8 @@ class Game {
                     return; // endBattle will be completed via treasure UI
                 }
             }
+            this.exitBattle();
         }
-        this.exitBattle();
     }
 
     exitBattle() {
@@ -2104,10 +2148,19 @@ class Game {
             this.addLog("宝箱を放置して立ち去った。");
             this.closeEvent();
             this.exitBattle();
+            this.saveGame();
         };
 
         opts.appendChild(btnOpen);
         opts.appendChild(btnLeave);
+
+        // Add keyboard hints
+        const buttons = opts.querySelectorAll('button');
+        const hints = ['(A)', '(S)'];
+        buttons.forEach((btn, idx) => {
+            if (hints[idx]) btn.textContent += hints[idx];
+        });
+
         screen.style.display = 'flex';
     }
 
@@ -2134,6 +2187,7 @@ class Game {
             this.inventory.push(drop);
             this.closeEvent();
             this.exitBattle();
+            this.saveGame();
         } else if (roll < successRate + trapRate) {
             this.addLog("罠にかかった！！");
             const traps = ['alarm', 'teleport', 'drain', 'bomb', 'curse'];
@@ -2143,6 +2197,7 @@ class Game {
             this.addLog("解錠に失敗したが、罠は作動しなかった。");
             this.closeEvent();
             this.exitBattle();
+            this.saveGame();
         }
     }
 
@@ -2206,6 +2261,7 @@ class Game {
                 this.exitBattle();
                 break;
         }
+        this.saveGame();
     }
 
     async triggerEnding() {
@@ -2353,6 +2409,7 @@ class Game {
             this.state = 'EXPLORE';
             campMenu.style.display = 'none';
             document.getElementById('explore-menu').style.display = 'flex';
+            this.saveGame();
         }
     }
 
@@ -2429,7 +2486,12 @@ class Game {
                             : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.showTargetSelection(${itemIdx}, 'use')">使う</button>`)
                         : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.showTargetSelection(${itemIdx}, 'equip')">装備</button>`
                     }
-                                    <button class="btn" style="padding:2px 5px; font-size:10px; border-color:#833;" onclick="game.dropItem(${itemIdx})">捨てる</button>
+                                    ${this.discardingItemIdx === itemIdx ?
+                        `<span style="color:#f55; font-size:10px;">捨てる？</span>
+                                     <button class="btn" style="padding:2px 5px; font-size:10px; border-color:#f55; color:#f55;" onclick="game.dropItem(${itemIdx}, true)">はい</button>
+                                     <button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.dropItem(-1)">いいえ</button>` :
+                        `<button class="btn" style="padding:2px 5px; font-size:10px; border-color:#833;" onclick="game.dropItem(${itemIdx})">捨てる</button>`
+                    }
                                 </div>
                             </div>
                         `;
@@ -2589,9 +2651,21 @@ class Game {
         this.updateUI();
     }
 
-    dropItem(itemIdx) {
-        if (confirm(`本当に ${this.inventory[itemIdx].name} を捨てる？`)) {
+    dropItem(itemIdx, confirmed = false) {
+        if (itemIdx === -1) {
+            this.discardingItemIdx = -1;
+            this.updateCampUI();
+            return;
+        }
+
+        if (confirmed) {
+            const item = this.inventory[itemIdx];
+            this.addLog(`「${item.name}」を捨てた。`);
             this.inventory.splice(itemIdx, 1);
+            this.discardingItemIdx = -1;
+            this.updateCampUI();
+        } else {
+            this.discardingItemIdx = itemIdx;
             this.updateCampUI();
         }
     }
@@ -2936,6 +3010,44 @@ class Game {
         if (this.state === 'BATTLE') {
             document.querySelectorAll('.battle-btn').forEach(b => b.disabled = (this.currentBattle.phase !== 'INPUT'));
         }
+    }
+
+    saveGame() {
+        if (this.state === 'ENDING' || this.state === 'START') return;
+
+        const saveData = {
+            party: this.party,
+            inventory: this.inventory,
+            pos: this.playerPos,
+            floor: this.currentFloor,
+            visited: this.visited,
+            npcFlags: this.npcFlags,
+            karma: this.karma,
+            levels: LEVELS,
+            elapsed: this.elapsedTimeAtSave + (Date.now() - this.startTime)
+        };
+        localStorage.setItem('wiztaste_save', JSON.stringify(saveData));
+    }
+
+    loadGame(data) {
+        this.party = data.party;
+        this.inventory = data.inventory;
+        this.playerPos = data.pos;
+        this.currentFloor = data.floor;
+        this.visited = data.visited;
+        this.npcFlags = data.npcFlags;
+        this.karma = data.karma;
+        if (data.levels) LEVELS = data.levels;
+        this.elapsedTimeAtSave = data.elapsed;
+        this.startTime = Date.now();
+
+        this.state = 'EXPLORE';
+        document.getElementById('char-create-screen').style.display = 'none';
+        document.getElementById('floor-indicator').textContent = `B${this.currentFloor + 1}F`;
+        audio.playBGM('bgm_explore');
+        this.updateTimer();
+        this.render();
+        this.addLog("前回の記録から冒険を再開した。");
     }
 }
 
