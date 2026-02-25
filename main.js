@@ -5,13 +5,15 @@ const VIEW_DIST = 6;
 const MAP_SIZE = 16;
 
 const CLASSES = {
-    WARRIOR: { name: '戦士', hp: 30, mp: 0, str: 15, int: 5, vit: 15, agi: 8, luk: 5 },
-    THIEF: { name: '盗賊', hp: 20, mp: 10, str: 10, int: 8, vit: 8, agi: 15, luk: 15 },
-    CLERIC: { name: '僧侶', hp: 22, mp: 12, str: 8, int: 12, vit: 10, agi: 10, luk: 10 },
-    MAGE: { name: '魔術師', hp: 15, mp: 25, str: 5, int: 18, vit: 5, agi: 12, luk: 8 },
-    SAMURAI: { name: '侍', hp: 25, mp: 12, str: 16, int: 8, vit: 12, agi: 14, luk: 8 },
-    MONK: { name: '武闘家', hp: 28, mp: 0, str: 14, int: 6, vit: 14, agi: 16, luk: 6 },
-    ARCHER: { name: '狩人', hp: 20, mp: 10, str: 12, int: 8, vit: 10, agi: 18, luk: 12 }
+    WARRIOR: { name: '戦士', hp: 30, mp: 0, str: 15, int: 5, vit: 15, agi: 8, luk: 5, desc: '高いHPと防御力を誇る前衛の要。', skillDesc: '全力斬り: 大ダメージを与える強力な一撃。' },
+    THIEF: { name: '盗賊', hp: 20, mp: 10, str: 10, int: 8, vit: 8, agi: 15, luk: 15, desc: '素早さと運が高く、宝箱の扱いに長けている。', skillDesc: '不意打ち: 素早さを活かした奇襲攻撃。' },
+    CLERIC: { name: '僧侶', hp: 22, mp: 12, str: 8, int: 12, vit: 10, agi: 10, luk: 10, desc: '神聖な魔法でパーティの傷を癒やす。', skillDesc: 'ヒール: 仲間一人のHPを大きく回復する。' },
+    MAGE: { name: '魔術師', hp: 15, mp: 25, str: 5, int: 18, vit: 5, agi: 12, luk: 8, desc: '強力な魔術を操り、敵軍を一掃する。', skillDesc: 'ファイヤーボール: 敵全体に魔法ダメージを与える。' },
+    SAMURAI: { name: '侍', hp: 25, mp: 12, str: 16, int: 8, vit: 12, agi: 14, luk: 8, desc: '刀を極め、強力な連撃を放つ。', skillDesc: '燕返し: 二回連続でダメージを与える。' },
+    MARTIAL_ARTIST: { name: '武闘家', hp: 28, mp: 0, str: 14, int: 6, vit: 14, agi: 16, luk: 6, desc: '強靱な肉体を持ち、防御無視の熱波を放つ。', skillDesc: '気功波: 敵の防御を無視してダメージを与える。' },
+    ARCHER: { name: '狩人', hp: 20, mp: 10, str: 12, int: 8, vit: 10, agi: 18, luk: 12, desc: '弓矢の達人。狙いすました一撃で敵を射抜く。', skillDesc: '狙い撃ち: 急所を突く高威力の射撃。' },
+    MONK: { name: 'モンク', hp: 26, mp: 12, str: 13, int: 12, vit: 12, agi: 12, luk: 10, desc: '回復と攻撃を両立し、粘り強く戦う。', skillDesc: '精神統一: 味方を回復しつつ、敵へ追撃を行う。' },
+    BISHOP: { name: 'ビショップ', hp: 22, mp: 22, str: 8, int: 18, vit: 10, agi: 10, luk: 12, desc: '究極の聖職者。癒やしと殲滅を同時に行う。', skillDesc: 'ホーリーライト: 味方を回復し、敵全員に神聖ダメージ。' }
 };
 
 const ITEMS = [
@@ -502,9 +504,13 @@ class Game {
 
             html += `
                         <div style="border: 1px dashed var(--text-color); padding: 5px; background: rgba(0,0,0,0.8);">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
                                 <span><strong style="color:#ffcc00;">${char.name} (${char.job})</strong></span>
                                 <span style="color:${char.bonusLeft > 0 ? '#5f5' : '#888'}; font-size:12px;">Bonus: ${char.bonusLeft}</span>
+                            </div>
+                            <div style="font-size:11px; color:#ccc; margin-bottom:5px;">
+                                ${char.desc}<br>
+                                <span style="color:#aaf;">[スキル] ${char.skillDesc}</span>
                             </div>
                             <div style="display:flex; flex-wrap:wrap; gap:2px;">
                                 ${statRow('str', 'STR')}
@@ -630,7 +636,8 @@ class Game {
 
     createChar(name, job) {
         return {
-            name, job: job.name, hp: job.hp, maxHp: job.hp, mp: job.mp, maxMp: job.mp,
+            name, job: job.name, desc: job.desc, skillDesc: job.skillDesc,
+            hp: job.hp, maxHp: job.hp, mp: job.mp, maxMp: job.mp,
             str: job.str, int: job.int, vit: job.vit, agi: job.agi, luk: job.luk,
             baseStr: job.str, baseInt: job.int, baseVit: job.vit, baseAgi: job.agi, baseLuk: job.luk,
             bonusLeft: 0,
@@ -1627,6 +1634,62 @@ class Game {
                         } else {
                             this.addLog(`${action.actor.name}はMPが足りない！`);
                         }
+                    } else if (job === 'モンク') {
+                        if (action.actor.mp >= 4) {
+                            action.actor.mp -= 4;
+                            // Small Heal (half of Cleric)
+                            let target = action.actor;
+                            let minHpPct = target.hp / target.maxHp;
+                            this.party.forEach(p => {
+                                if (p.hp > 0 && (p.hp / p.maxHp) < minHpPct) {
+                                    target = p;
+                                    minHpPct = p.hp / p.maxHp;
+                                }
+                            });
+                            const heal = Math.max(8, Math.floor(action.actor.int * 0.5 + 5));
+                            target.hp = Math.min(target.maxHp, target.hp + heal);
+                            this.addLog(`${action.actor.name}の精神統一！(MP-4) ${target.name}のHPが${heal}回復！`);
+                            const tgtIdx = this.party.indexOf(target);
+                            if (tgtIdx !== -1) this.showHealEffect(tgtIdx, heal);
+
+                            // Follow-up attack
+                            const wpnAtk = (action.actor.equipment.weapon?.atk || 0) + (action.actor.equipment.accessory?.atk || 0);
+                            const dmg = Math.max(1, (action.actor.str + wpnAtk) + Math.floor(Math.random() * 3));
+                            monster.currentHp -= dmg;
+                            this.addLog(`${action.actor.name}の追撃！ ${monster.name}に${dmg}のダメージ！`);
+                            this.showHitEffect(monsterDOMId, dmg);
+                        } else {
+                            this.addLog(`${action.actor.name}はMPが足りない！`);
+                        }
+                    } else if (job === 'ビショップ') {
+                        if (action.actor.mp >= 8) {
+                            action.actor.mp -= 8;
+                            // Standard Heal (same as Cleric)
+                            let target = action.actor;
+                            let minHpPct = target.hp / target.maxHp;
+                            this.party.forEach(p => {
+                                if (p.hp > 0 && (p.hp / p.maxHp) < minHpPct) {
+                                    target = p;
+                                    minHpPct = p.hp / p.maxHp;
+                                }
+                            });
+                            const heal = Math.max(15, action.actor.int + 10);
+                            target.hp = Math.min(target.maxHp, target.hp + heal);
+                            this.addLog(`${action.actor.name}のホーリーライト！(MP-8) ${target.name}のHPが${heal}回復！`);
+                            const tgtIdx = this.party.indexOf(target);
+                            if (tgtIdx !== -1) this.showHealEffect(tgtIdx, heal);
+
+                            // AoE Attack
+                            this.addLog("さらに聖なる光が敵全員を焼き払う！");
+                            aliveMonsters.forEach(m => {
+                                const dmg = Math.max(12, Math.floor(action.actor.int * 1.8 + 10));
+                                m.currentHp -= dmg;
+                                this.addLog(`${m.name}に${dmg}のダメージ！`);
+                                this.showHitEffect(m.id, dmg);
+                            });
+                        } else {
+                            this.addLog(`${action.actor.name}はMPが足りない！`);
+                        }
                     }
                 } else if (action.type === 'run') {
                     if (Math.random() > 0.4) {
@@ -1932,12 +1995,16 @@ class Game {
             this.party.forEach(p => {
                 if (p.hp > 0) {
                     p.exp += exp;
-                    if (p.exp >= p.level * 60) {
+                    // Exponentially scaling requirement: standard formula is roughly (Lv^2 or Lv^3) * base
+                    // Here we use Lv^2.2 to stay ahead of exponential monster exp growth
+                    let nextExpThreshold = Math.floor(60 * Math.pow(p.level, 2.2));
+                    while (p.exp >= nextExpThreshold) {
                         p.level++;
                         p.maxHp += 8;
                         p.maxMp += 4; p.mp = p.maxMp;
                         p.str += 2; p.int += 2; p.vit += 2; p.agi += 2; p.luk += 2;
                         this.addLog(`${p.name}はレベル${p.level}に上がった！`);
+                        nextExpThreshold = Math.floor(60 * Math.pow(p.level, 2.2));
                     }
                 }
             });
@@ -1990,20 +2057,155 @@ class Game {
                             drop.desc = `${statArr.join(', ')} (元: ${baseDrop.name})`;
                         }
                     }
-                    this.inventory.push(drop);
-                    this.addLog(`魔物が宝箱を落とした！「${drop.name}」を手に入れた！`);
+                    // Instead of pushing to inventory directly, trigger treasure event
+                    this.triggerTreasureEvent(drop);
+                    return; // endBattle will be completed via treasure UI
                 }
             }
         }
+        this.exitBattle();
+    }
+
+    exitBattle() {
         this.state = 'EXPLORE';
         document.getElementById('explore-menu').style.display = 'flex';
         document.getElementById('battle-menu').style.display = 'none';
         document.getElementById('monster-overlay').style.display = 'none';
         this.currentBattle = null;
-        if (won && !this.currentBattle?.isBoss) {
+        if (!this.currentBattle?.isBoss) {
             audio.playBGM('bgm_explore');
         }
         this.updateUI();
+    }
+
+    triggerTreasureEvent(drop) {
+        this.state = 'TREASURE';
+        const screen = document.getElementById('event-screen');
+        const title = document.getElementById('event-title');
+        const img = document.getElementById('event-img');
+        const desc = document.getElementById('event-desc');
+        const opts = document.getElementById('event-options');
+
+        title.textContent = "宝箱を発見！";
+        img.src = "assets/chest.png";
+        img.style.display = "block";
+        desc.textContent = "魔物が宝箱を残していったようだ。どうする？";
+
+        opts.innerHTML = '';
+        const btnOpen = document.createElement('button');
+        btnOpen.className = 'btn';
+        btnOpen.textContent = "開ける";
+        btnOpen.onclick = () => this.openChest(drop);
+
+        const btnLeave = document.createElement('button');
+        btnLeave.className = 'btn';
+        btnLeave.textContent = "立ち去る";
+        btnLeave.onclick = () => {
+            this.addLog("宝箱を放置して立ち去った。");
+            this.closeEvent();
+            this.exitBattle();
+        };
+
+        opts.appendChild(btnOpen);
+        opts.appendChild(btnLeave);
+        screen.style.display = 'flex';
+    }
+
+    openChest(drop) {
+        // Find player with highest Luck + Agility
+        let expert = this.party[0];
+        let maxVal = expert.luk + expert.agi;
+        this.party.forEach(p => {
+            if (p.hp > 0 && (p.luk + p.agi) > maxVal) {
+                expert = p;
+                maxVal = p.luk + p.agi;
+            }
+        });
+
+        this.addLog(`${expert.name}が解錠を試みる...`);
+
+        const roll = Math.random() * 100;
+        const successRate = 40 + (expert.luk + expert.agi) / 4;
+        const trapRate = Math.max(10, 30 - (expert.luk + expert.agi) / 8);
+
+        if (roll < successRate) {
+            this.addLog("解錠成功！");
+            this.addLog(`「${drop.name}」を手に入れた！`);
+            this.inventory.push(drop);
+            this.closeEvent();
+            this.exitBattle();
+        } else if (roll < successRate + trapRate) {
+            this.addLog("罠にかかった！！");
+            const traps = ['alarm', 'teleport', 'drain', 'bomb', 'curse'];
+            const trapType = traps[Math.floor(Math.random() * traps.length)];
+            this.triggerTrap(trapType);
+        } else {
+            this.addLog("解錠に失敗したが、罠は作動しなかった。");
+            this.closeEvent();
+            this.exitBattle();
+        }
+    }
+
+    triggerTrap(type) {
+        this.closeEvent();
+        switch (type) {
+            case 'alarm':
+                this.addLog("警報だ！周囲の魔物が集まってきた！");
+                this.startBattle(true);
+                break;
+            case 'teleport':
+                this.addLog("テレポーターが作動した！");
+                let rx, ry;
+                const map = LEVELS[this.currentFloor];
+                do {
+                    rx = 1 + Math.floor(Math.random() * (MAP_SIZE - 2));
+                    ry = 1 + Math.floor(Math.random() * (MAP_SIZE - 2));
+                } while (map[ry][rx] !== 0 && map[ry][rx] !== 2 && map[ry][rx] !== 3);
+                this.playerPos.x = rx;
+                this.playerPos.y = ry;
+                this.exitBattle();
+                break;
+            case 'drain':
+                this.addLog("ドレインの罠だ！パーティの生命力が吸い取られる！");
+                this.party.forEach(p => {
+                    if (p.level > 1) {
+                        p.level--;
+                        p.maxHp = Math.max(1, p.maxHp - 8);
+                        p.maxMp = Math.max(0, p.maxMp - 4);
+                        p.hp = Math.min(p.hp, p.maxHp);
+                        p.mp = Math.min(p.mp, p.maxMp);
+                        p.str = Math.max(1, p.str - 2); p.int = Math.max(1, p.int - 2);
+                        p.vit = Math.max(1, p.vit - 2); p.agi = Math.max(1, p.agi - 2);
+                        p.luk = Math.max(1, p.luk - 2);
+                        this.addLog(`${p.name}はレベル${p.level}に下がった...`);
+                    }
+                });
+                this.exitBattle();
+                break;
+            case 'bomb':
+                this.addLog("爆弾が爆発した！全員がダメージを受けた！");
+                this.party.forEach((p, idx) => {
+                    if (p.hp > 0) {
+                        const dmg = Math.floor(p.maxHp * 0.3);
+                        p.hp = Math.max(1, p.hp - dmg); // Leave at least 1 HP? User didn't specify, but regular bombs usually leave 1 HP or kill. Let's make it dangerous.
+                        this.addLog(`${p.name}は${dmg}のダメージ！`);
+                        this.showPartyHitEffect(idx, dmg);
+                    }
+                });
+                this.exitBattle();
+                break;
+            case 'curse':
+                this.addLog("呪いの霧が立ち込める...パーティの魔力が減少した！");
+                this.party.forEach(p => {
+                    if (p.mp > 0) {
+                        const loss = Math.floor(p.maxMp * 0.5);
+                        p.mp = Math.max(0, p.mp - loss);
+                        this.addLog(`${p.name}のMPが${loss}減少した。`);
+                    }
+                });
+                this.exitBattle();
+                break;
+        }
     }
 
     async triggerEnding() {
@@ -2157,11 +2359,12 @@ class Game {
     updateCampUI() {
         const campMenu = document.getElementById('camp-menu');
         if (this.state !== 'CAMP') return;
+        this.updateUI(); // Keep sidebar in sync
 
         let html = '<div class="camp-header">CAMP - パーティ状況</div>';
 
         this.party.forEach((p, idx) => {
-            const nextExp = p.level * 60;
+            const nextExp = Math.floor(60 * Math.pow(p.level, 2.2));
             const wpn = p.equipment.weapon ? p.equipment.weapon.name : 'なし';
             const arm = p.equipment.armor ? p.equipment.armor.name : 'なし';
             const acc = p.equipment.accessory ? p.equipment.accessory.name : 'なし';
@@ -2186,6 +2389,10 @@ class Game {
                         <div class="camp-character">
                             <div class="camp-char-stats">
                                 <strong style="color:var(--text-color); font-size:16px;">${p.name} (${p.job})</strong> - Lv: ${p.level}<br>
+                                <div style="font-size:11px; color:#ccc; margin-bottom:4px;">
+                                    ${p.desc}<br>
+                                    <span style="color:#aaf;">[スキル] ${p.skillDesc}</span>
+                                </div>
                                 HP: ${p.hp} / ${p.maxHp} | MP: ${p.mp} / ${p.maxMp}<br>
                                 STR: ${p.str}${strBonus} | INT: ${p.int}${intBonus} | VIT: ${p.vit}${vitBonus} | AGI: ${p.agi}${agiBonus} | LUK: ${p.luk}${lukBonus}<br>
                                 EXP: ${p.exp} / ${nextExp}<br>
@@ -2193,6 +2400,8 @@ class Game {
                             </div>
                             <div class="camp-char-actions">
                                 ${p.job === '僧侶' ? `<button class="btn" style="padding:4px; font-size:10px; margin-bottom:2px;" onclick="game.castCampMagic(${idx})">回復魔法(3MP)</button>` : ''}
+                                ${p.job === 'モンク' ? `<button class="btn" style="padding:4px; font-size:10px; margin-bottom:2px;" onclick="game.castCampMagic(${idx})">精神統一(3MP)</button>` : ''}
+                                ${p.job === 'ビショップ' ? `<button class="btn" style="padding:4px; font-size:10px; margin-bottom:2px;" onclick="game.castCampMagic(${idx})">聖別の儀(3MP)</button>` : ''}
                                 ${p.equipment.weapon ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'weapon')">武器外す</button>` : ''}
                                 ${p.equipment.armor ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'armor')">鎧外す</button>` : ''}
                                 ${p.equipment.accessory ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'accessory')">装飾外す</button>` : ''}
@@ -2235,7 +2444,7 @@ class Game {
 
     castCampMagic(casterIdx) {
         const caster = this.party[casterIdx];
-        if (caster.job !== '僧侶') return;
+        if (caster.job !== '僧侶' && caster.job !== 'モンク' && caster.job !== 'ビショップ') return;
         if (caster.hp <= 0) {
             this.addLog(`${caster.name}は倒れている...`);
             return;
@@ -2262,10 +2471,17 @@ class Game {
         }
 
         caster.mp -= 3;
-        const healAmt = Math.max(15, caster.int + 10);
+        let healAmt = 0;
+        if (caster.job === '僧侶' || caster.job === 'ビショップ') {
+            healAmt = Math.max(15, caster.int + 10);
+        } else if (caster.job === 'モンク') {
+            healAmt = Math.max(8, Math.floor(caster.int * 0.5 + 5));
+        }
+
         target.hp = Math.min(target.maxHp, target.hp + healAmt);
 
-        this.addLog(`${caster.name}の回復魔法！ ${target.name}のHPが${healAmt}回復した。`);
+        const skillName = caster.job === 'モンク' ? '精神統一' : (caster.job === 'ビショップ' ? '聖別の儀' : '回復魔法');
+        this.addLog(`${caster.name}の${skillName}！ ${target.name}のHPが${healAmt}回復した。`);
         this.updateCampUI();
         this.updateUI(); // Update side bar too
     }
