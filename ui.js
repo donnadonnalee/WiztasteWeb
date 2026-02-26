@@ -1,0 +1,414 @@
+/**
+ * UI & RENDERING LOGIC
+ */
+const UI = {
+    logs: [],
+
+    render: function (game, assets) {
+        this.drawDungeon(game, assets);
+        this.drawMinimap(game);
+        if (game.state !== 'GAMEOVER') this.updateUI(game);
+    },
+
+    drawDungeon: function (game, assets) {
+        const ctx = game.ctx;
+        const w = game.canvas.width;
+        const h = game.canvas.height;
+        const map = LEVELS[game.currentFloor];
+        const curTile = map[game.playerPos.y][game.playerPos.x];
+
+        if (curTile === 6) { // Dark Zone
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, w, h);
+            return;
+        }
+
+        // Ceiling
+        if (assets.ceiling.loaded) {
+            ctx.drawImage(assets.ceiling.img, 0, 0, w, h / 2);
+        } else {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, w, h / 2);
+        }
+
+        // Floor with gradient
+        if (assets.floor.loaded) {
+            ctx.drawImage(assets.floor.img, 0, h / 2, w, h / 2);
+            const grad = ctx.createLinearGradient(0, h / 2, 0, h);
+            grad.addColorStop(0, 'rgba(0,0,0,1)');
+            grad.addColorStop(0.3, 'rgba(0,0,0,0.6)');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, h / 2, w, h / 2);
+        } else {
+            const grad = ctx.createLinearGradient(0, h / 2, 0, h);
+            grad.addColorStop(0, '#000');
+            grad.addColorStop(0.5, '#111');
+            grad.addColorStop(1, '#112');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, h / 2, w, h / 2);
+        }
+
+        for (let d = VIEW_DIST; d >= 0; d--) {
+            this.drawWallsAtDistance(game, assets, d);
+        }
+    },
+
+    drawWallsAtDistance: function (game, assets, dist) {
+        const { x, y, dir } = game.playerPos;
+        const dx = [0, 1, 0, -1][dir], dy = [-1, 0, 1, 0][dir];
+        const px = [1, 0, -1, 0][dir], py = [0, 1, 0, -1][dir];
+        const map = LEVELS[game.currentFloor];
+        const tx = x + dx * dist, ty = y + dy * dist;
+
+        if (ty < 0 || ty >= map.length || tx < 0 || tx >= map[ty].length) return;
+
+        const ctx = game.ctx, w = game.canvas.width, h = game.canvas.height;
+
+        const getProj = (d, offsetX) => {
+            const scale = 1 / (d + 0.5);
+            const hz = h * 0.5 * scale, wz = w * 0.7 * scale;
+            return { x: w / 2 + (offsetX * wz), y: h / 2 - (h * 0.05), w: wz, h: hz };
+        };
+
+        const fillWall = (d, offset, side) => {
+            const p1 = getProj(d, offset), p2 = getProj(d + 1, offset);
+            let drawX, drawY, drawW, drawH;
+
+            if (side === 'front') {
+                drawX = p1.x - p1.w / 2; drawY = p1.y - p1.h; drawW = p1.w; drawH = p1.h * 2;
+                if (assets.wall.loaded) ctx.drawImage(assets.wall.img, drawX, drawY, drawW, drawH);
+                else { ctx.beginPath(); ctx.rect(drawX, drawY, drawW, drawH); ctx.closePath(); }
+            } else {
+                const img = assets.wall.loaded ? assets.wall.img : null;
+                const srcW = img ? img.width : 1, srcH = img ? img.height : 1;
+                let startX, endX, y1top, y1bot, y2top, y2bot;
+                if (side === 'left') { startX = p1.x - p1.w / 2; endX = p2.x - p2.w / 2; }
+                else { startX = p1.x + p1.w / 2; endX = p2.x + p2.w / 2; }
+                y1top = p1.y - p1.h; y1bot = p1.y + p1.h; y2top = p2.y - p2.h; y2bot = p2.y + p2.h;
+
+                if (img) {
+                    const steps = Math.ceil(Math.abs(endX - startX));
+                    if (steps > 0) {
+                        const stepCol = srcW / steps, wStep = (endX - startX) / steps;
+                        const drawWidth = wStep > 0 ? wStep + 1 : wStep - 1;
+                        for (let i = 0; i < steps; i++) {
+                            const t = i / steps;
+                            const cx = startX + wStep * i;
+                            const cyTop = y1top + (y2top - y1top) * t, cyBot = y1bot + (y2bot - y1bot) * t;
+                            ctx.drawImage(img, Math.floor(i * stepCol), 0, Math.max(1, Math.ceil(stepCol)), srcH, cx, cyTop, drawWidth, cyBot - cyTop);
+                        }
+                    }
+                } else {
+                    ctx.beginPath(); ctx.moveTo(startX, y1top); ctx.lineTo(endX, y2top); ctx.lineTo(endX, y2bot); ctx.lineTo(startX, y1bot); ctx.closePath();
+                }
+            }
+
+            if (!assets.wall.loaded) {
+                const br = Math.max(0, 100 - (d * 20));
+                ctx.fillStyle = `rgb(0, ${br}, 0, 0.9)`; ctx.fill();
+                ctx.strokeStyle = `rgb(0, ${br * 1.5}, 65)`; ctx.lineWidth = 2; ctx.stroke();
+            } else {
+                const darkness = Math.max(0, Math.min(0.8, d * 0.15));
+                if (darkness > 0) {
+                    ctx.fillStyle = `rgba(0, 0, 0, ${darkness})`;
+                    if (side === 'front') ctx.fillRect(drawX, drawY, drawW, drawH);
+                    else {
+                        ctx.beginPath();
+                        let sx = side === 'left' ? p1.x - p1.w / 2 : p1.x + p1.w / 2;
+                        let ex = side === 'left' ? p2.x - p2.w / 2 : p2.x + p2.w / 2;
+                        ctx.moveTo(sx, p1.y - p1.h); ctx.lineTo(ex, p2.y - p2.h); ctx.lineTo(ex, p2.y + p2.h); ctx.lineTo(sx, p1.y + p1.h);
+                        ctx.closePath(); ctx.fill();
+                    }
+                }
+            }
+        };
+
+        for (let offsetX = -3; offsetX <= 3; offsetX++) {
+            const ox = tx + offsetX * px, oy = ty + offsetX * py;
+            const isSolid = oy >= 0 && oy < map.length && ox >= 0 && ox < map[oy].length && (map[oy][ox] === 1 || map[oy][ox] === 4);
+            if (isSolid) {
+                if (offsetX < 0) {
+                    const rx = tx + (offsetX + 1) * px, ry = ty + (offsetX + 1) * py;
+                    if (!(ry >= 0 && ry < map.length && rx >= 0 && rx < map[ry].length && (map[ry][rx] === 1 || map[ry][rx] === 4))) fillWall(dist, offsetX, 'right');
+                }
+                if (offsetX > 0) {
+                    const lx = tx + (offsetX - 1) * px, ly = ty + (offsetX - 1) * py;
+                    if (!(ly >= 0 && ly < map.length && lx >= 0 && lx < map[ly].length && (map[ly][lx] === 1 || map[ly][lx] === 4))) fillWall(dist, offsetX, 'left');
+                }
+            }
+        }
+
+        for (let offsetX = -3; offsetX <= 3; offsetX++) {
+            const ox = tx + offsetX * px, oy = ty + offsetX * py;
+            const isSolid = oy >= 0 && oy < map.length && ox >= 0 && ox < map[oy].length && (map[oy][ox] === 1 || map[oy][ox] === 4);
+            if (isSolid) {
+                const isHidden = (map[oy][ox] === 4);
+                if (isHidden) { ctx.globalAlpha = 0.6; ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; }
+                fillWall(dist, offsetX, 'front');
+                if (isHidden) ctx.globalAlpha = 1.0;
+            } else {
+                const tile = (oy >= 0 && oy < map.length && ox >= 0 && ox < map[oy].length) ? map[oy][ox] : 0;
+                const darkness = Math.max(0, Math.min(0.8, dist * 0.15));
+                if (tile === 3 || tile === 8) {
+                    const p = getProj(dist + 0.5, offsetX);
+                    const img = tile === 8 ? assets.stair_down.img : assets.stair_down.img; // Placeholder for boss tile/stair down
+                    if (assets.stair_down.loaded) {
+                        ctx.drawImage(assets.stair_down.img, p.x - p.w / 2, p.y - p.h, p.w, p.h * 2);
+                        if (darkness > 0) { ctx.fillStyle = `rgba(0, 0, 0, ${darkness})`; ctx.fillRect(p.x - p.w / 2, p.y - p.h, p.w, p.h * 2); }
+                    }
+                } else if (tile === 2) {
+                    const p = getProj(dist + 0.5, offsetX);
+                    if (assets.stair_up.loaded) {
+                        ctx.drawImage(assets.stair_up.img, p.x - p.w / 2, p.y - p.h, p.w, p.h * 2);
+                        if (darkness > 0) { ctx.fillStyle = `rgba(0, 0, 0, ${darkness})`; ctx.fillRect(p.x - p.w / 2, p.y - p.h, p.w, p.h * 2); }
+                    }
+                }
+            }
+        }
+    },
+
+    drawMinimap: function (game) {
+        const ctx = game.mCtx, size = 160 / MAP_SIZE;
+        ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 160, 160);
+        const map = LEVELS[game.currentFloor], visited = game.visited[game.currentFloor];
+        for (let y = 0; y < map.length; y++) {
+            for (let x = 0; x < map[y].length; x++) {
+                if (!visited[y] || !visited[y][x]) continue;
+                const mc = map[y][x];
+                if (mc === 1 || mc === 4) ctx.fillStyle = '#d3d3d3';
+                else if (mc === 3) ctx.fillStyle = '#ff00ff';
+                else if (mc === 2) ctx.fillStyle = '#00ffff';
+                else if (mc === 6) ctx.fillStyle = '#112211';
+                else if (mc === 8) ctx.fillStyle = '#ff0000';
+                else if (mc === 9) ctx.fillStyle = '#ffff00';
+                else ctx.fillStyle = '#113311';
+                ctx.fillRect(x * size, y * size, size - 1, size - 1);
+            }
+        }
+        ctx.fillStyle = '#fff';
+        const px = game.playerPos.x * size + size / 2, py = game.playerPos.y * size + size / 2;
+        ctx.beginPath(); ctx.arc(px, py, size / 3, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.moveTo(px, py);
+        const dx = [0, 1, 0, -1][game.playerPos.dir] * size, dy = [-1, 0, 1, 0][game.playerPos.dir] * size;
+        ctx.lineTo(px + dx, py + dy); ctx.stroke();
+    },
+
+    updateUI: function (game) {
+        const list = document.getElementById('party-list');
+        if (!list) return;
+        list.innerHTML = '';
+        game.party.forEach((p, i) => {
+            const div = document.createElement('div');
+            div.id = `party-member-${i}`;
+            div.className = `party-member ${game.state === 'BATTLE' && game.turnIndex === i ? 'active' : ''}`;
+            const hpW = (p.hp / p.maxHp) * 100, mpW = p.maxMp > 0 ? (p.mp / p.maxMp) * 100 : 0;
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom: 2px;"><strong>${p.name}</strong> <span>Lv${p.level} ${p.job}</span></div>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;"><div class="stat-bar"><div class="stat-fill" style="width:${hpW}%; background:${p.hp <= 0 ? '#444' : '#ff4444'};"></div>
+                    <div style="position:absolute; top:0; left:0; width:100%; text-align:center; font-size:10px; line-height:14px; text-shadow:1px 1px 0 #000; z-index:2;">HP ${p.hp}/${p.maxHp}</div></div></div>
+                    <div style="flex:1;"><div class="stat-bar"><div class="stat-fill" style="width:${mpW}%; background:#4444ff;"></div>
+                    <div style="position:absolute; top:0; left:0; width:100%; text-align:center; font-size:10px; line-height:14px; text-shadow:1px 1px 0 #000; z-index:2;">MP ${p.mp}/${p.maxMp}</div></div></div>
+                </div>`;
+            list.appendChild(div);
+        });
+
+        const bm = document.getElementById('battle-menu');
+        const em = document.getElementById('explore-menu');
+        const mo = document.getElementById('monster-overlay');
+
+        if (game.state === 'BATTLE') {
+            if (game.currentBattle && game.currentBattle.phase === 'INPUT') {
+                if (bm) bm.style.display = 'flex';
+            } else {
+                if (bm) bm.style.display = 'none';
+            }
+            if (em) em.style.display = 'none';
+            if (mo) mo.style.display = 'flex';
+        } else if (game.state === 'EXPLORE') {
+            if (bm) bm.style.display = 'none';
+            if (em) em.style.display = 'flex';
+            if (mo) mo.style.display = 'none';
+        } else if (game.state === 'EVENT' || game.state === 'TREASURE') {
+            if (bm) bm.style.display = 'none';
+            if (em) em.style.display = 'none';
+        }
+
+        if (game.state === 'CAMP') this.updateCampUI(game);
+    },
+
+    updateTimer: function (game) {
+        const timer = document.getElementById('timer-display');
+        if (!timer) return;
+        const now = Date.now();
+        const elapsed = Math.floor((game.elapsedTimeAtSave + (now - (game.startTime || now))) / 1000);
+        const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+        const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+        const s = String(elapsed % 60).padStart(2, '0');
+        timer.textContent = `${h}:${m}:${s}`;
+    },
+
+    showHitEffect: function (id, dmg) {
+        const domId = id.startsWith('monster-') && !id.startsWith('monster-img-') ? id.replace('monster-', 'monster-img-') : id;
+        const el = document.getElementById(domId); if (!el) return;
+        el.classList.remove('target-hit'); void el.offsetWidth; el.classList.add('target-hit');
+        const rect = el.getBoundingClientRect();
+        const hit = document.createElement('div'); hit.className = 'damage-popup'; hit.textContent = dmg;
+        hit.style.left = `${rect.left + rect.width / 2}px`; hit.style.top = `${rect.top + rect.height / 2}px`;
+        document.body.appendChild(hit); setTimeout(() => hit.remove(), 1000);
+    },
+
+    showHealEffect: function (idx, val) {
+        const el = document.getElementById(`party-member-${idx}`); if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const heal = document.createElement('div'); heal.className = 'heal-popup'; heal.textContent = `+${val}`;
+        heal.style.left = `${rect.left + rect.width / 2}px`; heal.style.top = `${rect.top + rect.height / 2}px`;
+        document.body.appendChild(heal); setTimeout(() => heal.remove(), 1000);
+    },
+
+    showPartyHitEffect: function (idx, dmg) {
+        const el = document.getElementById(`party-member-${idx}`); if (!el) return;
+        el.classList.remove('target-hit'); void el.offsetWidth; el.classList.add('target-hit');
+        const rect = el.getBoundingClientRect();
+        const hit = document.createElement('div'); hit.className = 'damage-popup'; hit.textContent = `-${dmg}`;
+        hit.style.left = `${rect.left + rect.width / 2}px`; hit.style.top = `${rect.top + rect.height / 2}px`;
+        document.body.appendChild(hit); setTimeout(() => hit.remove(), 1000);
+    },
+
+
+    updateCampUI: function (game) {
+        const campMenu = document.getElementById('camp-menu');
+        if (!campMenu || game.state !== 'CAMP') return;
+
+        let html = '<div class="camp-header">CAMP - パーティ状況</div>';
+        game.party.forEach((p, idx) => {
+            const nextExp = Math.floor(60 * Math.pow(p.level, 2.2));
+            const wpn = p.equipment.weapon ? p.equipment.weapon.name : 'なし';
+            const arm = p.equipment.armor ? p.equipment.armor.name : 'なし';
+            const acc = p.equipment.accessory ? p.equipment.accessory.name : 'なし';
+
+            const getBonus = (stat) => {
+                let bonus = 0;
+                ['weapon', 'armor', 'accessory'].forEach(s => { if (p.equipment[s] && p.equipment[s][stat] !== undefined) bonus += p.equipment[s][stat]; });
+                return bonus !== 0 ? ` <span style="color:${bonus > 0 ? '#5f5' : '#f55'}">(${bonus > 0 ? '+' : ''}${bonus})</span>` : '';
+            };
+
+            html += `
+                <div class="camp-character">
+                    <div class="camp-char-stats">
+                        <strong style="color:#ffcc00; font-size:16px;">${p.name} (${p.job})</strong> - Lv: ${p.level}<br>
+                        <div style="font-size:11px; color:#ccc; margin-bottom:4px;">${p.desc}<br><span style="color:#aaf;">[スキル] ${p.skillDesc}</span></div>
+                        HP: ${p.hp} / ${p.maxHp} | MP: ${p.mp} / ${p.maxMp}<br>
+                        STR: ${p.str}${getBonus('atk')} | INT: ${p.int}${getBonus('int')} | VIT: ${p.vit}${getBonus('def')} | AGI: ${p.agi}${getBonus('agi')} | LUK: ${p.luk}${getBonus('luk')}<br>
+                        EXP: ${p.exp} / ${nextExp}<br>
+                        <span style="color:#888; font-size:12px;">EQ: [${wpn}] [${arm}] [${acc}]</span>
+                    </div>
+                    <div class="camp-char-actions">
+                        ${game.campMode === 'SELECT_CHARACTER' || game.campMode === 'SELECT_TARGET' ?
+                    `<button class="btn" style="padding:4px; border-color:#ffcc00;" onclick="game.executeItemAction(${idx}, ${game.pendingItemIdx}, '${game.campMode === 'SELECT_TARGET' ? 'use' : 'equip'}')">選択</button>` :
+                    ` ${['僧侶', 'ビショップ', 'モンク'].indexOf(p.job) !== -1 ? `<button class="btn" style="padding:4px; font-size:10px; margin-bottom:2px;" onclick="game.castCampMagic(${idx})">${p.job === 'モンク' ? '精神統一' : (p.job === 'ビショップ' ? '聖別の儀' : '回復魔法')}(3MP)</button>` : ''}
+                        ${p.equipment.weapon ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'weapon')">武器外す</button>` : ''}
+                        ${p.equipment.armor ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'armor')">鎧外す</button>` : ''}
+                        ${p.equipment.accessory ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'accessory')">装飾外す</button>` : ''}
+                        `}
+                    </div>
+                </div>`;
+        });
+
+        html += '<div class="camp-header" style="margin-top:10px; font-size:14px;">パーティの持ち物</div>';
+        html += '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">';
+        if (game.inventory.length === 0) html += '<span style="color:#888; font-size:12px;">何も持っていない。</span>';
+        else {
+            game.inventory.forEach((item, itemIdx) => {
+                html += `
+                    <div style="border:1px solid #444; padding:5px; font-size:12px; min-width:100px;">
+                        ${item.name} <br><span style="color:#888; font-size:10px;">${item.desc}</span>
+                        ${item.req ? `<br><span style="color:#ffcc00; font-size:10px;">[条件: ${Object.entries(item.req).map(([k, v]) => `${k.toUpperCase()} ${v}`).join(', ')}]</span>` : ''}<br>
+                        <div style="margin-top:5px; display:flex; gap:5px;">
+                            ${item.type === 'consumable' ? (item.targetAll ? `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.useItem(null, ${itemIdx})">使う</button>` : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.showTargetSelection(${itemIdx}, 'use')">使う</button>`) : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="UI.showTargetSelection(game, ${itemIdx}, 'equip')">装備</button>`}
+                            ${game.discardingItemIdx === itemIdx ? `<span style="color:#f55; font-size:10px;">捨てる？</span><button class="btn" style="padding:2px 5px; font-size:10px; border-color:#f55; color:#f55;" onclick="game.dropItem(${itemIdx}, true)">はい</button><button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.dropItem(-1)">いいえ</button>` : `<button class="btn" style="padding:2px 5px; font-size:10px; border-color:#833;" onclick="game.dropItem(${itemIdx})">捨てる</button>`}
+                        </div>
+                    </div>`;
+            });
+        }
+        html += '</div>';
+        html += `<button class="btn" style="margin-top:auto;" onclick="game.toggleCamp()">キャンプ終了 (ESC)</button>`;
+        campMenu.innerHTML = html;
+        campMenu.style.display = 'flex';
+    },
+
+    showTargetSelection: function (game, itemIdx, action) {
+        const item = game.inventory[itemIdx];
+        const campMenu = document.getElementById('camp-menu');
+        if (!campMenu) return;
+
+        let html = `<div class="camp-header">${action === 'use' ? '誰が使う？' : '誰が装備する？'} - ${item.name}</div>`;
+        html += `<div style="text-align:center; margin-bottom:20px; color:#888;">${item.desc}</div>`;
+
+        html += '<div style="display:flex; flex-direction:column; gap:10px; align-items:center;">';
+        game.party.forEach((p, cidx) => {
+            let disabled = '';
+            let color = '';
+            let errorMsg = '';
+            let currentEquip = '';
+
+            if (p.hp <= 0) {
+                disabled = 'disabled';
+                color = '#444';
+            } else if (action === 'equip') {
+                if (item.req) {
+                    for (const [stat, reqVal] of Object.entries(item.req)) {
+                        let pStat = p['base' + stat.charAt(0).toUpperCase() + stat.slice(1)] || p[stat];
+                        if (pStat < reqVal) {
+                            disabled = 'disabled';
+                            color = '#844';
+                            errorMsg = `(不足: ${stat.toUpperCase()} ${reqVal})`;
+                            break;
+                        }
+                    }
+                }
+                const currentItem = p.equipment[item.type];
+                currentEquip = `<div style="font-size:10px; color:#aaa; margin-top:4px;">[現在: ${currentItem ? currentItem.name : 'なし'}]</div>`;
+            }
+
+            if (!color) color = '#d3d3d3';
+            html += `<button class="btn" style="width:240px; padding:10px; color:${color}; border-color:${color}; display:flex; flex-direction:column; align-items:center;" ${disabled} onclick="game.executeItemAction(${cidx}, ${itemIdx}, '${action}')">
+                        <div>${p.name} (${p.job}) <span style="color:#f55">${errorMsg}</span></div>
+                        ${currentEquip}
+                    </button>`;
+        });
+        html += `</div>`;
+        html += `<button class="btn" style="margin-top:20px;" onclick="UI.updateCampUI(window.game)">キャンセル</button>`;
+        campMenu.innerHTML = html;
+    },
+
+    addLog: function (msg) {
+        const logWin = document.getElementById('log-window');
+        if (!logWin) return;
+        const entry = document.createElement('div');
+        entry.textContent = `> ${msg}`;
+        logWin.prepend(entry);
+    },
+
+    showBlackout: async function (game, text, duration, callback) {
+        const overlay = document.getElementById('fade-overlay');
+        const fadeText = document.getElementById('fade-text');
+        overlay.style.display = 'flex';
+        overlay.classList.remove('fade-out');
+        overlay.classList.add('fade-in');
+        if (text) {
+            fadeText.textContent = text;
+            fadeText.style.opacity = 1;
+        }
+        await new Promise(r => setTimeout(r, 1000));
+        if (callback) await callback();
+        const waitTime = Math.max(0, duration - 1000);
+        await new Promise(r => setTimeout(r, waitTime));
+        if (text) fadeText.style.opacity = 0;
+        overlay.classList.remove('fade-in');
+        overlay.classList.add('fade-out');
+        await new Promise(r => setTimeout(r, 1000));
+        overlay.style.display = 'none';
+    }
+};

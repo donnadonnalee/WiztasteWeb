@@ -448,6 +448,50 @@ canvas#view-canvas {
     padding: 5px 0;
 }
 
+/* Stat Allocation UI */
+.stat-alloc-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+.stat-name {
+    width: 40px;
+    color: #aaa;
+}
+
+.stat-val-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stat-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #222;
+    border: 1px solid #555;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.stat-btn:hover:not(:disabled) {
+    background: #444;
+    border-color: #ffcc00;
+}
+
+.stat-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
 /* Animations */
 @keyframes story-fadein {
     from {
