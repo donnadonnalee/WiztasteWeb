@@ -296,12 +296,21 @@ const UI = {
         const campMenu = document.getElementById('camp-menu');
         if (!campMenu || game.state !== 'CAMP') return;
 
-        let html = '<div class="camp-header">CAMP - パーティ状況</div>';
+        // Navigation Bar
+        let html = '<div class="camp-nav">';
+        game.party.forEach((p, idx) => {
+            html += `<button class="btn" onclick="document.getElementById('camp-char-${idx}').scrollIntoView()">${p.name}</button>`;
+        });
+        html += `<button class="btn" style="border-color:#ffcc00;" onclick="document.getElementById('camp-inventory').scrollIntoView()">持ち物</button>`;
+        html += `<button class="btn" style="border-color:#f55;" onclick="game.toggleCamp()">戻る</button>`;
+        html += '</div>';
+
+        html += '<div class="camp-content">';
+        html += '<div class="camp-header" style="margin-top:0;">CAMP - パーティ状況</div>';
+
         game.party.forEach((p, idx) => {
             const nextExp = Math.floor(50 * Math.pow(p.level, 1.7));
-            const wpn = p.equipment.weapon ? p.equipment.weapon.name : 'なし';
-            const arm = p.equipment.armor ? p.equipment.armor.name : 'なし';
-            const acc = p.equipment.accessory ? p.equipment.accessory.name : 'なし';
+            const isLowHp = p.hp < p.maxHp * 0.3;
 
             const getBonus = (stat) => {
                 let bonus = 0;
@@ -309,15 +318,32 @@ const UI = {
                 return bonus !== 0 ? ` <span style="color:${bonus > 0 ? '#5f5' : '#f55'}">(${bonus > 0 ? '+' : ''}${bonus})</span>` : '';
             };
 
+            const hpPercent = (p.hp / p.maxHp) * 100;
+            const mpPercent = (p.maxMp > 0) ? (p.mp / p.maxMp) * 100 : 0;
+
             html += `
-                <div class="camp-character">
+                <div id="camp-char-${idx}" class="camp-character ${isLowHp ? 'low-hp' : ''}">
                     <div class="camp-char-stats">
-                        <strong style="color:#ffcc00; font-size:16px;">${p.name} (${p.job})</strong> - Lv: ${p.level}<br>
-                        <div style="font-size:11px; color:#ccc; margin-bottom:4px;">${p.desc}<br><span style="color:#aaf;">[スキル] ${p.skillDesc}</span></div>
-                        HP: ${p.hp} / ${p.maxHp} | MP: ${p.mp} / ${p.maxMp}<br>
-                        STR: ${p.str}${getBonus('atk')} | INT: ${p.int}${getBonus('int')} | VIT: ${p.vit}${getBonus('def')} | AGI: ${p.agi}${getBonus('agi')} | LUK: ${p.luk}${getBonus('luk')}<br>
-                        EXP: ${p.exp} / ${nextExp}<br>
-                        <span style="color:#888; font-size:12px;">EQ: [${wpn}] [${arm}] [${acc}]</span>
+                        <strong style="color:#ffcc00; font-size:16px;">${p.name}</strong> <span style="font-size:12px; color:#aaa;">(${p.job}) Lv: ${p.level}</span><br>
+                        <div style="font-size:11px; color:#888; margin-bottom:4px;">${p.desc}</div>
+                        
+                        <div style="font-size:11px; margin-bottom:2px;">HP: ${p.hp} / ${p.maxHp}</div>
+                        <div class="stat-bar-camp"><div class="stat-fill-hp" style="width:${hpPercent}%; height:100%;"></div></div>
+                        <div style="font-size:11px; margin-bottom:2px;">MP: ${p.mp} / ${p.maxMp}</div>
+                        <div class="stat-bar-camp"><div class="stat-fill-mp" style="width:${mpPercent}%; height:100%;"></div></div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-top:8px; font-size:12px;">
+                            <div>STR: ${p.str}${getBonus('atk')}</div>
+                            <div>INT: ${p.int}${getBonus('int')}</div>
+                            <div>VIT: ${p.vit}${getBonus('def')}</div>
+                            <div>AGI: ${p.agi}${getBonus('agi')}</div>
+                            <div>LUK: ${p.luk}${getBonus('luk')}</div>
+                            <div>EXP: ${p.exp}/${nextExp}</div>
+                        </div>
+                        <div style="color:#aaf; font-size:11px; margin-top:5px;">[スキル] ${p.skillDesc}</div>
+                        <div style="color:#888; font-size:11px; margin-top:3px;">
+                            EQ: [${p.equipment.weapon?.name || 'なし'}] [${p.equipment.armor?.name || 'なし'}] [${p.equipment.accessory?.name || 'なし'}]
+                        </div>
                     </div>
                     <div class="camp-char-actions">
                         ${game.campMode === 'SELECT_CHARACTER' || game.campMode === 'SELECT_TARGET' ?
@@ -331,14 +357,14 @@ const UI = {
                 </div>`;
         });
 
-        html += '<div class="camp-header" style="margin-top:10px; font-size:14px;">パーティの持ち物</div>';
+        html += '<div id="camp-inventory" class="camp-header" style="margin-top:10px; font-size:14px;">パーティの持ち物</div>';
         html += '<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">';
         if (game.inventory.length === 0) html += '<span style="color:#888; font-size:12px;">何も持っていない。</span>';
         else {
             game.inventory.forEach((item, itemIdx) => {
                 html += `
-                    <div style="border:1px solid #444; padding:5px; font-size:12px; min-width:100px;">
-                        ${item.name} <br><span style="color:#888; font-size:10px;">${item.desc}</span>
+                    <div style="border:1px solid #444; background:rgba(30,30,30,0.5); padding:5px; font-size:12px; min-width:100px; flex:1;">
+                        <span style="color:#eee;">${item.name}</span> <br><span style="color:#888; font-size:10px;">${item.desc}</span>
                         ${item.req ? `<br><span style="color:#ffcc00; font-size:10px;">[条件: ${Object.entries(item.req).map(([k, v]) => `${k.toUpperCase()} ${v}`).join(', ')}]</span>` : ''}<br>
                         <div style="margin-top:5px; display:flex; gap:5px;">
                             ${item.type === 'consumable' ? ((item.targetAll || item.name === '妖精の霊薬') ? `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.useItem(null, ${itemIdx})">使う</button>` : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.showTargetSelection(${itemIdx}, 'use')">使う</button>`) : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="UI.showTargetSelection(game, ${itemIdx}, 'equip')">装備</button>`}
@@ -347,8 +373,8 @@ const UI = {
                     </div>`;
             });
         }
-        html += '</div>';
-        html += `<button class="btn" style="margin-top:auto;" onclick="game.toggleCamp()">キャンプ終了 (ESC)</button>`;
+        html += '</div>'; // close wrap
+        html += '</div>'; // close camp-content
         campMenu.innerHTML = html;
         campMenu.style.display = 'flex';
     },

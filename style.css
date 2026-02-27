@@ -285,31 +285,97 @@ canvas#view-canvas {
     position: absolute;
     top: 0;
     left: 0;
-    width: calc(100% - 20px);
-    height: calc(100% - 20px);
-    background: rgba(0, 0, 0, 0.9);
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
     border: 2px solid var(--text-color);
     display: none;
     flex-direction: column;
-    padding: 10px;
-    z-index: 10;
+    padding: 0;
+    /* Remove padding to handle scroll better */
+    z-index: 10000;
     overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.camp-nav {
+    position: sticky;
+    top: 0;
+    background: #111;
+    border-bottom: 1px solid var(--border-color);
+    padding: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    z-index: 10001;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.camp-nav .btn {
+    padding: 4px 8px;
+    font-size: 10px;
+    flex: 1;
+    min-width: 60px;
+}
+
+.camp-content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .camp-header {
     font-size: 18px;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     border-bottom: 1px dotted var(--text-color);
     padding-bottom: 5px;
+    color: #ffcc00;
 }
 
 .camp-character {
     display: flex;
     justify-content: space-between;
-    border: 1px dashed #444;
+    border: 1px solid #444;
+    background: rgba(20, 20, 20, 0.8);
     padding: 10px;
-    margin-bottom: 10px;
+    border-radius: 4px;
+    position: relative;
+    scroll-margin-top: 50px;
+}
+
+.camp-character.low-hp {
+    border-color: #f55;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+}
+
+.stat-bar-camp {
+    width: 100%;
+    height: 10px;
+    background: #222;
+    margin: 4px 0;
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid #333;
+}
+
+.stat-fill-hp {
+    background: #f44;
+}
+
+.stat-fill-mp {
+    background: #44f;
+}
+
+/* Hide status area when camp is open */
+.hide-status #status-area {
+    display: none !important;
+}
+
+.hide-status #viewport-container {
+    grid-row: 1 / span 3;
+    /* Ensure it starts from the top when status is hidden */
 }
 
 .camp-char-stats {
@@ -357,12 +423,23 @@ canvas#view-canvas {
 
     #explore-menu:not([style*="display: none"]) {
         display: grid !important;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1.5fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
         grid-template-areas:
-            ". forward . camp"
-            "left backward right .";
+            "left forward right camp"
+            "left backward right camp";
         gap: 5px;
         width: 100%;
+        height: 120px;
+        /* Give it a fixed height for mobile control area */
+    }
+
+    #explore-menu .btn {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
     }
 
     #btn-move-forward {
@@ -383,7 +460,6 @@ canvas#view-canvas {
 
     #btn-camp {
         grid-area: camp;
-        align-self: start;
     }
 
     #battle-menu:not([style*="display: none"]) {
