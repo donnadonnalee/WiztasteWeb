@@ -358,13 +358,30 @@ const Events = {
     },
 
     openChest: function (game, drop) {
+        const getEffective = (p, stat) => {
+            let val = p[stat] || 0;
+            ['weapon', 'armor', 'accessory'].forEach(s => {
+                if (p.equipment && p.equipment[s] && p.equipment[s][stat] !== undefined) val += p.equipment[s][stat];
+            });
+            return val;
+        };
+
         let expert = game.party[0];
-        let maxVal = expert.luk + expert.agi;
-        game.party.forEach(p => { if (p.hp > 0 && (p.luk + p.agi) > maxVal) { expert = p; maxVal = p.luk + p.agi; } });
+        let maxVal = getEffective(expert, 'luk') + getEffective(expert, 'agi');
+        game.party.forEach(p => {
+            if (p.hp > 0) {
+                const val = getEffective(p, 'luk') + getEffective(p, 'agi');
+                if (val > maxVal) { expert = p; maxVal = val; }
+            }
+        });
+
         UI.addLog(`${expert.name}が解錠を試みる...`);
         const roll = Math.random() * 100;
-        const successRate = 40 + (expert.luk + expert.agi) / 4;
-        const trapRate = Math.max(10, 30 - (expert.luk + expert.agi) / 8);
+        const currentLuk = getEffective(expert, 'luk');
+        const currentAgi = getEffective(expert, 'agi');
+        const successRate = 40 + (currentLuk + currentAgi) / 4;
+        const trapRate = Math.max(10, 30 - (currentLuk + currentAgi) / 8);
+
         if (roll < successRate) {
             UI.addLog("解錠成功！"); UI.addLog(`「${drop.name}」を手に入れた！`);
             game.inventory.push(drop); game.closeEvent(); game.exitBattle(); game.saveGame();
