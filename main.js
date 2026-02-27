@@ -80,34 +80,45 @@ class Game {
     rollParty() {
         this.party = [];
         const jobs = Object.values(CLASSES);
-        let names = [
-            'アレス', 'ルチア', 'ゼロ', 'シオン', 'カイン', 'セリス', 'レオン', 'アリア',
-            'クロウ', 'レイ', 'ティア', 'アーラン', 'ゼクス', 'ノア', 'イリス', 'ファリス',
-            'コタロウ', 'ヤマト', 'サクラ', 'カグラ', 'ハヤテ', 'シズク', 'ゲン', 'カエデ',
-            'レイフェイ', 'シャオ', 'リン', 'リュウ', 'メイ', 'シン', 'ラン', 'ユン',
-            'アリー', 'アミール', 'ファティマ', 'ハサン', 'ライラ', 'カシム', 'ザラ', 'オマール'
-        ];
-        for (let i = names.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [names[i], names[j]] = [names[j], names[i]];
-        }
-        for (let i = 0; i < 4; i++) {
+        const maleNames = ['アレス', 'ゼロ', 'シオン', 'カイン', 'レオン', 'クロウ', 'アーラン', 'ゼクス', 'ノア', 'コタロウ', 'ヤマト', 'ハヤテ', 'ゲン', 'レイフェイ', 'リュウ', 'シン', 'アミール', 'ハサン', 'カシム', 'オマール'];
+        const femaleNames = ['ルチア', 'セリス', 'アリア', 'レイ', 'ティア', 'イリス', 'ファリス', 'サクラ', 'カグラ', 'シズク', 'カエデ', 'シャオ', 'リン', 'メイ', 'ラン', 'ユン', 'アリー', 'ファティマ', 'ライラ', 'ザラ'];
+
+        const usedCombos = new Set();
+        while (this.party.length < 4) {
+            const gender = Math.random() < 0.5 ? 'male' : 'female';
             const job = jobs[Math.floor(Math.random() * jobs.length)];
-            const name = names.pop();
+            const comboKey = `${job.name}-${gender}`;
+
+            if (usedCombos.has(comboKey)) continue;
+            usedCombos.add(comboKey);
+
+            const nameList = gender === 'male' ? maleNames : femaleNames;
+            const nameIdx = Math.floor(Math.random() * nameList.length);
+            const name = nameList.splice(nameIdx, 1)[0];
+
             const bonus = 5 + Math.floor(Math.random() * 11);
-            const char = this.createChar(name, job);
+            const char = this.createChar(name, job, gender);
             char.bonusLeft = bonus;
             this.party.push(char);
         }
         this.renderCharCreate();
     }
 
-    createChar(name, job) {
+    createChar(name, job, gender) {
+        let str = job.str, int = job.int, vit = job.vit, agi = job.agi;
+        if (gender === 'male') {
+            str = Math.round(str * 1.1);
+            vit = Math.round(vit * 1.1);
+        } else {
+            int = Math.round(int * 1.1);
+            agi = Math.round(agi * 1.1);
+        }
+
         return {
-            name, job: job.name, desc: job.desc, skillDesc: job.skillDesc,
+            name, job: job.name, gender, desc: job.desc, skillDesc: job.skillDesc,
             hp: job.hp, maxHp: job.hp, mp: job.mp, maxMp: job.mp,
-            str: job.str, int: job.int, vit: job.vit, agi: job.agi, luk: job.luk,
-            baseStr: job.str, baseInt: job.int, baseVit: job.vit, baseAgi: job.agi, baseLuk: job.luk,
+            str, int, vit, agi, luk: job.luk,
+            baseStr: str, baseInt: int, baseVit: vit, baseAgi: agi, baseLuk: job.luk,
             bonusLeft: 0, level: 1, exp: 0, gold: 0,
             equipment: { weapon: null, armor: null, accessory: null },
             inventory: []
@@ -169,7 +180,7 @@ class Game {
             html += `
                 <div style="border: 1px dashed #fff; padding: 5px; background: rgba(0,0,0,0.8);">
                     <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                        <span><strong style="color:#ffcc00;">${char.name} (${char.job})</strong></span>
+                        <span><strong style="color:#ffcc00;">${char.name} (${char.job} / ${char.gender === 'male' ? '男' : '女'})</strong></span>
                         <span style="color:${char.bonusLeft > 0 ? '#5f5' : '#888'}; font-size:12px;">Bonus: ${char.bonusLeft}</span>
                     </div>
                     <div style="font-size:11px; color:#ccc; margin-bottom:5px;">${char.desc}<br><span style="color:#aaf;">[スキル] ${char.skillDesc}</span></div>
@@ -200,14 +211,31 @@ class Game {
         document.getElementById('story-screen').style.display = 'flex';
         this.storyIndex = 0; this.state = 'STORY';
         if (!this.introPlayed) { audio.playBGM('bgm_intro'); this.introPlayed = true; }
+
+        const getIntro = (char) => {
+            const patterns = {
+                '戦士': { male: '「俺の剣と盾が必要だろう？一緒に行ってやるよ。」', female: '「私の力、役立ててみせるわ。共に行きましょう。」' },
+                '盗賊': { male: '「お宝があるなら話は別だ。俺も混ぜてくれよ。」', female: '「面白そうな話ね。私の手癖、試してみる？」' },
+                '魔術師': { male: '「未知の魔力......興味深い。私も同行させてもらおう。」', female: '「私の魔法が必要かしら？いいわ、手を貸してあげる。」' },
+                '僧侶': { male: '「神の加護があらんことを。私も癒やしの手として参りましょう。」', female: '「怪我人が出るのは放っておけません。私にお任せください。」' },
+                '侍': { male: '「この刀、錆びさせるには惜しい。貴殿に助力しよう。」', female: '「私の剣筋、見極めてほしい。お供いたします。」' },
+                '武闘家': { male: '「鍛えたこの拳、試させてもらうぜ！面白そうだ！」', female: '「私の体術、迷宮でも通じるはず。一緒に行くわ！」' },
+                '狩人': { male: '「遠くから支えてやるよ。俺の矢は外さないぜ。」', female: '「私の弓で道を切り開くわ。連れていってちょうだい。」' },
+                'モンク': { male: '「拳と祈り、両方で力になろう。私も行こう。」', female: '「私がお守りします。迷宮の闇に負けはしません。」' },
+                'ビショップ': { male: '「大いなる光の導きあらんことを。私が道を照らしましょう。」', female: '「浄化の祈りを捧げます。共に困難を乗り越えましょう。」' }
+            };
+            const jobPattern = patterns[char.job] || { male: '「俺も行くぜ。よろしくな。」', female: '「私も行くわ。力になるわ。」' };
+            return jobPattern[char.gender] || jobPattern.male;
+        };
+
         this.storyMessages = [
             "酒場にて...<br>薄暗い店内に、炭の爆ぜる音と冒険者たちの低いうなりが響いている。",
             "バーテンダー<br>「......また現れたらしいですね。あの『渦』が。」",
             "バーテンダー<br>「迷宮の奥底から噴き出す瘴気が、街の家畜や子供たちを病ませ始めているそうです。この店も仕入れが高騰して大変ですよ......。」",
-            `${this.party[0].name}<br>「......ふん、またあの『渦』か。この店は腕利きが集まってるんだろ？<br>誰か、俺と一緒に『渦』討伐にいかねぇか？」`,
-            `${this.party[1].name}<br>「よし、お前の提案に乗ってやる。俺の名前は${this.party[1].name}。今まで各地を旅してきた。」`,
-            `${this.party[2].name}<br>「......財宝はどうでもいい。我々の腕が、その『渦』とやらにどこまで通じるか......。試してみたいとは思ってたところだ？」`,
-            `${this.party[3].name}<br>「俺も行くぜ！この店が大変だと聞いて黙っちゃいられないわ。」`,
+            `${this.party[0].name}<br>「......ふん、またあの『渦』か。この店には腕利きたちが集まっているようだな。<br>誰か、私と共に『渦』を止めるために立ち上がる者はいないか？」`,
+            `${this.party[1].name}<br>${getIntro(this.party[1])}`,
+            `${this.party[2].name}<br>${getIntro(this.party[2])}`,
+            `${this.party[3].name}<br>${getIntro(this.party[3])}`,
             "こうして、彼らは導かれるように恐るべき迷宮へと足を踏み入れることになった――"
         ];
         this.displayNextStory();
