@@ -324,15 +324,10 @@ const UI = {
             html += `
                 <div id="camp-char-${idx}" class="camp-character ${isLowHp ? 'low-hp' : ''}">
                     <div class="camp-char-stats">
-                        <strong style="color:#ffcc00; font-size:16px;">${p.name}</strong> <span style="font-size:12px; color:#aaa;">(${p.job}) Lv: ${p.level}</span><br>
-                        <div style="font-size:11px; color:#888; margin-bottom:4px;">${p.desc}</div>
+                        <strong style="color:#ffcc00; font-size:14px;">${p.name}</strong> 
+                        <span style="font-size:12px; color:#aaa;">(${p.job}) Lv: ${p.level} | HP: ${p.hp}/${p.maxHp} | MP: ${p.mp}/${p.maxMp}</span><br>
                         
-                        <div style="font-size:11px; margin-bottom:2px;">HP: ${p.hp} / ${p.maxHp}</div>
-                        <div class="stat-bar-camp"><div class="stat-fill-hp" style="width:${hpPercent}%; height:100%;"></div></div>
-                        <div style="font-size:11px; margin-bottom:2px;">MP: ${p.mp} / ${p.maxMp}</div>
-                        <div class="stat-bar-camp"><div class="stat-fill-mp" style="width:${mpPercent}%; height:100%;"></div></div>
-
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-top:8px; font-size:12px;">
+                        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:2px; margin-top:5px; font-size:11px; color:#ddd;">
                             <div>STR: ${p.str}${getBonus('atk')}</div>
                             <div>INT: ${p.int}${getBonus('int')}</div>
                             <div>VIT: ${p.vit}${getBonus('def')}</div>
@@ -340,8 +335,9 @@ const UI = {
                             <div>LUK: ${p.luk}${getBonus('luk')}</div>
                             <div>EXP: ${p.exp}/${nextExp}</div>
                         </div>
-                        <div style="color:#aaf; font-size:11px; margin-top:5px;">[スキル] ${p.skillDesc}</div>
-                        <div style="color:#888; font-size:11px; margin-top:3px;">
+                        <div style="color:#888; font-size:11px; margin-top:4px;">${p.desc}</div>
+                        <div style="color:#aaf; font-size:11px; margin-top:2px;">[スキル] ${p.skillDesc}</div>
+                        <div style="color:#888; font-size:11px; margin-top:2px;">
                             EQ: [${p.equipment.weapon?.name || 'なし'}] [${p.equipment.armor?.name || 'なし'}] [${p.equipment.accessory?.name || 'なし'}]
                         </div>
                     </div>

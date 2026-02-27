@@ -350,33 +350,9 @@ canvas#view-canvas {
     box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
 }
 
-.stat-bar-camp {
-    width: 100%;
-    height: 10px;
-    background: #222;
-    margin: 4px 0;
-    border-radius: 2px;
-    overflow: hidden;
-    border: 1px solid #333;
-}
+/* Unused bars removed */
 
-.stat-fill-hp {
-    background: #f44;
-}
-
-.stat-fill-mp {
-    background: #44f;
-}
-
-/* Hide status area when camp is open */
-.hide-status #status-area {
-    display: none !important;
-}
-
-.hide-status #viewport-container {
-    grid-row: 1 / span 3;
-    /* Ensure it starts from the top when status is hidden */
-}
+/* Layout: status area remains visible */
 
 .camp-char-stats {
     flex: 1;

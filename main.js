@@ -536,13 +536,11 @@ class Game {
     toggleCamp() {
         if (this.state === 'EXPLORE') {
             this.state = 'CAMP';
-            document.body.classList.add('hide-status');
             document.getElementById('explore-menu').style.display = 'none';
             document.getElementById('camp-menu').style.display = 'flex';
             this.updateUI();
         } else if (this.state === 'CAMP') {
             this.state = 'EXPLORE';
-            document.body.classList.remove('hide-status');
             document.getElementById('camp-menu').style.display = 'none';
             document.getElementById('explore-menu').style.display = 'flex';
             this.discardingItemIdx = -1;
