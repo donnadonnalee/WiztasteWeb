@@ -369,7 +369,8 @@ const Events = {
             UI.addLog("解錠成功！"); UI.addLog(`「${drop.name}」を手に入れた！`);
             game.inventory.push(drop); game.closeEvent(); game.exitBattle(); game.saveGame();
         } else if (roll < successRate + trapRate) {
-            UI.addLog("罠にかかった！！");
+            UI.addLog("罠にかかった！！"); UI.addLog(`「${drop.name}」を手に入れた！`);
+            game.inventory.push(drop);
             this.triggerTrap(game, ['alarm', 'teleport', 'drain', 'bomb', 'curse'][Math.floor(Math.random() * 5)]);
         } else {
             UI.addLog("解錠に失敗したが、罠は作動しなかった。");

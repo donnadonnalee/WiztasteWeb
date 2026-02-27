@@ -579,6 +579,24 @@ canvas#view-canvas {
     animation: shake-hit 0.4s ease-out;
 }
 
+@keyframes monster-death {
+    0% {
+        filter: brightness(2) saturate(0) contrast(2);
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        filter: brightness(5) saturate(0) contrast(2);
+        opacity: 0;
+        transform: scale(1.2);
+    }
+}
+
+.monster-dead {
+    animation: monster-death 0.5s ease-out forwards;
+}
+
 /* Blackout Overlay */
 .fade-overlay {
     position: absolute;

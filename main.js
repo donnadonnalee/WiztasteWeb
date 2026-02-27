@@ -467,7 +467,11 @@ class Game {
     useItem(charIdx, itemIdx) {
         const item = this.inventory[itemIdx];
         if (charIdx === null) { item.effect(this.party); }
-        else { const target = this.party[charIdx]; if (item.hpRestore) { target.hp = Math.min(target.maxHp, target.hp + item.hpRestore); UI.addLog(`${target.name}は${item.name}を使った。`); } }
+        else {
+            const target = this.party[charIdx];
+            if (item.hpRestore) { target.hp = Math.min(target.maxHp, target.hp + item.hpRestore); UI.addLog(`${target.name}は${item.name}を使った。`); }
+            if (item.mpRestore) { target.mp = Math.min(target.maxMp, target.mp + item.mpRestore); UI.addLog(`${target.name}は${item.name}を使った。`); }
+        }
         if (!item.infinite) this.inventory.splice(itemIdx, 1);
         this.campMode = null; this.updateUI();
     }

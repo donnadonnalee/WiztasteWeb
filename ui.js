@@ -225,7 +225,22 @@ const UI = {
                 if (bm) bm.style.display = 'none';
             }
             if (em) em.style.display = 'none';
-            if (mo) mo.style.display = 'flex';
+            if (mo) {
+                mo.style.display = 'flex';
+                game.currentBattle.monsters.forEach((m, i) => {
+                    const el = document.getElementById(`monster-img-${i}`);
+                    if (el) {
+                        if (m.currentHp <= 0) {
+                            if (!el.classList.contains('monster-dead')) {
+                                el.classList.add('monster-dead');
+                            }
+                        } else {
+                            el.classList.remove('monster-dead');
+                            el.style.display = 'block';
+                        }
+                    }
+                });
+            }
         } else if (game.state === 'EXPLORE') {
             if (bm) bm.style.display = 'none';
             if (em) em.style.display = 'flex';
