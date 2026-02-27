@@ -298,7 +298,7 @@ const UI = {
 
         let html = '<div class="camp-header">CAMP - パーティ状況</div>';
         game.party.forEach((p, idx) => {
-            const nextExp = Math.floor(60 * Math.pow(p.level, 2.2));
+            const nextExp = Math.floor(50 * Math.pow(p.level, 1.7));
             const wpn = p.equipment.weapon ? p.equipment.weapon.name : 'なし';
             const arm = p.equipment.armor ? p.equipment.armor.name : 'なし';
             const acc = p.equipment.accessory ? p.equipment.accessory.name : 'なし';
@@ -341,7 +341,7 @@ const UI = {
                         ${item.name} <br><span style="color:#888; font-size:10px;">${item.desc}</span>
                         ${item.req ? `<br><span style="color:#ffcc00; font-size:10px;">[条件: ${Object.entries(item.req).map(([k, v]) => `${k.toUpperCase()} ${v}`).join(', ')}]</span>` : ''}<br>
                         <div style="margin-top:5px; display:flex; gap:5px;">
-                            ${item.type === 'consumable' ? (item.targetAll ? `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.useItem(null, ${itemIdx})">使う</button>` : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.showTargetSelection(${itemIdx}, 'use')">使う</button>`) : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="UI.showTargetSelection(game, ${itemIdx}, 'equip')">装備</button>`}
+                            ${item.type === 'consumable' ? ((item.targetAll || item.name === '妖精の霊薬') ? `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.useItem(null, ${itemIdx})">使う</button>` : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.showTargetSelection(${itemIdx}, 'use')">使う</button>`) : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="UI.showTargetSelection(game, ${itemIdx}, 'equip')">装備</button>`}
                             ${game.discardingItemIdx === itemIdx ? `<span style="color:#f55; font-size:10px;">捨てる？</span><button class="btn" style="padding:2px 5px; font-size:10px; border-color:#f55; color:#f55;" onclick="game.dropItem(${itemIdx}, true)">はい</button><button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.dropItem(-1)">いいえ</button>` : `<button class="btn" style="padding:2px 5px; font-size:10px; border-color:#833;" onclick="game.dropItem(${itemIdx})">捨てる</button>`}
                         </div>
                     </div>`;
