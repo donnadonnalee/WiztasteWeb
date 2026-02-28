@@ -174,9 +174,9 @@ class Game {
                 return `
                     <div style="display:inline-flex; align-items:center; width:90px; margin-bottom:4px; position:relative; z-index:2;">
                         <span style="display:inline-block; width:30px; font-size:12px;">${label}</span>
-                        <button class="btn" style="padding:0 5px; height:18px; font-size:10px;" ${char[stat] <= char[baseKey] ? 'disabled' : ''} onclick="game.adjustStat(${idx}, '${stat}', -1)">-</button>
+                        <button class="btn" style="padding:0 5px; height:18px; font-size:10px;" ${char[stat] <= char[baseKey] ? 'disabled' : ''} onclick="window.game.adjustStat(${idx}, '${stat}', -1)">-</button>
                         <span style="display:inline-block; width:20px; text-align:center; font-size:12px;">${char[stat]}</span>
-                        <button class="btn" style="padding:0 5px; height:18px; font-size:10px;" ${char.bonusLeft <= 0 ? 'disabled' : ''} onclick="game.adjustStat(${idx}, '${stat}', 1)">+</button>
+                        <button class="btn" style="padding:0 5px; height:18px; font-size:10px;" ${char.bonusLeft <= 0 ? 'disabled' : ''} onclick="window.game.adjustStat(${idx}, '${stat}', 1)">+</button>
                     </div>`;
             };
             html += `
@@ -320,6 +320,12 @@ class Game {
             }
         } else if (this.state === 'CAMP') {
             if (e.key === 'c' || e.key === 'C' || e.key === 'Escape') this.toggleCamp();
+            const key = e.key.toLowerCase();
+            if (key === 'a') document.getElementById('camp-char-0')?.scrollIntoView();
+            else if (key === 's') document.getElementById('camp-char-1')?.scrollIntoView();
+            else if (key === 'd') document.getElementById('camp-char-2')?.scrollIntoView();
+            else if (key === 'f') document.getElementById('camp-char-3')?.scrollIntoView();
+            else if (key === 'i') document.getElementById('camp-inventory')?.scrollIntoView();
         } else if (this.state === 'BATTLE' && this.currentBattle?.phase === 'INPUT') {
             switch (e.key.toLowerCase()) {
                 case 'a': this.battleAction('attack'); break;
@@ -546,14 +552,35 @@ class Game {
         const penaltySeconds = (this.currentFloor + 1) * 30;
         this.elapsedTimeAtSave += (penaltySeconds * 1000);
         this.state = 'GAMEOVER'; audio.playBGM('bgm_dead');
+
+        const ghosts = this.party.filter(p => p.baseVit < 0);
+
         await UI.showBlackout(this, "全滅した...", 3000, () => {
             this.playerPos = { x: 1, y: 1, dir: 1 }; this.currentFloor = 0;
-            this.party.forEach(p => { p.hp = p.maxHp; p.mp = p.maxMp; p.deadLogged = false; });
+
+            if (ghosts.length > 0) {
+                this.party.forEach(p => {
+                    if (p.baseVit < 0) {
+                        p.hp = 0;
+                        p.isGhost = true;
+                    } else {
+                        // Alive members HP becomes 1-9
+                        p.hp = Math.floor(Math.random() * 9) + 1;
+                        p.mp = p.maxMp;
+                    }
+                    p.deadLogged = false;
+                });
+                ghosts.forEach(g => UI.addLog(`「${g.name}が呼ぶ声がした……」`));
+            } else {
+                this.party.forEach(p => { p.hp = p.maxHp; p.mp = p.maxMp; p.deadLogged = false; });
+            }
+
             document.getElementById('floor-indicator').textContent = 'B1F';
             this.exitBattle();
             UI.addLog("気が付いたら迷宮の入り口に戻っていた。アビスロードを倒すまで町には戻れないようだ");
         });
     }
+
 
     handleEnding() {
         this.clearTime = Date.now() - (this.startTime || Date.now());
@@ -631,9 +658,15 @@ class Game {
                 item.effect(this.party);
             } else {
                 // Fallback for serialized special items
-                if (item.name === '妖精の霊薬') {
+                if (item.name === '妖精の霊薬' || item.name === 'ゴブリンの霊薬') {
                     this.party.forEach(p => { if (p.hp > 0) p.hp = Math.min(p.maxHp, p.hp + 50); });
-                    UI.addLog(`妖精の霊薬を使った！全員のHPが50回復！`);
+                    UI.addLog(`${item.name}を使った！全員のHPが50回復！`);
+                } else if (item.name === '闇の叡智の結晶') {
+                    this.party.forEach(p => { if (p.hp > 0) p.mp = Math.min(p.maxMp, p.mp + 20); });
+                    UI.addLog(`闇の叡智の結晶から魔力が溢れ出す！全員のMPが20回復した！`);
+                } else if (item.name === '不思議な手鏡') {
+                    Events.showMirrorUI(this);
+                    return; // Don't remove/reset yet, Mirror UI handles closing
                 } else if (item.hpRestore) {
                     this.party.forEach(p => { if (p.hp > 0) p.hp = Math.min(p.maxHp, p.hp + item.hpRestore); });
                     UI.addLog(`${item.name}を使った！全員のHPが回復！`);
@@ -735,3 +768,10 @@ class Game {
 }
 
 window.game = new Game();
+// Final re-render and UI update to ensure everything is visible after all scripts and assets load
+setTimeout(() => {
+    if (window.game) {
+        window.game.render();
+        window.game.updateUI();
+    }
+}, 100);

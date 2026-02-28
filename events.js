@@ -22,6 +22,8 @@ const Events = {
         const options = document.getElementById('event-options');
 
         if (screen) screen.style.display = 'flex';
+        if (title) title.textContent = '';
+        if (desc) desc.innerHTML = '';
         if (options) options.innerHTML = '';
 
         let imgName = `event_${floor}`;
@@ -38,10 +40,11 @@ const Events = {
 
         if (floor === 1) this.handleEvent1F(game, title, desc, options);
         else if (floor === 2) this.handleEvent2F(game, title, desc, options);
+        else if (floor === 3) this.handleEvent3F(game, title, desc, options);
         else if (floor === 4) this.handleEvent4F(game, title, desc, options);
         else if (floor === 5) this.handleEvent5F(game, title, desc, options);
-        else if (floor === 7) this.handleEvent7F(game, title, desc, options);
         else if (floor === 6) this.handleEvent6F(game, title, desc, options);
+        else if (floor === 7) this.handleEvent7F(game, title, desc, options);
         else if (floor === 8) this.handleEvent8F(game, title, desc, options);
         else if (floor === 9) this.handleEvent9F(game, title, desc, options);
 
@@ -110,6 +113,9 @@ const Events = {
         const options = document.getElementById('event-options');
 
         if (screen) screen.style.display = 'flex';
+        const campMenu = document.getElementById('camp-menu');
+        if (campMenu) campMenu.style.display = 'none';
+
         title.textContent = "不思議な手鏡";
         if (img) { img.src = "assets/event_1.png"; img.style.display = "block"; }
 
@@ -132,7 +138,7 @@ const Events = {
 
         options.innerHTML = '';
         const btnBack = document.createElement('button');
-        btnBack.className = 'btn'; btnBack.textContent = '鏡をしまう';
+        btnBack.className = 'btn'; btnBack.textContent = '鏡をしまう (A)';
         btnBack.onclick = () => game.closeEvent();
         options.appendChild(btnBack);
     },
@@ -231,12 +237,12 @@ const Events = {
     },
 
     handleEvent5F: function (game, title, desc, options) {
-        title.textContent = "負傷した冒険者";
-        desc.innerHTML = "薄暗い通路の隅に、血を流して倒れている冒険者がいる。<br><br>息も絶え絶えにこちらを見上げ、助けを求めているようだ...。<br><br>※助ける場合、パーティ全員のMPが0になり、所持している消耗アイテム（ポーション等）をすべて失います。";
+        title.textContent = "負傷した騎士";
+        desc.innerHTML = "薄暗い通路の隅に、血を流して倒れている騎士がいる。<br><br>息も絶え絶えにこちらを見上げ、助けを求めているようだ...。<br><br>※助ける場合、パーティ全員のMPが0になり、所持している消耗アイテム（ポーション等）をすべて失います。";
         const btnHelp = document.createElement('button');
         btnHelp.className = 'btn'; btnHelp.textContent = '助ける';
         btnHelp.onclick = () => {
-            game.karma += 50; UI.addLog("あなたは手持ちの道具と魔力を駆使して冒険者を治療した！");
+            game.karma += 50; UI.addLog("あなたは手持ちの道具と魔力を駆使して騎士を治療した！");
             game.npcFlags.helpedAdventurer = true; game.npcFlags.event5FDone = true;
             game.party.forEach(p => p.mp = 0);
             game.inventory = game.inventory.filter(item => item.type !== 'consumable');
@@ -253,11 +259,11 @@ const Events = {
         const btnPlunder = document.createElement('button');
         btnPlunder.className = 'btn'; btnPlunder.textContent = '略奪';
         btnPlunder.onclick = () => {
-            game.karma -= 30; UI.addLog("あなたは弱り切った冒険者から荷物を奪い取るべく襲いかかった。");
+            game.karma -= 30; UI.addLog("あなたは弱り切った騎士から荷物を奪い取るべく襲いかかった。");
             game.npcFlags.event5FDone = true;
             game.closeEvent();
             game.startCustomBattle([{
-                id: 'monster-0', name: "負傷した冒険者", hp: 400, maxHp: 400, currentHp: 400, atk: 50, agi: 20, exp: 100, level: 5,
+                id: 'monster-0', name: "負傷した騎士", hp: 100, maxHp: 100, currentHp: 100, atk: 50, agi: 10, exp: 300, level: 5,
                 svg: `<img src="assets/event_5.png" style="width:100%; height:100%; object-fit:contain;" />`
             }], { isAdventurerLoot: true });
         };
@@ -265,8 +271,8 @@ const Events = {
     },
 
     handleEvent7F: function (game, title, desc, options) {
-        title.textContent = "狂乱の剣士『アルトリウス』";
         if (game.npcFlags.metSwordsman) {
+            title.textContent = "狂乱の剣士『アルトリウス』";
             desc.innerHTML = "…っ！！　彼は、３階でロングソードをくれた気前のよい冒険者だ。あの活発な笑顔の面影を潜め、今はただ血走った眼差しで虚空を睨みつけている。<br><br>迷宮の瘴気にあてられ、彼の精神は完全に崩壊していた。口元から止めるどなく液を垂らし、かつて君たちに軽口を叩いたその口で、今は意味をなさない罵声を吐き続けている。<br><br>「アァ…モウ…モウ何もかもおしまいだ…！オマエタチも、俺の邪魔をするのか…！？」<br><br>突如、男が奇声を上げ、得物を振りかざして襲いかかってきた！！";
             const btnFight = document.createElement('button');
             btnFight.className = 'btn'; btnFight.textContent = '戦う';
@@ -298,6 +304,7 @@ const Events = {
             };
             options.appendChild(btnRun);
         } else {
+            title.textContent = "冒険者の遺体";
             desc.innerHTML = "通路の先で、冒険者の無惨な死体を発見した。<br><br>彼の傍らには、禍々しい血の気を放つ<br>装備品が転がっている。";
             const btnLoot = document.createElement('button');
             btnLoot.className = 'btn'; btnLoot.textContent = '奪い取る';
@@ -312,8 +319,8 @@ const Events = {
     },
 
     handleEvent6F: function (game, title, desc, options) {
-        title.textContent = "親ゴブリン";
         if (game.npcFlags.savedGoblin) {
+            title.textContent = "親ゴブリン";
             desc.innerHTML = "巨大なキングゴブリンが立ちはだかった！<br>...しかし、殺意はないようだ。<br><br>どうやら、あなたが４階で自分の子供を見逃したことに気づいているらしい。友好的に頭を下げている。";
             const btnNod = document.createElement('button');
             btnNod.className = 'btn'; btnNod.textContent = '頷く';
@@ -335,6 +342,7 @@ const Events = {
             };
             options.appendChild(btnFight);
         } else {
+            title.textContent = "怒れる親ゴブリン";
             desc.innerHTML = "巨大なキングゴブリンが立ちはだかった！<br><br>子供を殺された怒り狂っているのか、こちらを睨みつけ、巨大な棍棒を振り上げている！！";
             const btnFight = document.createElement('button');
             btnFight.className = 'btn'; btnFight.textContent = '戦う';
@@ -370,8 +378,12 @@ const Events = {
                 btn.className = 'btn'; btn.textContent = `${p.name}を犠牲にする`;
                 btn.onclick = () => {
                     if (!confirm(`本当に ${p.name} を生贄に捧げますか？\n(二度と復帰できなくなります)`)) return;
-                    UI.addLog(`${p.name}「う、うそ。今まで一緒にやってここまで来たんだぞ。一緒にアビスロードを倒そう……なあ……」`);
+                    const sacrificeMsg = p.gender === 'male'
+                        ? `${p.name}「待てよ、俺を置いていくのか？……嘘だろ、頼む、考え直してくれ……！」`
+                        : `${p.name}「待って、私を捧げるなんて……信じられない。ねえ、冗談でしょ……？」`;
+                    UI.addLog(sacrificeMsg);
                     p.hp = 0; p.baseVit = -999; game.karma -= 100;
+
                     UI.addLog(`闇の賢者の魔術により、${p.name}の命が吸い尽くされた……！`);
                     game.npcFlags.event8FDone = true;
                     game.inventory.push({ name: "深淵の杖", type: "weapon", atk: 15, req: { int: 25 }, desc: "INT+80 とてつもない魔力を秘めた杖", intBonus: 80 });
@@ -405,7 +417,7 @@ const Events = {
 
     handleEvent9F: function (game, title, desc, options) {
         if (game.npcFlags.helpedAdventurer) {
-            title.textContent = "恩返しの亡霊";
+            title.textContent = "騎士の亡霊";
             desc.innerHTML = "５階で助けたはずの男が、透き通った姿で微笑んでいる。<br>彼はこの先で息絶えたのだろう。<br><br>「......君たちなら、奴に届くはずだ......。」";
             const btn = document.createElement('button');
             btn.className = 'btn'; btn.textContent = '受け取る';
@@ -421,6 +433,7 @@ const Events = {
             };
             options.appendChild(btn);
         } else {
+            title.textContent = "冒険者の遺体";
             desc.innerHTML = "通路の先で、冒険者の無惨な死体を発見した。<br>５階で見捨てたあの男のようだ...。<br><br>遺体からは瘴気が溢れ出している。<br><br>そして、傍らには、禍々しいオーラを放つ装備品が転がっている。";
             const btn = document.createElement('button');
             btn.className = 'btn'; btn.textContent = '遺体をあさる';

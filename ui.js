@@ -27,7 +27,7 @@ const UI = {
         if (assets.ceiling.loaded) {
             ctx.drawImage(assets.ceiling.img, 0, 0, w, h / 2);
         } else {
-            ctx.fillStyle = '#000';
+            ctx.fillStyle = '#111';
             ctx.fillRect(0, 0, w, h / 2);
         }
 
@@ -44,7 +44,7 @@ const UI = {
             const grad = ctx.createLinearGradient(0, h / 2, 0, h);
             grad.addColorStop(0, '#000');
             grad.addColorStop(0.5, '#111');
-            grad.addColorStop(1, '#112');
+            grad.addColorStop(1, '#151520');
             ctx.fillStyle = grad;
             ctx.fillRect(0, h / 2, w, h / 2);
         }
@@ -152,7 +152,6 @@ const UI = {
                 const darkness = Math.max(0, Math.min(0.8, dist * 0.15));
                 if (tile === 3 || tile === 8) {
                     const p = getProj(dist + 0.5, offsetX);
-                    const img = tile === 8 ? assets.stair_down.img : assets.stair_down.img; // Placeholder for boss tile/stair down
                     if (assets.stair_down.loaded) {
                         ctx.drawImage(assets.stair_down.img, p.x - p.w / 2, p.y - p.h, p.w, p.h * 2);
                         if (darkness > 0) { ctx.fillStyle = `rgba(0, 0, 0, ${darkness})`; ctx.fillRect(p.x - p.w / 2, p.y - p.h, p.w, p.h * 2); }
@@ -201,18 +200,23 @@ const UI = {
         game.party.forEach((p, i) => {
             const div = document.createElement('div');
             div.id = `party-member-${i}`;
-            div.className = `party-member ${game.state === 'BATTLE' && game.turnIndex === i ? 'active' : ''}`;
+            const isGhost = p.isGhost === true;
+            div.className = `party-member ${game.state === 'BATTLE' && game.turnIndex === i ? 'active' : ''} ${isGhost ? 'ghost-member' : ''}`;
             div.style.position = 'relative';
             div.style.overflow = 'hidden';
 
+            const portraitUrl = isGhost ? 'assets/face_亡霊.jpeg' : p.portrait;
             const hpW = (p.hp / p.maxHp) * 100, mpW = p.maxMp > 0 ? (p.mp / p.maxMp) * 100 : 0;
             div.innerHTML = `
-                <div class="card-portrait-bg" style="background-image: url('${p.portrait}')"></div>
+                <div class="card-portrait-bg ${isGhost ? 'ghost-portrait' : ''}" style="background-image: url('${portraitUrl}')"></div>
                 <div class="card-content">
                     <div style="display:flex; justify-content:space-between; margin-bottom: 2px;">
                         <strong>${p.name}</strong> 
                         <span style="font-size:10px; color:#aaa;">Lv${p.level} ${p.job}</span>
                     </div>
+                    ${isGhost ? `
+                    <div class="ghost-status" style="text-align:center; padding: 5px 0;">[ 亡霊 ]</div>
+                    ` : `
                     <div style="display:flex; gap:5px;">
                         <div style="flex:1;">
                             <div class="stat-bar">
@@ -227,6 +231,7 @@ const UI = {
                             </div>
                         </div>
                     </div>
+                    `}
                 </div>`;
             list.appendChild(div);
         });
@@ -308,7 +313,6 @@ const UI = {
         document.body.appendChild(hit); setTimeout(() => hit.remove(), 1000);
     },
 
-
     updateCampUI: function (game) {
         const campMenu = document.getElementById('camp-menu');
         if (!campMenu || game.state !== 'CAMP') return;
@@ -319,7 +323,7 @@ const UI = {
             html += `<button class="btn" onclick="document.getElementById('camp-char-${idx}').scrollIntoView()">${p.name}</button>`;
         });
         html += `<button class="btn" style="border-color:#ffcc00;" onclick="document.getElementById('camp-inventory').scrollIntoView()">持ち物</button>`;
-        html += `<button class="btn" style="border-color:#f55;" onclick="game.toggleCamp()">戻る</button>`;
+        html += `<button class="btn" style="border-color:#f55;" onclick="window.game.toggleCamp()">戻る</button>`;
         html += '</div>';
 
         html += '<div class="camp-content">';
@@ -328,6 +332,7 @@ const UI = {
         game.party.forEach((p, idx) => {
             const nextExp = Math.floor(50 * Math.pow(p.level, 1.7));
             const isLowHp = p.hp < p.maxHp * 0.3;
+            const isGhost = p.isGhost === true;
 
             const getBonus = (stat) => {
                 let bonus = 0;
@@ -335,22 +340,18 @@ const UI = {
                 return bonus !== 0 ? ` <span style="color:${bonus > 0 ? '#5f5' : '#f55'}">(${bonus > 0 ? '+' : ''}${bonus})</span>` : '';
             };
 
-            const hpPercent = (p.hp / p.maxHp) * 100;
-            const mpPercent = (p.maxMp > 0) ? (p.mp / p.maxMp) * 100 : 0;
-
+            const portraitUrl = isGhost ? 'assets/face_亡霊.jpeg' : p.portrait;
             html += `
-                <div id="camp-char-${idx}" class="camp-character ${isLowHp ? 'low-hp' : ''}" style="position:relative; overflow:hidden;">
-                    <!-- Original Layout Restored -->
+                <div id="camp-char-${idx}" class="camp-character ${isLowHp ? 'low-hp' : ''} ${isGhost ? 'ghost-member' : ''}" style="position:relative; overflow:hidden;">
                     <div style="display:flex; gap:15px; position:relative; z-index:2; width:100%;">
-                        <!-- Character Portrait -->
                         <div style="width:100px; height:120px; border:2px solid #555; background:#222; flex-shrink:0;">
-                            <img src="${p.portrait}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect width=%221%22 height=%221%22 fill=%22%23333%22/></svg>'">
+                            <img src="${portraitUrl}" class="${isGhost ? 'ghost-portrait' : ''}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect width=%221%22 height=%221%22 fill=%22%23333%22/></svg>'">
                         </div>
 
                         <div style="flex:1;">
                             <div class="camp-char-stats">
-                                <strong style="color:#ffcc00; font-size:14px;">${p.name}</strong> 
-                                <span style="font-size:12px; color:#aaa;">(${p.job}) Lv: ${p.level} | HP: ${p.hp}/${p.maxHp} | MP: ${p.mp}/${p.maxMp}</span><br>
+                                <strong style="color:${isGhost ? '#00ffff' : '#ffcc00'}; font-size:14px;">${p.name}${isGhost ? ' (亡霊)' : ''}</strong> 
+                                ${isGhost ? '' : `<span style="font-size:12px; color:#aaa;">(${p.job}) Lv: ${p.level} | HP: ${p.hp}/${p.maxHp} | MP: ${p.mp}/${p.maxMp}</span>`}<br>
                                 
                                 <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:2px; margin-top:5px; font-size:11px; color:#ddd;">
                                     <div>STR: ${p.str}${getBonus('atk')}</div>
@@ -367,13 +368,13 @@ const UI = {
                                 </div>
                             </div>
                             <div class="camp-char-actions" style="margin-top:8px;">
-                                ${game.campMode === 'SELECT_CHARACTER' || game.campMode === 'SELECT_TARGET' ?
-                    `<button class="btn" style="padding:4px; border-color:#ffcc00;" onclick="game.executeItemAction(${idx}, ${game.pendingItemIdx}, '${game.campMode === 'SELECT_TARGET' ? 'use' : 'equip'}')">選択</button>` :
-                    ` ${['僧侶', 'ビショップ', 'モンク'].indexOf(p.job) !== -1 ? `<button class="btn" style="padding:4px; font-size:10px; margin-bottom:2px;" onclick="game.castCampMagic(${idx})">${p.job === 'モンク' ? '精神統一' : (p.job === 'ビショップ' ? '聖別の儀' : '回復魔法')}(3MP)</button>` : ''}
-                                ${p.equipment.weapon ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'weapon')">武器外す</button>` : ''}
-                                ${p.equipment.armor ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'armor')">鎧外す</button>` : ''}
-                                ${p.equipment.accessory ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="game.unequipItem(${idx}, 'accessory')">装飾外す</button>` : ''}
-                                `}
+                                ${isGhost ? '<div class="ghost-status" style="color:#00ffff; font-weight:bold; text-shadow:0 0 5px #00ffff;">亡霊は動けない</div>' : (game.campMode === 'SELECT_CHARACTER' || game.campMode === 'SELECT_TARGET' ?
+                    `<button class="btn" style="padding:4px; border-color:#ffcc00;" onclick="window.game.executeItemAction(${idx}, ${game.pendingItemIdx}, '${game.campMode === 'SELECT_TARGET' ? 'use' : 'equip'}')">選択</button>` :
+                    ` ${['僧侶', 'ビショップ', 'モンク'].indexOf(p.job) !== -1 ? `<button class="btn" style="padding:4px; font-size:10px; margin-bottom:2px;" onclick="window.game.castCampMagic(${idx})">${p.job === 'モンク' ? '精神統一' : (p.job === 'ビショップ' ? '聖別の儀' : '回復魔法')}(3MP)</button>` : ''}
+                                ${p.equipment.weapon ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="window.game.unequipItem(${idx}, 'weapon')">武器外す</button>` : ''}
+                                ${p.equipment.armor ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="window.game.unequipItem(${idx}, 'armor')">鎧外す</button>` : ''}
+                                ${p.equipment.accessory ? `<button class="btn" style="padding:2px 4px; font-size:10px; border-color:#833;" onclick="window.game.unequipItem(${idx}, 'accessory')">装飾外す</button>` : ''}
+                                `)}
                             </div>
                         </div>
                     </div>
@@ -390,14 +391,14 @@ const UI = {
                         <span style="color:#eee;">${item.name}</span> <br><span style="color:#888; font-size:10px;">${item.desc}</span>
                         ${item.req ? `<br><span style="color:#ffcc00; font-size:10px;">[条件: ${Object.entries(item.req).map(([k, v]) => `${k.toUpperCase()} ${v}`).join(', ')}]</span>` : ''}<br>
                         <div style="margin-top:5px; display:flex; gap:5px;">
-                            ${item.type === 'consumable' ? ((item.targetAll || item.name === '妖精の霊薬') ? `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.useItem(null, ${itemIdx})">使う</button>` : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.showTargetSelection(${itemIdx}, 'use')">使う</button>`) : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="UI.showTargetSelection(game, ${itemIdx}, 'equip')">装備</button>`}
-                            ${game.discardingItemIdx === itemIdx ? `<span style="color:#f55; font-size:10px;">捨てる？</span><button class="btn" style="padding:2px 5px; font-size:10px; border-color:#f55; color:#f55;" onclick="game.dropItem(${itemIdx}, true)">はい</button><button class="btn" style="padding:2px 5px; font-size:10px;" onclick="game.dropItem(-1)">いいえ</button>` : `<button class="btn" style="padding:2px 5px; font-size:10px; border-color:#833;" onclick="game.dropItem(${itemIdx})">捨てる</button>`}
+                            ${item.type === 'consumable' ? ((item.targetAll || item.name === '妖精の霊薬') ? `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="window.game.useItem(null, ${itemIdx})">使う</button>` : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="window.game.showTargetSelection(${itemIdx}, 'use')">使う</button>`) : `<button class="btn" style="padding:2px 5px; font-size:10px;" onclick="UI.showTargetSelection(window.game, ${itemIdx}, 'equip')">装備</button>`}
+                            ${game.discardingItemIdx === itemIdx ? `<span style="color:#f55; font-size:10px;">捨てる？</span><button class="btn" style="padding:2px 5px; font-size:10px; border-color:#f55; color:#f55;" onclick="window.game.dropItem(${itemIdx}, true)">はい</button><button class="btn" style="padding:2px 5px; font-size:10px;" onclick="window.game.dropItem(-1)">いいえ</button>` : `<button class="btn" style="padding:2px 5px; font-size:10px; border-color:#833;" onclick="window.game.dropItem(${itemIdx})">捨てる</button>`}
                         </div>
                     </div>`;
             });
         }
-        html += '</div>'; // close wrap
-        html += '</div>'; // close camp-content
+        html += '</div>';
+        html += '</div>';
         campMenu.innerHTML = html;
         campMenu.style.display = 'flex';
     },
@@ -417,7 +418,7 @@ const UI = {
             let errorMsg = '';
             let currentEquip = '';
 
-            if (p.hp <= 0) {
+            if (p.hp <= 0 || p.isGhost) {
                 disabled = 'disabled';
                 color = '#444';
             } else if (action === 'equip') {
@@ -437,10 +438,10 @@ const UI = {
             }
 
             if (!color) color = '#d3d3d3';
-            html += `<button class="btn" style="width:240px; padding:10px; color:${color}; border-color:${color}; display:flex; flex-direction:column; align-items:center;" ${disabled} onclick="game.executeItemAction(${cidx}, ${itemIdx}, '${action}')">
-                        <div>${p.name} (${p.job}) <span style="color:#f55">${errorMsg}</span></div>
-                        ${currentEquip}
-                    </button>`;
+            html += `<button class="btn" style="width:240px; padding:10px; color:${color}; border-color:${color}; display:flex; flex-direction:column; align-items:center;" ${disabled} onclick="window.game.executeItemAction(${cidx}, ${itemIdx}, '${action}')">
+                            <div>${p.name} (${p.job}) <span style="color:#f55">${errorMsg}</span></div>
+                            ${currentEquip}
+                        </button>`;
         });
         html += `</div>`;
         html += `<button class="btn" style="margin-top:20px;" onclick="UI.updateCampUI(window.game)">キャンセル</button>`;
