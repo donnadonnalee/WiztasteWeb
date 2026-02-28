@@ -392,7 +392,7 @@ canvas#view-canvas {
         max-height: none;
         grid-template-areas: "view" "status" "log" "controls";
         grid-template-columns: 1fr;
-        grid-template-rows: 1fr auto minmax(50px, 10vh) auto;
+        grid-template-rows: minmax(150px, 30vh) auto 1fr auto;
     }
 
     #status-area {
