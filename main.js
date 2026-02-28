@@ -531,7 +531,7 @@ class Game {
             this.inventory.push({
                 name: '闇の叡智の結晶', type: 'consumable', infinite: true, targetAll: true, mpRestore: 20, desc: '何度でも使える魔力の結晶',
                 effect: () => {
-                    game.party.forEach(p => { if (p.hp > 0) p.mp = Math.min(p.maxMp, p.mp + 20); });
+                    game.party.forEach(p => { if (p.hp > 0) p.mp = Math.min(game.getEffectiveMaxMp(p), p.mp + 20); });
                     UI.addLog(`闇の叡智の結晶から魔力が溢れ出す！全員のMPが20回復した！`);
                 }
             });
@@ -541,7 +541,7 @@ class Game {
             this.inventory.push({
                 name: '妖精の霊薬', type: 'consumable', infinite: true, targetAll: true, hpRestore: 50, desc: '何度でも使える全体回復薬',
                 effect: () => {
-                    game.party.forEach(mbr => { if (mbr.hp > 0) mbr.hp = Math.min(mbr.maxHp, mbr.hp + 50); });
+                    game.party.forEach(mbr => { if (mbr.hp > 0) mbr.hp = Math.min(game.getEffectiveMaxHp(mbr), mbr.hp + 50); });
                     UI.addLog(`妖精の霊薬を使った！全員のHPが50回復！`);
                 }
             });
@@ -574,7 +574,7 @@ class Game {
 
     levelUp(p) {
         p.level++; p.exp = 0; p.str += 2; p.int += 2; p.vit += 2; p.agi += 2; p.luk += 2;
-        p.maxHp += 10; p.maxMp += 5; p.hp = p.maxHp; p.mp = p.maxMp;
+        p.maxHp += 10; p.maxMp += 5; p.hp = this.getEffectiveMaxHp(p); p.mp = this.getEffectiveMaxMp(p);
         UI.addLog(`${p.name}はレベル ${p.level} に上がった！`);
     }
 
@@ -602,7 +602,7 @@ class Game {
                 });
                 ghosts.forEach(g => UI.addLog(`「${g.name}が呼ぶ声がした……」`));
             } else {
-                this.party.forEach(p => { p.hp = p.maxHp; p.mp = p.maxMp; p.deadLogged = false; });
+                this.party.forEach(p => { p.hp = this.getEffectiveMaxHp(p); p.mp = this.getEffectiveMaxMp(p); p.deadLogged = false; });
             }
 
             document.getElementById('floor-indicator').textContent = 'B1F';
@@ -673,10 +673,10 @@ class Game {
     castCampMagic(idx) {
         const caster = this.party[idx]; if (caster.mp < 3 || caster.hp <= 0) return;
         let target = null, low = 1.0;
-        this.party.forEach(p => { const pct = p.hp / p.maxHp; if (p.hp > 0 && pct < low && p.hp < p.maxHp) { low = pct; target = p; } });
+        this.party.forEach(p => { const effMax = this.getEffectiveMaxHp(p); const pct = p.hp / effMax; if (p.hp > 0 && pct < low && p.hp < effMax) { low = pct; target = p; } });
         if (!target) { UI.addLog("回復が必要な仲間にいない。"); return; }
         caster.mp -= 3; const heal = Math.max(15, caster.int + 10);
-        target.hp = Math.min(target.maxHp, target.hp + heal);
+        target.hp = Math.min(this.getEffectiveMaxHp(target), target.hp + heal);
         UI.addLog(`${caster.name}の回復魔法！${target.name}のHPが${heal}回復した。`);
         this.updateUI();
     }
@@ -729,26 +729,26 @@ class Game {
             } else {
                 // Fallback for serialized special items
                 if (item.name === '妖精の霊薬' || item.name === 'ゴブリンの霊薬') {
-                    this.party.forEach(p => { if (p.hp > 0) p.hp = Math.min(p.maxHp, p.hp + 50); });
+                    this.party.forEach(p => { if (p.hp > 0) p.hp = Math.min(this.getEffectiveMaxHp(p), p.hp + 50); });
                     UI.addLog(`${item.name}を使った！全員のHPが50回復！`);
                 } else if (item.name === '闇の叡智の結晶') {
-                    this.party.forEach(p => { if (p.hp > 0) p.mp = Math.min(p.maxMp, p.mp + 20); });
+                    this.party.forEach(p => { if (p.hp > 0) p.mp = Math.min(this.getEffectiveMaxMp(p), p.mp + 20); });
                     UI.addLog(`闇の叡智の結晶から魔力が溢れ出す！全員のMPが20回復した！`);
                 } else if (item.name === '不思議な手鏡') {
                     Events.showMirrorUI(this);
                     return; // Don't remove/reset yet, Mirror UI handles closing
                 } else if (item.hpRestore) {
-                    this.party.forEach(p => { if (p.hp > 0) p.hp = Math.min(p.maxHp, p.hp + item.hpRestore); });
+                    this.party.forEach(p => { if (p.hp > 0) p.hp = Math.min(this.getEffectiveMaxHp(p), p.hp + item.hpRestore); });
                     UI.addLog(`${item.name}を使った！全員のHPが回復！`);
                 } else if (item.mpRestore) {
-                    this.party.forEach(p => { if (p.hp > 0) p.mp = Math.min(p.maxMp, p.mp + item.mpRestore); });
+                    this.party.forEach(p => { if (p.hp > 0) p.mp = Math.min(this.getEffectiveMaxMp(p), p.mp + item.mpRestore); });
                     UI.addLog(`${item.name}を使った！全員のMPが回復！`);
                 }
             }
         } else {
             const target = this.party[charIdx];
-            if (item.hpRestore) { target.hp = Math.min(target.maxHp, target.hp + item.hpRestore); UI.addLog(`${target.name}は${item.name}を使った。`); }
-            if (item.mpRestore) { target.mp = Math.min(target.maxMp, target.mp + item.mpRestore); UI.addLog(`${target.name}は${item.name}を使った。`); }
+            if (item.hpRestore) { target.hp = Math.min(this.getEffectiveMaxHp(target), target.hp + item.hpRestore); UI.addLog(`${target.name}は${item.name}を使った。`); }
+            if (item.mpRestore) { target.mp = Math.min(this.getEffectiveMaxMp(target), target.mp + item.mpRestore); UI.addLog(`${target.name}は${item.name}を使った。`); }
         }
         if (!item.infinite) this.inventory.splice(itemIdx, 1);
         this.campMode = null; this.updateUI();
