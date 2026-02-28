@@ -256,14 +256,36 @@ class Game {
     displayNextStory() {
         const storyContent = document.getElementById('story-content');
         const nextBtn = document.getElementById('btn-story-next');
-        if (this.storyIndex >= this.storyMessages.length) { this.startGame(); return; }
+        const skipBtn = document.getElementById('btn-story-skip');
+
+        if (this.storyIndex >= this.storyMessages.length) {
+            if (this.state === 'EPILOGUE') {
+                document.getElementById('story-screen').style.display = 'none';
+                document.getElementById('ending-screen').style.display = 'flex';
+                this.renderRanking();
+            } else {
+                this.startGame();
+            }
+            return;
+        }
+
         const msg = this.storyMessages[this.storyIndex++];
         storyContent.innerHTML = `<div class="story-anim">${msg}</div>`;
+
         nextBtn.style.display = 'none';
+        if (this.state === 'EPILOGUE') skipBtn.style.display = 'none';
+
         setTimeout(() => {
             nextBtn.style.display = 'inline-block';
-            if (this.storyIndex >= this.storyMessages.length) { nextBtn.textContent = '迷宮へ向かう'; nextBtn.style.color = '#f55'; nextBtn.style.borderColor = '#f55'; }
-            else { nextBtn.textContent = '次へ ▼'; nextBtn.style.color = '#ffcc00'; nextBtn.style.borderColor = '#ffcc00'; }
+            if (this.storyIndex >= this.storyMessages.length) {
+                nextBtn.textContent = this.state === 'EPILOGUE' ? 'エピローグを終える' : '迷宮へ向かう';
+                nextBtn.style.color = '#f55';
+                nextBtn.style.borderColor = '#f55';
+            } else {
+                nextBtn.textContent = '次へ ▼';
+                nextBtn.style.color = '#ffcc00';
+                nextBtn.style.borderColor = '#ffcc00';
+            }
         }, 800);
     }
 
@@ -534,11 +556,49 @@ class Game {
     }
 
     handleEnding() {
-        this.state = 'ENDING'; audio.playBGM('bgm_ending');
+        this.clearTime = Date.now() - (this.startTime || Date.now());
+        this.state = 'ENDING';
+        audio.playBGM('bgm_ending');
         UI.showBlackout(this, "『渦』の波動が消失した...", 4000, () => {
-            document.getElementById('ending-screen').style.display = 'flex';
-            this.renderRanking();
+            this.startEpilogue();
         });
+    }
+
+    startEpilogue() {
+        document.getElementById('explore-menu').style.display = 'none';
+        document.getElementById('story-screen').style.display = 'flex';
+        this.storyIndex = 0;
+        this.state = 'EPILOGUE';
+
+        const getVictory = (char) => {
+            const patterns = {
+                '戦士': { male: '「終わったか......。よし、まずは酒場で一杯やらせてくれ。」', female: '「私たちの勝ちね！さあ、酒場に帰りましょう！」' },
+                '盗賊': { male: '「最高の冒険だったぜ。お宝もたっぷりだしな！」', female: '「ふふ、この感覚......癖になりそう。またどこかでね。」' },
+                '魔術師': { male: '「『渦』の消失を確認した。貴重な資料が手に入ったよ。」', female: '「私の魔法、完璧だったでしょ？さて、研究に戻るわね。」' },
+                '僧侶': { male: '「神の御加護により、悪しき波動は消え去りました。誇りに思います。」', female: '「皆さんが無事で本当に良かったです。祈りが通じましたね。」' },
+                '侍': { male: '「見事な戦いであった。拙者の刀も、喜んでいるようだ。」', female: '「乱れの根源を断てたこと、光栄に存じます。さらばです。」' },
+                '武闘家': { male: '「いい汗をかいたぜ！やっぱり実戦が一番の修行だな。」', female: '「やり遂げたわ！最高に清々しい気分よ！ありがとう！」' },
+                '狩人': { male: '「ふぅ......緊張が解けた。酒場に着いたら喉を潤すとしようぜ。」', female: '「私の矢が届いたわね。また新しい旅が楽しみだわ。」' },
+                'モンク': { male: '「心身が研ぎ澄まされる勝負であった。良き旅であったよ。」', female: '「皆さんの絆が、闇を打ち払いました......感謝します。」' },
+                'ビショップ': { male: '「天の裁きは下された。この地にも再び安寧が訪れるだろう。」', female: '「光の勝利です。この平穏が末永く続くことを祈りましょう。」' }
+            };
+            const jobPattern = patterns[char.job] || { male: '「終わったな。お疲れさん。」', female: '「終わったわね。お疲れ様。」' };
+            return jobPattern[char.gender] || jobPattern.male;
+        };
+
+        this.storyMessages = [
+            "迷宮の最深部...<br>『渦』が音もなく崩れ落ち、陽炎のように消えていく。",
+            "地上に戻ると、懐かしい酒場の灯りが見えた。",
+            "酒場にて...<br>死線を潜り抜けたパーティを、バーテンダーが温かく迎える。",
+            "バーテンダー<br>「あなたたちならやってくれると信じていました。これでしばらくはこの街も安泰です。」",
+            `${this.party[1].name}<br>${getVictory(this.party[1])}`,
+            `${this.party[2].name}<br>${getVictory(this.party[2])}`,
+            `${this.party[3].name}<br>${getVictory(this.party[3])}`,
+            `${this.party[0].name}<br>「......ああ。これで終わりなんだな。それぞれの道を行くというわけか。」`,
+            "バーテンダー<br>「一期一会、それが冒険者というものです。さあ、最後の乾杯を。街の平和に！」",
+            "こうして、一時の仲間たちはそれぞれの旅路へと戻っていった。<br>彼らの物語は、今も語り継がれている......"
+        ];
+        this.displayNextStory();
     }
 
     renderRanking() {
