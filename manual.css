@@ -1,0 +1,101 @@
+/* manual.css - Premium styling for the HTML game manual */
+
+/* Global Styles */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e, #0f0f1a);
+    color: #e0e0e0;
+    line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+    color: #ffffff;
+    margin-top: 1rem;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Section Card */
+.section-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Spoiler Button */
+.spoiler-btn {
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: #e0e0e0;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.spoiler-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.spoiler-btn[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* Details Panel */
+.details {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.4s ease;
+    margin-top: 0.5rem;
+}
+
+.details img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+}
+
+/* Grid for images */
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+/* Table for class/gender details */
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.info-table th,
+.info-table td {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.info-table th {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+}

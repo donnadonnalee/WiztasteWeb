@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ゲームマニュアル</title>
+    <link rel="stylesheet" href="manual.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="container">
+        <h1>ゲームマニュアル</h1>
+
+        <!-- Story -->
+        <section class="section-card">
+            <h2>ストーリー</h2>
+            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
+            <div class="details">
+                <p>深淵の渦が世界を脅かす中、勇敢な冒険者たちは「VORTEX: The Labyrinth of
+                    Souls」のダンジョンへ挑む。各階層で試練と謎を乗り越え、最深部の渦を討伐し、世界に平和を取り戻す壮大な旅路がここに始まる。</p>
+                <div class="image-grid">
+                    <img src="assets/intro.jpg" alt="Story Image" />
+                </div>
+            </div>
+        </section>
+
+        <!-- Start Screen -->
+        <section class="section-card">
+            <h2>スタート画面・キャラ抽選画面の操作方法</h2>
+            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
+            <div class="details">
+                <p>スタート画面の各ボタンやキャラ抽選の流れを説明します。</p>
+                <div class="image-grid">
+                    <img src="assets/floor.png" alt="Start Screen" />
+                    <img src="assets/face_戦士_male.jpeg" alt="Character Select" />
+                </div>
+            </div>
+        </section>
+
+        <!-- Classes & Gender -->
+        <section class="section-card">
+            <h2>職業・性別の内容・詳細</h2>
+            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
+            <div class="details">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>職業</th>
+                            <th>性別</th>
+                            <th>説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>戦士</td>
+                            <td>男性</td>
+                            <td>高い攻撃力と防御力。</td>
+                        </tr>
+                        <tr>
+                            <td>戦士</td>
+                            <td>女性</td>
+                            <td>同上、スキルが若干異なる。</td>
+                        </tr>
+                        <!-- 追加の職業・性別行 -->
+                    </tbody>
+                </table>
+                <div class="image-grid">
+                    <img src="assets/face_戦士_male.jpeg" alt="Warrior Male" />
+                    <img src="assets/face_戦士_female.jpeg" alt="Warrior Female" />
+                </div>
+            </div>
+        </section>
+
+        <!-- Game Systems -->
+        <section class="section-card">
+            <h2>ゲームシステム</h2>
+            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
+            <div class="details">
+                <ul>
+                    <li><strong>オートセーブ</strong>：一定時間ごとに自動保存。</li>
+                    <li><strong>キャンプ</strong>：休息・装備変更が可能。</li>
+                    <li><strong>カルマシステム</strong>：行動に応じてカルマが変化。</li>
+                    <li><strong>ランキングシステム</strong>：スコアやクリアタイムで順位付け。</li>
+                    <li><strong>宝箱システム</strong>：ランダムアイテム取得。</li>
+                    <li><strong>ダンジョンギミック</strong>：罠やパズル。</li>
+                </ul>
+                <div class="image-grid">
+                    <img src="assets/boss.png" alt="Auto Save" />
+                    <img src="assets/chest.png" alt="Camp" />
+                    <img src="assets/face_ビショップ_male.jpeg" alt="Karma" />
+                </div>
+            </div>
+        </section>
+
+        <!-- Events -->
+        <section class="section-card">
+            <h2>イベント</h2>
+            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
+            <div class="details">
+                <p>各フロアのイベント一覧をここに記載します。</p>
+                <ul>
+                    <li>フロア 1 – イベント名 – 簡易説明</li>
+                    <li>フロア 2 – イベント名 – 簡易説明</li>
+                    <!-- 追加のフロア -->
+                </ul>
+                <div class="image-grid">
+                    <img src="assets/event_1.png" alt="Floor 1 Event" />
+                    <img src="assets/event_2.png" alt="Floor 2 Event" />
+                </div>
+            </div>
+        </section>
+
+        <!-- Enemies -->
+        <section class="section-card">
+            <h2>敵紹介</h2>
+            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
+            <div class="details">
+                <ul>
+                    <li><strong>スライム</strong> – 弱いが数が多い。</li>
+                    <li><strong>ゴブリン</strong> – 素早く、単体攻撃が得意。</li>
+                    <!-- 追加の敵 -->
+                </ul>
+                <div class="image-grid">
+                    <img src="assets/monster_0.png" alt="Slime" />
+                    <img src="assets/monster_1.png" alt="Goblin" />
+                </div>
+            </div>
+        </section>
+
+    </div>
+    <script src="manual.js"></script>
+</body>
+
+</html>
