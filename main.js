@@ -376,10 +376,10 @@ class Game {
             this.party.forEach(p => {
                 if (p.hp <= 0) return;
                 if (type === 'HP') {
-                    if (isGain) p.hp = Math.min(p.maxHp, p.hp + amount);
+                    if (isGain) p.hp = Math.min(this.getEffectiveMaxHp(p), p.hp + amount);
                     else p.hp = Math.max(1, p.hp - amount);
                 } else {
-                    if (isGain) p.mp = Math.min(p.maxMp, p.mp + amount);
+                    if (isGain) p.mp = Math.min(this.getEffectiveMaxMp(p), p.mp + amount);
                     else p.mp = Math.max(0, p.mp - amount);
                 }
             });
@@ -596,7 +596,7 @@ class Game {
                     } else {
                         // Alive members HP becomes 1-9
                         p.hp = Math.floor(Math.random() * 9) + 1;
-                        p.mp = p.maxMp;
+                        p.mp = this.getEffectiveMaxMp(p);
                     }
                     p.deadLogged = false;
                 });
@@ -686,6 +686,9 @@ class Game {
         ['weapon', 'armor', 'accessory'].forEach(s => {
             if (p.equipment && p.equipment[s] && p.equipment[s].hp !== undefined) val += p.equipment[s].hp;
         });
+        // Also factor in VIT bonuses from equipment (each VIT point = 2 HP)
+        const vitBonus = this.getEffectiveStat(p, 'vit') - p.vit;
+        val += vitBonus * 2;
         return val;
     }
 
@@ -694,6 +697,9 @@ class Game {
         ['weapon', 'armor', 'accessory'].forEach(s => {
             if (p.equipment && p.equipment[s] && p.equipment[s].mp !== undefined) val += p.equipment[s].mp;
         });
+        // Also factor in INT bonuses from equipment (each INT point = 2 MP)
+        const intBonus = this.getEffectiveStat(p, 'int') - p.int;
+        val += intBonus * 2;
         return val;
     }
 

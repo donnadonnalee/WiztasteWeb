@@ -184,7 +184,7 @@ const Events = {
                 const elixir = {
                     name: '妖精の霊薬', type: 'consumable', infinite: true, targetAll: true, hpRestore: 50, desc: '何度でも使える全体回復薬',
                     effect: () => {
-                        game.party.forEach(mbr => { if (mbr.hp > 0) mbr.hp = Math.min(mbr.maxHp, mbr.hp + 50); });
+                        game.party.forEach(mbr => { if (mbr.hp > 0) mbr.hp = Math.min(game.getEffectiveMaxHp(mbr), mbr.hp + 50); });
                         UI.addLog(`妖精の霊薬を使った！全員のHPが50回復！`);
                     }
                 };
@@ -480,10 +480,10 @@ const Events = {
         };
 
         let expert = game.party[0];
-        let maxVal = getEffective(expert, 'luk') + getEffective(expert, 'agi');
+        let maxVal = game.getEffectiveStat(expert, 'luk') + game.getEffectiveStat(expert, 'agi');
         game.party.forEach(p => {
             if (p.hp > 0) {
-                const val = getEffective(p, 'luk') + getEffective(p, 'agi');
+                const val = game.getEffectiveStat(p, 'luk') + game.getEffectiveStat(p, 'agi');
                 if (val > maxVal) { expert = p; maxVal = val; }
             }
         });
@@ -514,8 +514,8 @@ const Events = {
             case 'alarm': UI.addLog("警報だ！周囲の魔物が集まってきた！"); game.startBattle(true); return; // Don't exit battle
             case 'teleport': UI.addLog("テレポーターが作動した！"); game.teleport(); break;
             case 'drain': UI.addLog("ドレインの罠だ！"); game.party.forEach(p => { if (p.level > 1) p.level--; }); break;
-            case 'bomb': UI.addLog("爆弾が爆発した！"); game.party.forEach(p => p.hp = Math.max(1, p.hp - Math.floor(p.maxHp * 0.3))); break;
-            case 'curse': UI.addLog("呪いの霧だ！"); game.party.forEach(p => p.mp = Math.max(0, p.mp - Math.floor(p.maxMp * 0.5))); break;
+            case 'bomb': UI.addLog("爆弾が爆発した！"); game.party.forEach(p => p.hp = Math.max(1, p.hp - Math.floor(game.getEffectiveMaxHp(p) * 0.3))); break;
+            case 'curse': UI.addLog("呪いの霧だ！"); game.party.forEach(p => p.mp = Math.max(0, p.mp - Math.floor(game.getEffectiveMaxMp(p) * 0.5))); break;
         }
         game.exitBattle(); // Ensure BGM and UI reset
         game.saveGame();
