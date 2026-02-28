@@ -475,5 +475,16 @@ const UI = {
         overlay.classList.add('fade-out');
         await new Promise(r => setTimeout(r, 1000));
         overlay.style.display = 'none';
+    },
+    // Flash the screen with a color overlay
+    flashScreen: function (color) {
+        const overlay = document.createElement('div');
+        overlay.className = 'screen-flash';
+        overlay.style.backgroundColor = color || 'rgba(255,255,255,0.5)';
+        document.body.appendChild(overlay);
+        // Remove after animation duration (0.4s)
+        setTimeout(() => {
+            overlay.remove();
+        }, 400);
     }
 };

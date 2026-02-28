@@ -90,6 +90,8 @@ const Battle = {
         if (job === '戦士') {
             if (actor.hp > 5) {
                 actor.hp -= 5;
+                audio.playSE('se_heavy_attack');
+                UI.flashScreen('rgba(255,0,0,0.5)');
                 const mult = (actor.skillMultiplier || 1.0);
                 const wpnAtk = (actor.equipment.weapon?.atk || 0) + (actor.equipment.accessory?.atk || 0);
                 const dmg = Math.floor(((actor.str + wpnAtk) + Math.random() * 5) * 1.5 * mult);
@@ -100,6 +102,8 @@ const Battle = {
         } else if (job === '武闘家') {
             if (actor.hp > 4) {
                 actor.hp -= 4;
+                audio.playSE('se_attack');
+                UI.flashScreen('rgba(255,255,255,0.4)');
                 const mult = (actor.skillMultiplier || 1.0);
                 const dmg = Math.floor((actor.str * 1.5 + actor.agi * 0.5) * mult);
                 monster.currentHp -= dmg;
@@ -109,6 +113,8 @@ const Battle = {
         } else if (job === '盗賊') {
             if (actor.mp >= 3) {
                 actor.mp -= 3;
+                audio.playSE('se_attack');
+                UI.flashScreen('rgba(150,0,255,0.4)');
                 const mult = (actor.skillMultiplier || 1.0);
                 const dmg = Math.floor((actor.agi * 1.8 + Math.random() * 5) * mult);
                 monster.currentHp -= dmg;
@@ -118,6 +124,8 @@ const Battle = {
         } else if (job === '僧侶') {
             if (actor.mp >= 4) {
                 actor.mp -= 4;
+                audio.playSE('se_heal');
+                UI.flashScreen('rgba(200,255,200,0.5)');
                 let target = actor;
                 let minHpPct = target.hp / target.maxHp;
                 game.party.forEach(p => { if (p.hp > 0 && (p.hp / p.maxHp) < minHpPct) { target = p; minHpPct = p.hp / p.maxHp; } });
@@ -130,6 +138,8 @@ const Battle = {
         } else if (job === '魔術師') {
             if (actor.mp >= 5) {
                 actor.mp -= 5;
+                audio.playSE('se_fire');
+                UI.flashScreen('rgba(255,100,0,0.5)');
                 UI.addLog(`${actor.name}のファイヤーボール！(MP-5) 全体に炎が襲う！`);
                 const mult = (actor.skillMultiplier || 1.0);
                 aliveMonsters.forEach(m => {
@@ -142,6 +152,8 @@ const Battle = {
         } else if (job === '侍') {
             if (actor.mp >= 4) {
                 actor.mp -= 4;
+                audio.playSE('se_heavy_attack');
+                UI.flashScreen('rgba(255,255,255,0.5)');
                 const mult = (actor.skillMultiplier || 1.0);
                 const wpnAtk = (actor.equipment.weapon?.atk || 0) + (actor.equipment.accessory?.atk || 0);
                 const dmg1 = Math.floor(((actor.str + wpnAtk) * 0.8 + Math.random() * 3) * mult);
@@ -153,6 +165,8 @@ const Battle = {
         } else if (job === '狩人') {
             if (actor.mp >= 3) {
                 actor.mp -= 3;
+                audio.playSE('se_arrow');
+                UI.flashScreen('rgba(255,255,255,0.4)');
                 const mult = (actor.skillMultiplier || 1.0);
                 const dmg = Math.floor((actor.str + actor.agi * 1.2) * mult);
                 monster.currentHp -= dmg;
@@ -162,6 +176,8 @@ const Battle = {
         } else if (job === 'モンク') {
             if (actor.mp >= 4) {
                 actor.mp -= 4;
+                audio.playSE('se_heal');
+                UI.flashScreen('rgba(200,255,200,0.4)');
                 let target = actor;
                 let minHpPct = target.hp / target.maxHp;
                 game.party.forEach(p => { if (p.hp > 0 && (p.hp / p.maxHp) < minHpPct) { target = p; minHpPct = p.hp / p.maxHp; } });
@@ -179,6 +195,8 @@ const Battle = {
         } else if (job === 'ビショップ') {
             if (actor.mp >= 8) {
                 actor.mp -= 8;
+                audio.playSE('se_magic');
+                UI.flashScreen('rgba(255,255,255,0.7)');
                 let target = actor;
                 let minHpPct = target.hp / target.maxHp;
                 game.party.forEach(p => { if (p.hp > 0 && (p.hp / p.maxHp) < minHpPct) { target = p; minHpPct = p.hp / p.maxHp; } });
@@ -200,6 +218,8 @@ const Battle = {
     handleEnemyAction: function (game, actor, aliveParty) {
         const skill = game.currentBattle.isBoss ? ENEMY_SKILLS['boss'] : ENEMY_SKILLS[actor.imgIndex];
         if (skill && Math.random() < skill.chance) {
+            if (skill.se) audio.playSE(skill.se);
+            if (skill.flashColor) UI.flashScreen(skill.flashColor);
             UI.addLog(`${actor.name}の${skill.name}！`);
             if (skill.desc) UI.addLog(skill.desc);
             const target = aliveParty[Math.floor(Math.random() * aliveParty.length)];

@@ -158,25 +158,25 @@ _generatedMonsters.forEach((m, idx) => {
 });
 
 const ENEMY_SKILLS = {
-    0: { name: '分裂', chance: 0.5, type: 'summon', desc: '体が二つに分かれた！' },
-    1: { name: '吸血', chance: 0.4, type: 'drain', desc: '鋭い牙で噛みついた！', mult: 1.2 },
-    2: { name: '粘着糸', chance: 0.3, type: 'attack', desc: '粘着質な糸を吐き出した！', mult: 1.5 },
-    3: { name: '毒牙', chance: 0.4, type: 'pierce', desc: '毒の牙が深く突き刺さる！', mult: 1.5 },
-    4: { name: '仲間を呼ぶ', chance: 0.3, type: 'summon', desc: '仲間を呼び寄せた！' },
-    5: { name: '骨投げ', chance: 0.4, type: 'attack', desc: '自身の骨を投げつけてきた！', mult: 1.8 },
-    6: { name: 'エナジードレイン', chance: 0.4, type: 'drain', desc: '生命力を吸い取られた！', mult: 1.5 },
-    7: { name: '痛恨の一撃', chance: 0.3, type: 'attack', desc: '渾身の一撃が叩き込まれた！', mult: 2.5 },
-    8: { name: '暗黒の炎', chance: 0.3, type: 'aoe', desc: '禍々しい炎が周囲を焼き尽くす！', mult: 0.7 },
-    9: { name: '炎', chance: 0.4, type: 'aoe', desc: '灼熱の炎を吐き出した！', mult: 0.6 },
-    10: { name: '腐食液', chance: 0.4, type: 'pierce', desc: '腐食性の液体を浴びせかけてきた！', mult: 1.5 },
-    11: { name: 'ファイヤーボール', chance: 0.5, type: 'attack', desc: '巨大な火球を放った！', mult: 2.0 },
-    12: { name: '吸血', chance: 0.4, type: 'drain', desc: '闇の中から牙を突き立てた！', mult: 1.4 },
-    13: { name: 'メテオ', chance: 0.2, type: 'aoe', desc: '宇宙から隕石が降り注ぐ！', mult: 2.0 },
-    14: { name: '暴走', chance: 0.5, type: 'attack', desc: '激しく暴れ狂った！', mult: 2.5 },
-    15: { name: '呪い', chance: 0.2, type: 'drain', desc: '呪いを放った！', mult: 1.4 },
-    16: { name: '痛恨の一撃', chance: 0.2, type: 'attack', desc: '渾身の一撃が叩き込まれた！', mult: 2.5 },
-    17: { name: '宣告', chance: 0.1, type: 'attack', desc: '死を宣告した！', mult: 3.4 },
-    'boss': { name: '絶望の波動', chance: 0.1, type: 'aoe', desc: '周囲の空気が重く震える...', mult: 2.0 }
+    0: { name: '分裂', chance: 0.5, type: 'summon', desc: '体が二つに分かれた！', se: 'se_summoned', flashColor: 'rgba(255,255,255,0.5)' },
+    1: { name: '吸血', chance: 0.4, type: 'drain', desc: '鋭い牙で噛みついた！', mult: 1.2, se: 'se_drain', flashColor: 'rgba(255,0,0,0.4)' },
+    2: { name: '粘着糸', chance: 0.3, type: 'attack', desc: '粘着質な糸を吐き出した！', mult: 1.5, se: 'se_attack', flashColor: 'rgba(255,255,255,0.3)' },
+    3: { name: '毒牙', chance: 0.4, type: 'pierce', desc: '毒の牙が深く突き刺さる！', mult: 1.5, se: 'se_attack', flashColor: 'rgba(200,255,100,0.4)' },
+    4: { name: '仲間を呼ぶ', chance: 0.3, type: 'summon', desc: '仲間を呼び寄せた！', se: 'se_summoned', flashColor: 'rgba(255,255,255,0.5)' },
+    5: { name: '骨投げ', chance: 0.4, type: 'attack', desc: '自身の骨を投げつけてきた！', mult: 1.8, se: 'se_heavy_attack', flashColor: 'rgba(255,255,255,0.4)' },
+    6: { name: 'エナジードレイン', chance: 0.4, type: 'drain', desc: '生命力を吸い取られた！', mult: 1.5, se: 'se_drain', flashColor: 'rgba(150,0,255,0.4)' },
+    7: { name: '痛恨の一撃', chance: 0.3, type: 'attack', desc: '渾身の一撃が叩き込まれた！', mult: 2.5, se: 'se_heavy_attack', flashColor: 'rgba(255,0,0,0.6)' },
+    8: { name: '暗黒の炎', chance: 0.3, type: 'aoe', desc: '禍々しい炎が周囲を焼き尽くす！', mult: 0.7, se: 'se_fire', flashColor: 'rgba(100,0,100,0.5)' },
+    9: { name: '炎', chance: 0.4, type: 'aoe', desc: '灼熱の炎を吐き出した！', mult: 0.6, se: 'se_fire', flashColor: 'rgba(255,100,0,0.5)' },
+    10: { name: '腐食液', chance: 0.4, type: 'pierce', desc: '腐食性の液体を浴びせかけてきた！', mult: 1.5, se: 'se_magic', flashColor: 'rgba(100,255,100,0.4)' },
+    11: { name: 'ファイヤーボール', chance: 0.5, type: 'attack', desc: '巨大な火球を放った！', mult: 2.0, se: 'se_fire', flashColor: 'rgba(255,50,0,0.6)' },
+    12: { name: '吸血', chance: 0.4, type: 'drain', desc: '闇の中から牙を突き立てた！', mult: 1.4, se: 'se_drain', flashColor: 'rgba(200,0,0,0.5)' },
+    13: { name: 'メテオ', chance: 0.2, type: 'aoe', desc: '宇宙から隕石が降り注ぐ！', mult: 2.0, se: 'se_heavy_attack', flashColor: 'rgba(255,150,0,0.7)' },
+    14: { name: '暴走', chance: 0.5, type: 'attack', desc: '激しく暴れ狂った！', mult: 2.5, se: 'se_heavy_attack', flashColor: 'rgba(255,255,255,0.6)' },
+    15: { name: '呪い', chance: 0.2, type: 'drain', desc: '呪いを放った！', mult: 1.4, se: 'se_magic', flashColor: 'rgba(150,0,255,0.5)' },
+    16: { name: '痛恨の一撃', chance: 0.2, type: 'attack', desc: '渾身の一撃が叩き込まれた！', mult: 2.5, se: 'se_heavy_attack', flashColor: 'rgba(255,0,0,0.6)' },
+    17: { name: '宣告', chance: 0.1, type: 'attack', desc: '死を宣告した！', mult: 3.4, se: 'se_magic', flashColor: 'rgba(0,0,0,0.8)' },
+    'boss': { name: '絶望の波動', chance: 0.1, type: 'aoe', desc: '周囲の空気が重く震える...', mult: 2.0, se: 'se_heavy_attack', flashColor: 'rgba(255,255,255,0.8)' }
 };
 
 function generateMaze(size, depth = 0) {
