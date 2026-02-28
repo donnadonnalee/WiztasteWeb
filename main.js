@@ -261,8 +261,7 @@ class Game {
         if (this.storyIndex >= this.storyMessages.length) {
             if (this.state === 'EPILOGUE') {
                 document.getElementById('story-screen').style.display = 'none';
-                document.getElementById('ending-screen').style.display = 'flex';
-                this.renderRanking();
+                this.showFinalRanking();
             } else {
                 this.startGame();
             }
@@ -658,10 +657,74 @@ class Game {
         this.displayNextStory();
     }
 
-    renderRanking() {
-        // Simple ranking placeholder
-        const list = document.getElementById('ranking-list');
-        if (list) list.innerHTML = `<li>1st: ${this.party[0].name} (Karma: ${this.karma})</li>`;
+    showFinalRanking() {
+        const elapsed = Math.floor(this.clearTime / 1000);
+        const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+        const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+        const s = String(elapsed % 60).padStart(2, '0');
+        const timeStr = `${h}:${m}:${s}`;
+
+        document.getElementById('clear-time-display').textContent = timeStr;
+        document.getElementById('ending-screen').style.display = 'flex';
+
+        const btn = document.getElementById('btn-submit-score');
+        btn.onclick = () => {
+            const nameInput = document.getElementById('player-name-input');
+            const name = nameInput.value.trim() || '名無し';
+            btn.disabled = true;
+            btn.textContent = '送信中...';
+
+            if (window.firebaseInitialized) {
+                const dbRankRef = window.firebaseRef('rankings');
+                window.firebasePush(dbRankRef, {
+                    name: name,
+                    time: this.clearTime,
+                    timeStr: timeStr,
+                    karma: this.karma,
+                    timestamp: JSON.parse(JSON.stringify(new Date())) // Alternative to ServerValue if needed, but compat push usually works
+                }).then(() => {
+                    btn.textContent = '登録完了！';
+                }).catch(e => {
+                    btn.textContent = 'エラー発生';
+                    console.error(e);
+                });
+            } else {
+                btn.textContent = 'オフライン';
+            }
+        };
+
+        this.loadRankings();
+    }
+
+    loadRankings() {
+        if (!window.firebaseInitialized) return;
+        const dbRankRef = window.firebaseRef('rankings');
+        const q = window.firebaseQuery(window.firebaseLimitToFirst(window.firebaseOrderByChild(dbRankRef, 'time'), 10));
+
+        window.firebaseOnValue(q, (snapshot) => {
+            let html = '';
+            let rank = 1;
+            const rankings = [];
+            snapshot.forEach((childSnapshot) => {
+                rankings.push(childSnapshot.val());
+            });
+
+            // Firebase returns in ascending order by default if using orderByChild('time')
+            rankings.forEach((data) => {
+                const safeName = typeof data.name === 'string' ?
+                    data.name.replace(/[&<>'"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[m])) : '名無し';
+                const safeTime = typeof data.timeStr === 'string' ?
+                    data.timeStr.replace(/[&<>'"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[m])) : '';
+                const karmaStr = data.karma !== undefined ? `<span style="color:#aaf; font-size:12px; margin-left:10px;">[カルマ: ${parseInt(data.karma, 10)}]</span>` : '';
+
+                html += `<div class="rank-item" style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #333;">
+                            <span>${rank}. ${safeName}${karmaStr}</span>
+                            <span style="color:#ffcc00;">${safeTime}</span>
+                         </div>`;
+                rank++;
+            });
+            document.getElementById('ranking-container').innerHTML = html || 'まだ記録がありません。';
+        });
     }
 
     closeEvent() {
