@@ -392,44 +392,51 @@ canvas#view-canvas {
         max-height: none;
         grid-template-areas: "view" "status" "log" "controls";
         grid-template-columns: 1fr;
-        grid-template-rows: minmax(250px, 50vh) minmax(140px, auto) minmax(60px, 120px) auto;
+        grid-template-rows: 1fr auto minmax(50px, 10vh) auto;
     }
 
     #status-area {
         flex-direction: row;
         justify-content: space-between;
-        align-items: stretch;
+        align-items: flex-start;
+        /* Align both party-list and minimap to top */
         overflow: hidden;
-        height: 180px;
-        /* Adjust height based on character card content */
         background: rgba(10, 10, 10, 0.95);
+        padding: 5px 10px;
     }
 
     #party-list {
         flex: 0 0 220px;
-        /* Keep compact and non-stretched */
         margin-right: 10px;
         margin-bottom: 0px;
         overflow-y: auto;
         overflow-x: hidden;
     }
 
+    .party-member {
+        padding: 4px 8px;
+        /* Slightly tighter for better vertical fit */
+        margin-bottom: 2px;
+    }
+
     #minimap-container {
         flex: 1;
-        /* Expand horizontally to fill remaining space */
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
+        /* Move minimap gravity to top */
         background: #000;
         border: 1px solid var(--text-color);
         min-width: 0;
+        height: 100%;
+        /* Fill the auto-height container */
     }
 
     #minimap-canvas {
         width: auto !important;
-        height: 100% !important;
-        /* Scale vertically to fill container height */
+        height: auto !important;
         max-width: 100%;
+        max-height: 100%;
         aspect-ratio: 1;
         border: none;
     }
