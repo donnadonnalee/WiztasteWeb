@@ -487,5 +487,20 @@ const UI = {
         setTimeout(() => {
             overlay.remove();
         }, 400);
+    },
+
+    openManual: function () {
+        const overlay = document.getElementById('manual-overlay');
+        if (overlay) {
+            overlay.style.display = 'flex';
+            this.addLog("マニュアルを開きました。");
+        }
+    },
+
+    closeManual: function () {
+        const overlay = document.getElementById('manual-overlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
     }
 };

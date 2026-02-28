@@ -4,71 +4,44 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ゲームマニュアル</title>
+    <title>VORTEX: Manual</title>
     <link rel="stylesheet" href="manual.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yuji+Mai&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div class="container">
-        <h1>ゲームマニュアル</h1>
+        <h1>VORTEX -深淵の淵-</h1>
 
         <!-- Story -->
         <section class="section-card">
-            <h2>ストーリー</h2>
-            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
+            <h2>物語の断片：深淵の渦</h2>
+            <button class="spoiler-btn" aria-expanded="false">「序章：酒場、あるいは絶望の端で」</button>
             <div class="details">
-                <p>深淵の渦が世界を脅かす中、勇敢な冒険者たちは「VORTEX: The Labyrinth of
-                    Souls」のダンジョンへ挑む。各階層で試練と謎を乗り越え、最深部の渦を討伐し、世界に平和を取り戻す壮大な旅路がここに始まる。</p>
+                <div class="story-box">
+                    <p>石造りの酒場には、煤けた脂火の臭いと冒険者たちの重苦しい沈黙が充満していた。外では、迷宮の奥底から噴き出す瘴気が夜を蝕んでいる。街の家畜は相次いで倒れ、子供たちは原因不明の熱に浮かされ、かつて豊かだった土地は緩やかな死へと向かっていた。
+                    </p>
+
+                    <p>「……また現れたらしいですね。あの『渦』が」</p>
+
+                    <p>バーテンダーの擦れた声が、薪の爆ぜる音を切り裂く。彼の視線の先、カウンターに座る者たちの背中には、隠しきれない疲弊と、それ以上に深い「渇き」が張り付いていた。迷宮――それはかつては栄華の跡であり、今は魂を喰らう「VORTEX」の苗床。最深部に鎮座する「渦」を討たない限り、この世界に明日は訪れない。
+                    </p>
+
+                    <p>「ふん、またあの『渦』か。……この店には腕利きが集まっているようだな」</p>
+
+                    <p>一人の探索者が立ち上がる。その眼光は、絶望の淵にありながらも、まだ折れぬ意志を宿していた。<br>
+                        「誰か、私と共に『渦』を止めるために立ち上がる者はいないか？」</p>
+
+                    <p>椅子を引く軋み音が、連鎖的に響き渡る。ある者は金のため、ある者は過去を清算するため、またある者は純粋なる光の導きを信じて。境遇も信仰も異なる四人の魂が、今、薄暗い酒場の隅で交差した。</p>
+
+                    <p>彼らが踏み出すのは、生者が立ち入ることを許されぬ「魂の迷宮（The Labyrinth of Souls）」。<br>
+                        暗闇の先で待ち受けるのは、試練か、謎か、それとも救いなき終焉か。<br>
+                        深淵なる渦を巡る、死と再生の旅路が今、幕を開ける――。</p>
+                </div>
                 <div class="image-grid">
                     <img src="assets/intro.jpg" alt="Story Image" />
-                </div>
-            </div>
-        </section>
-
-        <!-- Start Screen -->
-        <section class="section-card">
-            <h2>スタート画面・キャラ抽選画面の操作方法</h2>
-            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
-            <div class="details">
-                <p>スタート画面の各ボタンやキャラ抽選の流れを説明します。</p>
-                <div class="image-grid">
-                    <img src="assets/floor.png" alt="Start Screen" />
-                    <img src="assets/face_戦士_male.jpeg" alt="Character Select" />
-                </div>
-            </div>
-        </section>
-
-        <!-- Classes & Gender -->
-        <section class="section-card">
-            <h2>職業・性別の内容・詳細</h2>
-            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
-            <div class="details">
-                <table class="info-table">
-                    <thead>
-                        <tr>
-                            <th>職業</th>
-                            <th>性別</th>
-                            <th>説明</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>戦士</td>
-                            <td>男性</td>
-                            <td>高い攻撃力と防御力。</td>
-                        </tr>
-                        <tr>
-                            <td>戦士</td>
-                            <td>女性</td>
-                            <td>同上、スキルが若干異なる。</td>
-                        </tr>
-                        <!-- 追加の職業・性別行 -->
-                    </tbody>
-                </table>
-                <div class="image-grid">
-                    <img src="assets/face_戦士_male.jpeg" alt="Warrior Male" />
-                    <img src="assets/face_戦士_female.jpeg" alt="Warrior Female" />
                 </div>
             </div>
         </section>
@@ -76,55 +49,1054 @@
         <!-- Game Systems -->
         <section class="section-card">
             <h2>ゲームシステム</h2>
-            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
+            <button class="spoiler-btn" aria-expanded="false">「システム・操作解説（詳細）」</button>
             <div class="details">
-                <ul>
-                    <li><strong>オートセーブ</strong>：一定時間ごとに自動保存。</li>
-                    <li><strong>キャンプ</strong>：休息・装備変更が可能。</li>
-                    <li><strong>カルマシステム</strong>：行動に応じてカルマが変化。</li>
-                    <li><strong>ランキングシステム</strong>：スコアやクリアタイムで順位付け。</li>
-                    <li><strong>宝箱システム</strong>：ランダムアイテム取得。</li>
-                    <li><strong>ダンジョンギミック</strong>：罠やパズル。</li>
-                </ul>
-                <div class="image-grid">
-                    <img src="assets/boss.png" alt="Auto Save" />
-                    <img src="assets/chest.png" alt="Camp" />
-                    <img src="assets/face_ビショップ_male.jpeg" alt="Karma" />
+                <div class="system-grid">
+                    <!-- Party Creation -->
+                    <div class="system-box">
+                        <h3>キャラクター抽選とボーナス</h3>
+                        <p>冒険の始まりは、酒場に集まった4人の志願者を選ぶことから始まります。満足のいくステータスや職業が出るまで、何度でも<strong>「再抽選（Rキー）」</strong>が可能です。
+                        </p>
+                        <p><span class="reward-item">重要：</span>
+                            各キャラクターのステータス横にある「+」ボタンでボーナスポイントを割り振れます。VITは最大HP、INTは最大MPに直結し、各ステータスは装備可能条件にも関係するため、バランスを考えて慎重に割り当てましょう。
+                        </p>
+                    </div>
+
+                    <!-- Dungeon -->
+                    <div class="system-box">
+                        <h3>3Dダンジョン探索</h3>
+                        <p>名作ウィザードリィを彷彿とさせる、主観視点での探索です。マップは挑戦のたびにその姿を変え、壁の奥には<strong>「隠し扉」</strong>が潜んでいることもあります。</p>
+                        <ul>
+                            <li><strong>テレポーター</strong>：迷宮内の別の場所へランダムに転送されます。</li>
+                            <li><strong>回転床</strong>：一歩踏み出すと向きが強制的に変えられます。</li>
+                        </ul>
+                    </div>
+
+                    <!-- Battle -->
+                    <div class="system-box">
+                        <h3>戦略的なコマンド戦闘</h3>
+                        <p>敵と遭遇するとコマンド選択式の戦闘になります。各職業には固有のスキルがあり、HPやMPを消費して強力な一撃や支援を繰り出すことができます。</p>
+                    </div>
+
+                    <!-- Gear & Camp -->
+                    <div class="system-box">
+                        <h3>キャンプと装備の掟</h3>
+                        <p>「Cキー」でキャンプを開き、アイテムの使用や装備の変更が行えます。装備品には<strong>「必要ステータス」</strong>が設定されており、これを満たさないと真価を発揮できません。
+                        </p>
+                        <p><small>※初期のボーナス割り振りが、将来強力な武具を扱えるかどうかの鍵を握ります。</small></p>
+                    </div>
+
+                    <!-- Karma -->
+                    <div class="system-box">
+                        <h3>カルマシステム</h3>
+                        <p>迷宮内でのあなたの決断は、その魂の在り方（カルマ）を規定します。カルマの値によって、以下の恩恵と代償が生まれます。</p>
+                        <div class="karma-grid">
+                            <div class="karma-card light">
+                                <div class="karma-title">善のカルマ（正の値）</div>
+                                <p>聖なる加護により、歩数に応じて<strong>HPが自動回復</strong>しやすくなります。引き換えに、わずかなMPを消費します。</p>
+                            </div>
+                            <div class="karma-card dark">
+                                <div class="karma-title">悪のカルマ（負の値）</div>
+                                <p>闇の魔力と同調し、歩数に応じて<strong>MPが自動回復</strong>しやすくなります。引き換えに、わずかなHPを消費します。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save & Ranking -->
+                    <div class="system-box">
+                        <h3>記録と死のペナルティ</h3>
+                        <p>戦闘終了後などに<strong>オートセーブ</strong>が行われます。全滅すると「死のペナルティ」としてクリアタイム（探索時間）が大幅に加算され、スタート地点に送られます。</p>
+                        <p>無事に「渦」を討伐できれば、その誇り高き記録をランキングボードに刻むことができます。</p>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="system-box">
+                        <h3>操作方法</h3>
+                        <div class="control-grid">
+                            <div class="control-item"><span class="control-key">W / ↑</span> 前進</div>
+                            <div class="control-item"><span class="control-key">S / ↓</span> 後退</div>
+                            <div class="control-item"><span class="control-key">A / ←</span> 左を向く</div>
+                            <div class="control-item"><span class="control-key">D / →</span> 右を向く</div>
+                            <div class="control-item"><span class="control-key">C</span> キャンプを開く</div>
+                            <div class="control-item"><span class="control-key">Enter</span> 決定 / 開始</div>
+                            <div class="control-item"><span class="control-key">R</span> メンバー再抽選</div>
+                        </div>
+                        <div style="margin-top: 1rem; font-size: 0.9rem; color: #aaa;">
+                            <strong>戦闘ショートカット:</strong><br>
+                            A: 攻撃 / S: スキル / D: 防御 / F: 逃げる
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Events -->
+        <!-- Classes & Gender -->
         <section class="section-card">
-            <h2>イベント</h2>
-            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
+            <h2>職業・性別の詳細</h2>
+            <button class="spoiler-btn" aria-expanded="false">「職業プロファイル（全9種）」</button>
             <div class="details">
-                <p>各フロアのイベント一覧をここに記載します。</p>
-                <ul>
-                    <li>フロア 1 – イベント名 – 簡易説明</li>
-                    <li>フロア 2 – イベント名 – 簡易説明</li>
-                    <!-- 追加のフロア -->
-                </ul>
-                <div class="image-grid">
-                    <img src="assets/event_1.png" alt="Floor 1 Event" />
-                    <img src="assets/event_2.png" alt="Floor 2 Event" />
+                <div class="character-gallery">
+
+                    <!-- Warrior -->
+                    <div class="class-section">
+                        <div class="class-header">
+                            <h3>戦士 <span style="font-size: 1rem; color: #888;">- Warrior -</span></h3>
+                        </div>
+                        <p class="class-description">高いHPと防御力を誇る前衛の要。最前線でパーティの盾となり、強力な武具を使いこなします。</p>
+                        <div class="gender-cards">
+                            <div class="gender-card">
+                                <img src="assets/face_戦士_male.jpeg" alt="Warrior Male" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">男性 / MALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">全力振り</span>
+                                        <p class="skill-desc">大ダメージを与える強力な一撃。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gender-card">
+                                <img src="assets/face_戦士_female.jpeg" alt="Warrior Female" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">全力振り</span>
+                                        <p class="skill-desc">大ダメージを与える強力な一撃。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thief -->
+                    <div class="class-section">
+                        <div class="class-header">
+                            <h3>盗賊 <span style="font-size: 1rem; color: #888;">- Thief -</span></h3>
+                        </div>
+                        <p class="class-description">素早さと運が高く、宝箱の扱いに長けている。不意打ちによって戦況を有利に進めます。</p>
+                        <div class="gender-cards">
+                            <div class="gender-card">
+                                <img src="assets/face_盗賊_male.jpeg" alt="Thief Male" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">男性 / MALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">不意打ち</span>
+                                        <p class="skill-desc">素早さを活かした奇襲攻撃。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gender-card">
+                                <img src="assets/face_盗賊_female.jpeg" alt="Thief Female" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">不意打ち</span>
+                                        <p class="skill-desc">素早さを活かした奇襲攻撃。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cleric -->
+                    <div class="class-section">
+                        <div class="class-header">
+                            <h3>僧侶 <span style="font-size: 1rem; color: #888;">- Cleric -</span></h3>
+                        </div>
+                        <p class="class-description">神聖な魔法でパーティの傷を癒やす。アンデッドを退ける浄化の力も持っています。</p>
+                        <div class="gender-cards">
+                            <div class="gender-card">
+                                <img src="assets/face_僧侶_male.jpeg" alt="Cleric Male" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">男性 / MALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">ヒール</span>
+                                        <p class="skill-desc">味方一人のHPを大きく回復する。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gender-card">
+                                <img src="assets/face_僧侶_female.jpeg" alt="Cleric Female" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">ヒール</span>
+                                        <p class="skill-desc">味方一人のHPを大きく回復する。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mage -->
+                    <div class="class-section">
+                        <div class="class-header">
+                            <h3>魔術師 <span style="font-size: 1rem; color: #888;">- Mage -</span></h3>
+                        </div>
+                        <p class="class-description">強力な魔術を操り、敵軍を一掃する。防御は脆いが、一撃の破壊力は随一。</p>
+                        <div class="gender-cards">
+                            <div class="gender-card">
+                                <img src="assets/face_魔術師_male.jpeg" alt="Mage Male" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">男性 / MALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">ファイヤーボール</span>
+                                        <p class="skill-desc">敵全体に魔法ダメージを与える。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gender-card">
+                                <img src="assets/face_魔術師_female.jpeg" alt="Mage Female" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">ファイヤーボール</span>
+                                        <p class="skill-desc">敵全体に魔法ダメージを与える。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Samurai -->
+                    <div class="class-section">
+                        <div class="class-header">
+                            <h3>侍 <span style="font-size: 1rem; color: #888;">- Samurai -</span></h3>
+                        </div>
+                        <p class="class-description">刀を極め、強力な連撃を放つ。攻守のバランスが良く、独自の剣技で敵を切り裂きます。</p>
+                        <div class="gender-cards">
+                            <div class="gender-card">
+                                <img src="assets/face_侍_male.jpeg" alt="Samurai Male" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">男性 / MALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">燕返し</span>
+                                        <p class="skill-desc">二回連続でダメージを与える。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gender-card">
+                                <img src="assets/face_侍_female.jpeg" alt="Samurai Female" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">燕返し</span>
+                                        <p class="skill-desc">二回連続でダメージを与える。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Martial Artist -->
+                    <div class="class-section">
+                        <div class="class-header">
+                            <h3>武闘家 <span style="font-size: 1rem; color: #888;">- Martial Artist -</span></h3>
+                        </div>
+                        <p class="class-description">強靭な肉体を持ち、防御無視の熱波を放つ。素手や爪による攻撃は、堅い敵にも有効です。</p>
+                        <div class="gender-cards">
+                            <div class="gender-card">
+                                <img src="assets/face_武闘家_male.jpeg" alt="Martial Artist Male"
+                                    class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">男性 / MALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">気功波</span>
+                                        <p class="skill-desc">敵の防御を無視してダメージを与える。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gender-card">
+                                <img src="assets/face_武闘家_female.jpeg" alt="Martial Artist Female"
+                                    class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">気功波</span>
+                                        <p class="skill-desc">敵の防御を無視してダメージを与える。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Archer -->
+                    <div class="class-section">
+                        <div class="class-header">
+                            <h3>狩人 <span style="font-size: 1rem; color: #888;">- Archer -</span></h3>
+                        </div>
+                        <p class="class-description">弓矢の達人。狙いすました一撃で敵を射抜く。高い命中率と回避率を誇ります。</p>
+                        <div class="gender-cards">
+                            <div class="gender-card">
+                                <img src="assets/face_狩人_male.jpeg" alt="Archer Male" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">男性 / MALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">狙い撃ち</span>
+                                        <p class="skill-desc">急所を突く高威力の射撃。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gender-card">
+                                <img src="assets/face_狩人_female.jpeg" alt="Archer Female" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">狙い撃ち</span>
+                                        <p class="skill-desc">急所を突く高威力の射撃。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monk -->
+                    <div class="class-section">
+                        <div class="class-header">
+                            <h3>モンク <span style="font-size: 1rem; color: #888;">- Monk -</span></h3>
+                        </div>
+                        <p class="class-description">回復と攻撃を両立し、粘り強く戦う。自身の精神を高め、戦況に合わせて自在に動けます。</p>
+                        <div class="gender-cards">
+                            <div class="gender-card">
+                                <img src="assets/face_モンク_male.jpeg" alt="Monk Male" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">男性 / MALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">精神統一</span>
+                                        <p class="skill-desc">味方を回復しつつ、敵へ追撃を行う。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gender-card">
+                                <img src="assets/face_モンク_female.jpeg" alt="Monk Female" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">精神統一</span>
+                                        <p class="skill-desc">味方を回復しつつ、敵へ追撃を行う。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bishop -->
+                    <div class="class-section">
+                        <div class="class-header">
+                            <h3>ビショップ <span style="font-size: 1rem; color: #888;">- Bishop -</span></h3>
+                        </div>
+                        <p class="class-description">究極の聖職者。癒やしと浄化を同時に行い、パーティに絶対的な安心をもたらします。</p>
+                        <div class="gender-cards">
+                            <div class="gender-card">
+                                <img src="assets/face_ビショップ_male.jpeg" alt="Bishop Male" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">男性 / MALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">ホーリーライト</span>
+                                        <p class="skill-desc">味方を回復し、敵全員に神聖ダメージ。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gender-card">
+                                <img src="assets/face_ビショップ_female.jpeg" alt="Bishop Female" class="gender-portrait" />
+                                <div class="gender-info">
+                                    <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">SKILL</span> <span class="skill-name">ホーリーライト</span>
+                                        <p class="skill-desc">味方を回復し、敵全員に神聖ダメージ。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
+            </div>
+        </section>
+
+        <!-- Events & NPCs -->
+        <section class="section-card">
+            <h2>迷宮の住人たち (NPC)</h2>
+            <button class="spoiler-btn" aria-expanded="false">「住人の詳細（ネタバレ・攻略情報を含みます）」</button>
+            <div class="details">
+                <p>迷宮に囚われた者、あるいはそこで生きる者たち。彼らとの出会いは、あなたの旅を大きく変えることになるでしょう。</p>
+
+                <!-- 1F: Miraculous Mirror -->
+                <div class="npc-profile">
+                    <div class="npc-header">
+                        <img src="assets/event_1.png" alt="不思議な手鏡" class="npc-avatar" />
+                        <div class="npc-info">
+                            <h3>不思議な手鏡</h3>
+                            <span class="npc-location">出現場所: 1F 通路</span>
+                        </div>
+                    </div>
+                    <div class="npc-story">
+                        「鏡面には、誰かのものであろう激しい情念が焼き付いている……。」<br>
+                        冷たい石畳に落ちたこの鏡は、拾い上げた者の業（カルマ）を反射します。善行を積めば癒やしの光を、悪行を重ねれば破滅の霧を。あなたの魂は、この鏡にどう映るでしょうか？
+                    </div>
+
+                    <div class="floor-context">
+                        <h4>1F: 運命の岐路</h4>
+                        <p>迷宮の入り口近くで、プレイヤーは最初の選択を迫られます。この鏡を手にするか、あるいは拒絶するか。</p>
+                        <table class="choice-table">
+                            <thead>
+                                <tr>
+                                    <th>選択肢</th>
+                                    <th>カルマ</th>
+                                    <th>結果・報酬</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="choice-label">鏡を拾い上げる</span></td>
+                                    <td><span class="karma-badge karma-pos">+5</span></td>
+                                    <td><span class="reward-item">不思議な手鏡</span> を入手。<br><span
+                                            class="reward-info">所持中、毎歩HPまたはMPが微増減する。</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">鏡を叩き割る</span></td>
+                                    <td><span class="karma-badge karma-neg">-20</span></td>
+                                    <td>不吉な予感と共に、カルマが大きく低下する。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2F: The Elder -->
+                <div class="npc-profile">
+                    <div class="npc-header">
+                        <img src="assets/event_2.png" alt="老師" class="npc-avatar" />
+                        <div class="npc-info">
+                            <h3>老師</h3>
+                            <span class="npc-location">出現場所: 2F 修練の間</span>
+                        </div>
+                    </div>
+                    <div class="npc-story">
+                        静かに目を閉じ、迷宮の最奥を見据える老人。「汝、本当の絶望を知らぬようだ」と語る彼の言葉は重い。十分な経験を積んだ者にのみ、彼は真の力を呼び覚ます修行を授けます。
+                    </div>
+
+                    <div class="floor-context">
+                        <h4>2F: 試練の条件</h4>
+                        <p>修行を受けるには、パーティ全員の研鑽が必要です。</p>
+                        <table class="choice-table">
+                            <thead>
+                                <tr>
+                                    <th>状況</th>
+                                    <th>報酬・効果</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="choice-label">全員レベル10以上</span></td>
+                                    <td><span class="reward-item">ステータス固定</span><br><span
+                                            class="reward-info">現在の全ステータスが「ベースステータス」として上書きされ、装備条件のクリアが容易になる。</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">レベル不足時</span></td>
+                                    <td>「汝、本当の絶望を知らぬようだ」と一蹴される。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3F/7F: Altrius -->
+                <div class="npc-profile">
+                    <div class="npc-header">
+                        <img src="assets/event_3.png" alt="アルトリウス" class="npc-avatar" />
+                        <div class="npc-info">
+                            <h3>気前のよい剣士『アルトリウス』</h3>
+                            <span class="npc-location">出現場所: 3F / 7F</span>
+                        </div>
+                    </div>
+                    <div class="npc-story">
+                        「やあ君たち、そんな装備でここに来たのかい？」<br>
+                        3階で出会う彼は、自らのおさがりを譲ってくれる陽気な男です。しかし、迷宮の瘴気は残酷です。7階で再会する時、彼は狂気に飲まれ、かつての友に牙を向きます。
+                    </div>
+
+                    <div class="floor-context">
+                        <h4>3F: 最初の出会い</h4>
+                        <table class="choice-table">
+                            <thead>
+                                <tr>
+                                    <th>選択肢</th>
+                                    <th>カルマ</th>
+                                    <th>結果・戦闘</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="choice-label">受け取る</span></td>
+                                    <td><span class="karma-badge karma-pos">+10</span></td>
+                                    <td><span class="reward-item">ロングソード</span> を入手。</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">戦う</span></td>
+                                    <td><span class="karma-badge karma-neg">-70</span></td>
+                                    <td>戦闘開始: <br><strong>HP 300 / ATK 30 / SPD 10</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="floor-context">
+                        <h4>7F: 狂乱の再会</h4>
+                        <p>3階で出会ったか否かに関わらず、彼は狂気に沈んでいます。※3階で会っていない場合は遺体として発見。</p>
+                        <table class="choice-table">
+                            <thead>
+                                <tr>
+                                    <th>選択肢</th>
+                                    <th>カルマ</th>
+                                    <th>結果・戦闘</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="choice-label">戦う</span></td>
+                                    <td><span class="karma-badge karma-pos">+10</span></td>
+                                    <td>苦しみから解放するため、剣を握る。<br><strong>HP 2500 / ATK 190 / SPD 85</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">逃げる</span></td>
+                                    <td><span class="karma-badge karma-neg">-10</span></td>
+                                    <td>代償としてパーティ全員のHPが20%まで激減する。</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">遺体から奪う</span></td>
+                                    <td><span class="karma-badge karma-neg">-20</span></td>
+                                    <td><span class="reward-item">呪われた 狂戦士の剣</span> を入手。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 4F/6F: Goblins -->
+                <div class="npc-profile">
+                    <div class="npc-header">
+                        <img src="assets/event_4child.png" alt="ゴブリン" class="npc-avatar" />
+                        <div class="npc-info">
+                            <h3>はぐれゴブリンとキングゴブリン</h3>
+                            <span class="npc-location">出現場所: 4F / 6F</span>
+                        </div>
+                    </div>
+                    <div class="npc-story">
+                        4階で震える子供のゴブリン。彼を見逃したならば、6階で強大なキングゴブリン（親）が感謝をもってあなたを迎えるでしょう。逆に彼を手にかけたなら……親の怒りは凄まじいものとなります。
+                    </div>
+
+                    <div class="floor-context">
+                        <h4>4F: 震える幼生</h4>
+                        <table class="choice-table">
+                            <thead>
+                                <tr>
+                                    <th>選択肢</th>
+                                    <th>カルマ</th>
+                                    <th>結果・報酬</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="choice-label">戦う</span></td>
+                                    <td><span class="karma-badge karma-neg">-50</span></td>
+                                    <td>将来の芽を摘む。戦闘開始:<br><strong>HP 40 / ATK 10 / SPD 5</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">見逃す</span></td>
+                                    <td><span class="karma-badge karma-pos">+20</span></td>
+                                    <td>慈悲を見せる。6階での展開が変化する。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="floor-context">
+                        <h4>6F: 親の咆哮</h4>
+                        <table class="choice-table">
+                            <thead>
+                                <tr>
+                                    <th>状況・選択肢</th>
+                                    <th>カルマ</th>
+                                    <th>結果・報酬</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="choice-label">【生存時】 頷く/友好</span></td>
+                                    <td><span class="karma-badge karma-pos">+20</span></td>
+                                    <td>4階での再会（報酬）に繋がる。</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">【討伐時】 戦う (怒り)</span></td>
+                                    <td>--</td>
+                                    <td>復讐に燃える親との決戦。戦闘開始:<br><strong>HP 1300 / ATK 130 / SPD 25</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">略奪 (再会時)</span></td>
+                                    <td><span class="karma-badge karma-neg">-50</span></td>
+                                    <td>報酬を渡そうとする親子を襲う。<br><strong>キングHP 1300 + 子供HP 40</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">報酬を受け取る</span></td>
+                                    <td><span class="karma-badge karma-pos">+30</span></td>
+                                    <td><span class="reward-item">妖精の霊薬</span> を入手。<br><span
+                                            class="reward-info">何度でも使える全体HP50回復薬。</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 5F/9F: Wounded Knight -->
+                <div class="npc-profile">
+                    <div class="npc-header">
+                        <img src="assets/event_5.png" alt="負傷した騎士" class="npc-avatar" />
+                        <div class="npc-info">
+                            <h3>負傷した騎士</h3>
+                            <span class="npc-location">出現場所: 5F / 9F</span>
+                        </div>
+                    </div>
+                    <div class="npc-story">
+                        血を流し、息も絶え絶えに助けを求める騎士。己の魔力と物資を捧げて彼を救うか、あるいはその荷を奪うか。5階でのあなたの慈悲は、9階で「騎士の亡霊」としての再会と、伝説の武具の譲渡に繋がります。
+                    </div>
+
+                    <div class="floor-context">
+                        <h4>5F: 献身の試練</h4>
+                        <table class="choice-table">
+                            <thead>
+                                <tr>
+                                    <th>選択肢</th>
+                                    <th>カルマ</th>
+                                    <th>代償・報酬</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="choice-label">助ける</span></td>
+                                    <td><span class="karma-badge karma-pos">+50</span></td>
+                                    <td><span class="reward-info">全員のMPが0になり、消耗品全紛失。</span><br>9階で大きな見返りがある。</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">見捨てる</span></td>
+                                    <td><span class="karma-badge karma-neg">-20</span></td>
+                                    <td>無言で立ち去る。9階では遺体を発見。</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">略奪</span></td>
+                                    <td><span class="karma-badge karma-neg">-30</span></td>
+                                    <td>弱った騎士を襲う。戦闘開始:<br><strong>HP 100 / ATK 50 / SPD 10</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="floor-context">
+                        <h4>9F: 報いの果て</h4>
+                        <table class="choice-table">
+                            <thead>
+                                <tr>
+                                    <th>状況・選択肢</th>
+                                    <th>カルマ</th>
+                                    <th>入手アイテム</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="choice-label">【救助済】 亡霊から受領</span></td>
+                                    <td><span class="karma-badge karma-pos">+20</span></td>
+                                    <td><span class="reward-item">英雄の聖剣 / 英雄の鎧 / 光の護符</span><br><span
+                                            class="reward-info">最深部攻略に必須級の伝説セット。</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">【不救助】 遺体をあさる</span></td>
+                                    <td><span class="karma-badge karma-neg">-20</span></td>
+                                    <td><span class="reward-item">呪われた 血塗られた魔剣</span><br><span
+                                            class="reward-info">高威力だが、精神を蝕む代償を伴う。</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 8F: Dark Sage -->
+                <div class="npc-profile">
+                    <div class="npc-header">
+                        <img src="assets/event_8.png" alt="闇の賢者" class="npc-avatar" />
+                        <div class="npc-info">
+                            <h3>闇の賢者</h3>
+                            <span class="npc-location">出現場所: 8F</span>
+                        </div>
+                    </div>
+                    <div class="npc-story">
+                        底知れぬ魔力を放つ、冷徹な合理主義者。彼は「仲間の命」と引き換えに最強の杖を渡すという悍ましい取引を持ちかけてきます。その口車に乗るか、正義を貫き戦うかはあなた次第です。
+                    </div>
+
+                    <div class="floor-context">
+                        <h4>8F: 究極の取引</h4>
+                        <table class="choice-table">
+                            <thead>
+                                <tr>
+                                    <th>選択肢</th>
+                                    <th>カルマ</th>
+                                    <th>結果・報酬</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="choice-label">仲間を犠牲にする</span></td>
+                                    <td><span class="karma-badge karma-neg">-100</span></td>
+                                    <td><span class="reward-item">深淵の杖 (INT+80)</span> を入手。<br><span
+                                            class="reward-info">選ばれた仲間は永久にロストする。</span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">戦う</span></td>
+                                    <td><span class="karma-badge karma-neg">-20</span></td>
+                                    <td>戦闘開始: <br><strong>HP 6000 / ATK 220 / SPD 70</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="choice-label">拒絶する</span></td>
+                                    <td><span class="karma-badge karma-pos">+50</span></td>
+                                    <td>賢者は闇へと消え去る。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </section>
 
         <!-- Enemies -->
         <section class="section-card">
-            <h2>敵紹介</h2>
-            <button class="spoiler-btn" aria-expanded="false">「イベント詳細（ネタバレを含みます）」</button>
+            <h2>迷宮の魔物たち</h2>
+            <button class="spoiler-btn" aria-expanded="false">「魔物図鑑（ネタバレ・スキル情報を含みます）」</button>
             <div class="details">
-                <ul>
-                    <li><strong>スライム</strong> – 弱いが数が多い。</li>
-                    <li><strong>ゴブリン</strong> – 素早く、単体攻撃が得意。</li>
-                    <!-- 追加の敵 -->
-                </ul>
-                <div class="image-grid">
-                    <img src="assets/monster_0.png" alt="Slime" />
-                    <img src="assets/monster_1.png" alt="Goblin" />
+                <p>迷宮に蠢く魔物たち。彼らは階層を下るごとに強大になり、多彩なスキルで探索者を追い詰めます。</p>
+
+                <div class="monster-grid">
+                    <!-- Slime -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_0.png" alt="スライム" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>スライム</h3>
+                            <p class="monster-lore">迷宮の至る所で見かける不定形の魔物。物理攻撃には弱いが、放置すると分裂して増殖する性質を持つ。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">分裂</span>
+                            </div>
+                            <p class="skill-desc">自身の複製を作り出し、数で圧倒する。</p>
+                        </div>
+                        <div class="variant-box">変種: レッド、ダーク、キング等</div>
+                    </div>
+
+                    <!-- Bat -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_1.png" alt="バット" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>バット</h3>
+                            <p class="monster-lore">暗闇を好み、集団で襲い掛かる翼竜。その牙には相手の生命力を吸い取る力が宿っている。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">吸血</span>
+                            </div>
+                            <p class="skill-desc">ダメージを与えつつ、自身のHPを回復する。</p>
+                        </div>
+                    </div>
+
+                    <!-- Spider -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_2.png" alt="スパイダー" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>スパイダー</h3>
+                            <p class="monster-lore">天井や壁から奇襲を仕掛ける巨大な蜘蛛。粘着質の糸は探索者の自由を奪う。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">粘着糸</span>
+                            </div>
+                            <p class="skill-desc">強力な糸を吐き出し、大ダメージを与える。</p>
+                        </div>
+                    </div>
+
+                    <!-- Snake -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_3.png" alt="スネーク" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>スネーク</h3>
+                            <p class="monster-lore">迷宮の小部屋に潜む毒蛇。その牙にかかれば、どんな強者も衰弱は免れない。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">毒牙</span>
+                            </div>
+                            <p class="skill-desc">防御を無視する猛毒の牙で突き刺す。</p>
+                        </div>
+                    </div>
+
+                    <!-- Goblin -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_4.png" alt="ゴブリン" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>ゴブリン</h3>
+                            <p class="monster-lore">迷宮の下層で独自の社会を築く小鬼。知能が高く、危機に陥ると仲間を呼び集める。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">仲間を呼ぶ</span>
+                            </div>
+                            <p class="skill-desc">周囲の仲間を呼び寄せ、戦力を補充する。</p>
+                        </div>
+                    </div>
+
+                    <!-- Skeleton -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_5.png" alt="スケルトン" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>スケルトン</h3>
+                            <p class="monster-lore">死してなお迷宮を彷徨う戦士の骸。自身の骨を武器として投げつけてくる執念の塊。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">骨投げ</span>
+                            </div>
+                            <p class="skill-desc">自らの骨を高速で射出し、大ダメージを与える。</p>
+                        </div>
+                    </div>
+
+                    <!-- Phantom -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_6.png" alt="ファントム" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>ファントム</h3>
+                            <p class="monster-lore">物理的な実体を持たない亡霊。生者の魂（エナジー）を直接刈り取る存在。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">エナジードレイン</span>
+                            </div>
+                            <p class="skill-desc">生命力を直接吸い取り、自身を強化する。</p>
+                        </div>
+                    </div>
+
+                    <!-- Ogre -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_7.png" alt="オーガ" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>オーガ</h3>
+                            <p class="monster-lore">圧倒的な巨躯を誇る人食い鬼。その一撃は大地を揺らし、盾をも粉砕する。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">痛恨の一撃</span>
+                            </div>
+                            <p class="skill-desc">全てを粉砕する破壊的な打撃を繰り出す。</p>
+                        </div>
+                    </div>
+
+                    <!-- Demon -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_8.png" alt="デーモン" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>デーモン</h3>
+                            <p class="monster-lore">魔界から召喚された上位の魔物。暗黒の魔力を操り、周囲を死へと導く炎を放つ。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">暗黒の炎</span>
+                            </div>
+                            <p class="skill-desc">広範囲を闇の炎で焼き尽くす全体攻撃。</p>
+                        </div>
+                    </div>
+
+                    <!-- Dragon -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_9.png" alt="ドラゴン" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>ドラゴン</h3>
+                            <p class="monster-lore">迷宮の深層に君臨する古の支配者。灼熱の吐息（ブレス）は一瞬でパーティを壊滅させる。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">炎</span>
+                            </div>
+                            <p class="skill-desc">超高温のブレスにより全体に甚大な被害を与える。</p>
+                        </div>
+                    </div>
+
+                    <!-- Zombie -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_10.png" alt="ゾンビ" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>ゾンビ</h3>
+                            <p class="monster-lore">腐敗した身体で延々と歩み続ける不死者。その体液は金属すら溶かす腐食性を帯びている。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">腐食液</span>
+                            </div>
+                            <p class="skill-desc">防御を貫通し、装備の隙間からダメージを与える。</p>
+                        </div>
+                    </div>
+
+                    <!-- Mage -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_11.png" alt="メイジ" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>メイジ</h3>
+                            <p class="monster-lore">禁断の術に溺れた魔導士のなれの果て。絶え間なく放たれる火球が探索者を阻む。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">ファイヤーボール</span>
+                            </div>
+                            <p class="skill-desc">高威力の魔法弾を放ち、標的を灰にする。</p>
+                        </div>
+                    </div>
+
+                    <!-- Vampire -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_12.png" alt="ヴァンパイア" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>ヴァンパイア</h3>
+                            <p class="monster-lore">闇夜を司る貴族の吸血鬼。洗練された動きで標的を翻弄し、その血液を糧とする。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">吸血</span>
+                            </div>
+                            <p class="skill-desc">影から接近し、生命力を奪い取って自己再生する。</p>
+                        </div>
+                    </div>
+
+                    <!-- Devil -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_13.png" alt="デビル" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>デビル</h3>
+                            <p class="monster-lore">悪意を具現化したような上位悪魔。天空から巨大な岩を召喚し、全てを押し潰す。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">メテオ</span>
+                            </div>
+                            <p class="skill-desc">広範囲に壊滅的な打撃を及ぼす究極の魔法。</p>
+                        </div>
+                    </div>
+
+                    <!-- Dinosaur -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_14.png" alt="ダイナソー" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>ダイナソー</h3>
+                            <p class="monster-lore">太古の地層から蘇った狂暴な恐竜。理性なきその暴力は、あらゆる防御を無意味にする。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">暴走</span>
+                            </div>
+                            <p class="skill-desc">我を忘れた猛攻により、単体に致命傷を与える。</p>
+                        </div>
+                    </div>
+
+                    <!-- Eater -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_15.png" alt="イーター" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>イーター</h3>
+                            <p class="monster-lore">魔力を喰らう得体の知れない生物。標的に呪いをかけ、内側からむしばんでいく。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">呪い</span>
+                            </div>
+                            <p class="skill-desc">相手を徐々に劣化させ、生命力を横取りする。</p>
+                        </div>
+                    </div>
+
+                    <!-- Diablo -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_16.png" alt="ディアブロ" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>ディアブロ</h3>
+                            <p class="monster-lore">深淵の底から這い出た破壊の権化。慈悲なき一撃は魂をも砕き、再生を許さない。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">痛恨の一撃</span>
+                            </div>
+                            <p class="skill-desc">超高威力の物理攻撃を標的に叩きつける。</p>
+                        </div>
+                    </div>
+
+                    <!-- Lich -->
+                    <div class="monster-card">
+                        <div class="monster-visual">
+                            <img src="assets/monster_17.png" alt="リッチ" class="monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>リッチ</h3>
+                            <p class="monster-lore">生と死を超越した最高位の魔導士。静かなる死の宣告は、対峙する者の寿命を削り取る。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">宣告</span>
+                            </div>
+                            <p class="skill-desc">抗いがたい死の魔力により、標的に絶望を与える。</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

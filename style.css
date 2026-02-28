@@ -163,6 +163,28 @@ canvas#view-canvas {
     border-color: #888;
 }
 
+#btn-manual {
+    position: absolute;
+    top: 80px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #ffcc00;
+    padding: 5px 12px;
+    border: 1px solid #ffcc00;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 10;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    border-radius: 4px;
+}
+
+#btn-manual:hover {
+    background: #ffcc00;
+    color: #000;
+}
+
 /* Status Area */
 #status-area {
     grid-area: status;

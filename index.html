@@ -21,6 +21,7 @@
                     <div id="floor-indicator">B1F</div>
                     <div id="timer-display">00:00:00</div>
                     <button id="btn-mute" onclick="audio.toggleMute()">🔊</button>
+                    <button id="btn-manual" onclick="UI.openManual()">？</button>
                     <div id="monster-overlay"></div>
                     <div id="camp-menu"></div>
                 </div>
@@ -63,6 +64,8 @@
                     <!-- Characters dynamically added here -->
                 </div>
                 <div style="display:flex; gap:10px;">
+                    <button class="btn" id="btn-manual-intro" style="border-color:#ffcc00; color:#ffcc00;"
+                        onclick="UI.openManual()">MANUAL</button>
                     <button class="btn" id="btn-reroll" style="border-color:#55f;">パーティ再抽選 (R)</button>
                     <button class="btn" id="btn-start" style="border-color:#f55; color:#f55;">冒険開始 (S)</button>
                 </div>
@@ -121,6 +124,22 @@
             <!-- FADE OVERLAY -->
             <div id="fade-overlay" class="fade-overlay">
                 <div id="fade-text" class="fade-text"></div>
+            </div>
+
+            <!-- MANUAL OVERLAY -->
+            <div id="manual-overlay"
+                style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:40000; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+                <div
+                    style="width:90%; height:90%; background:#050508; border:2px solid #ffcc00; border-radius:12px; position:relative; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 0 30px rgba(0,0,0,1);">
+                    <div
+                        style="padding:10px 20px; background:#111; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="color:#ffcc00; font-family:'Yuji Mai', serif; font-size:18px;">VORTEX: GAME
+                            MANUAL</span>
+                        <button class="btn" onclick="UI.closeManual()"
+                            style="border-color:#f55; color:#f55; padding:4px 12px;">CLOSE (X)</button>
+                    </div>
+                    <iframe src="manual.html" style="flex:1; border:none; width:100%; height:100%;"></iframe>
+                </div>
             </div>
 
         </div> <!-- /app-root -->
