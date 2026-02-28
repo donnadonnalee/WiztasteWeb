@@ -202,7 +202,7 @@ class Game {
         });
         document.getElementById('char-create-list').innerHTML = html;
         const btnStart = document.getElementById('btn-start');
-        btnStart.textContent = '冒険開始 (タイマー始動)';
+        btnStart.textContent = '冒険開始';
         btnStart.disabled = false;
     }
 
