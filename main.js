@@ -454,10 +454,82 @@ class Game {
         this.updateUI();
     }
 
-    startBossBattle() {
-        const boss = { id: 'monster-0', name: "アビスロード", hp: 8500, maxHp: 8500, currentHp: 8500, atk: 280, agi: 60, exp: 30000, level: 10, svg: `<img src="assets/boss.png" style="width:100%; height:100%; object-fit:contain; transform:scale(1.8);" />` };
-        this.startCustomBattle([boss], { isBoss: true });
-        audio.playBGM('bgm_boss');
+    async startBossBattle() {
+        const floor = this.currentFloor + 1;
+        const isFinalBoss = floor === 10;
+
+        if (isFinalBoss) {
+            // Final Boss Staging
+            this.state = 'EVENT';
+            audio.stopBGM();
+
+            await UI.showBlackout(this, "空気が一変する...", 2000, async () => {
+                audio.playBGM('bgm_boss');
+
+                const bossName = "アビスロード";
+                const karma = this.karma;
+                let dialogue = "";
+
+                if (karma > 50) {
+                    dialogue = "「ほう……。その身に宿した光、眩しすぎるな。だが、ここはそのような輝きが届く場所ではないぞ。」";
+                } else if (karma < -50) {
+                    dialogue = "「ククク……。お前の中にある闇、心地よいぞ。我が渦の一部として、永遠に溺れるがいい。」";
+                } else {
+                    dialogue = "「虚ろな魂よ。目的もなく彷徨う者に、この渦を止めることはできぬ。」";
+                }
+
+                // Show Boss Dialogue using Event Screen
+                const eventScreen = document.getElementById('event-screen');
+                const eventTitle = document.getElementById('event-title');
+                const eventImg = document.getElementById('event-img');
+                const eventDesc = document.getElementById('event-desc');
+                const eventOptions = document.getElementById('event-options');
+
+                eventTitle.textContent = "渦の支配者";
+                eventImg.src = "assets/boss10.png";
+                eventImg.style.display = 'block';
+                eventImg.style.filter = 'drop-shadow(0 0 20px #f00)';
+                eventDesc.innerHTML = `渦の中から一人の老人が現れた。\n老人は静かに、しかし威圧感を持って語りだす。\n\n${dialogue}`;
+                eventOptions.innerHTML = '';
+
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.textContent = '戦闘開始 (A)';
+                btn.onclick = () => {
+                    this.closeEvent();
+                    const finalBoss = {
+                        id: 'monster-0',
+                        name: bossName,
+                        hp: 8500, maxHp: 8500, currentHp: 8500,
+                        atk: 280, agi: 60, exp: 30000, level: 10,
+                        svg: `<img src="assets/boss10.png" style="width:100%; height:100%; object-fit:contain; transform:scale(1.8);" />`
+                    };
+                    this.startCustomBattle([finalBoss], { isBoss: true });
+                };
+                eventOptions.appendChild(btn);
+                eventScreen.style.display = 'flex';
+
+                // Add "old man" description
+                UI.addLog("渦の中から一人の老人が現れた。老人は渦の支配者のようだ。");
+            });
+        } else {
+            // Mid Bosses
+            const midBoss = {
+                id: 'monster-0',
+                name: `フロア守護者 (B${floor}F)`,
+                hp: 150 * floor + Math.pow(1.3, floor) * 100,
+                maxHp: 150 * floor + Math.pow(1.3, floor) * 100,
+                currentHp: 150 * floor + Math.pow(1.3, floor) * 100,
+                atk: 20 + floor * 15,
+                agi: 10 + floor * 4,
+                exp: 500 * floor * floor,
+                level: floor,
+                svg: `<img src="assets/boss${floor}.png" style="width:100%; height:100%; object-fit:contain; transform:scale(1.5);" />`
+            };
+            this.startCustomBattle([midBoss], { isMidBoss: true });
+            audio.playBGM('bgm_boss');
+            UI.addLog(`B${floor}F の守護者が現れた！`);
+        }
     }
 
     battleAction(type) {
@@ -482,11 +554,11 @@ class Game {
             this.party.forEach(p => {
                 if (p.hp > 0) {
                     p.exp += totalExp;
-                    let nextExp = Math.floor(30 * Math.pow(p.level, 1.35) + 20 * p.level);
+                    let nextExp = Math.floor(100 * Math.pow(p.level, 1.5) + 50 * p.level);
                     while (p.exp >= nextExp) {
                         p.exp -= nextExp;
                         this.levelUp(p);
-                        nextExp = Math.floor(30 * Math.pow(p.level, 1.35) + 20 * p.level);
+                        nextExp = Math.floor(100 * Math.pow(p.level, 1.5) + 50 * p.level);
                     }
                 }
             });

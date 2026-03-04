@@ -232,20 +232,32 @@ function generateAllLevels() {
     LEVELS.length = 0;
     for (let i = 0; i < 10; i++) {
         const map = generateMaze(MAP_SIZE, i);
-        if (i === 9) {
-            for (let r = 0; r < map.length; r++) {
-                for (let c = 0; c < map[r].length; c++) if (map[r][c] === 3) map[r][c] = 8;
-            }
-        }
-        if (i >= 0 && i <= 8) {
-            let emptySpots = [];
-            for (let r = 1; r < map.length - 1; r++) {
-                for (let c = 1; c < map[r].length - 1; c++) {
-                    if (map[r][c] === 0 && !(r === 1 && c === 1) && map[r][c] !== 2 && map[r][c] !== 3 && map[r][c] !== 8) emptySpots.push({ r, c });
+
+        // Place boss tile (8) on every floor instead of just floor 9
+        let emptySpots = [];
+        for (let r = 1; r < map.length - 1; r++) {
+            for (let c = 1; c < map[r].length - 1; c++) {
+                if (map[r][c] === 0 && !(r === 1 && c === 1) && map[r][c] !== 2 && map[r][c] !== 3) {
+                    emptySpots.push({ r, c });
                 }
             }
-            if (emptySpots.length > 0) {
-                let spot = emptySpots[Math.floor(Math.random() * emptySpots.length)];
+        }
+        if (emptySpots.length > 0) {
+            let spot = emptySpots[Math.floor(Math.random() * emptySpots.length)];
+            map[spot.r][spot.c] = 8;
+        }
+
+        if (i >= 0 && i <= 8) {
+            let emptySpotsEnv = [];
+            for (let r = 1; r < map.length - 1; r++) {
+                for (let c = 1; c < map[r].length - 1; c++) {
+                    if (map[r][c] === 0 && !(r === 1 && c === 1) && map[r][c] !== 2 && map[r][c] !== 3 && map[r][c] !== 8) {
+                        emptySpotsEnv.push({ r, c });
+                    }
+                }
+            }
+            if (emptySpotsEnv.length > 0) {
+                let spot = emptySpotsEnv[Math.floor(Math.random() * emptySpotsEnv.length)];
                 map[spot.r][spot.c] = 9;
             }
         }
