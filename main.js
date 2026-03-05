@@ -448,7 +448,8 @@ class Game {
         document.getElementById('battle-menu').style.display = 'flex';
         const mo = document.getElementById('monster-overlay'); mo.innerHTML = '';
         this.currentBattle.monsters.forEach((m, i) => { const c = document.createElement('div'); c.className = 'monster-img-container'; c.id = `monster-img-${i}`; c.innerHTML = m.svg; mo.appendChild(c); });
-        mo.style.display = 'flex'; audio.playBGM('bgm_battle');
+        mo.style.display = 'flex';
+        if (!flags.keepBGM) audio.playBGM('bgm_battle');
         this.turnIndex = 0;
         while (this.turnIndex < this.party.length && this.party[this.turnIndex].hp <= 0) this.turnIndex++;
         this.updateUI();
@@ -457,79 +458,74 @@ class Game {
     async startBossBattle() {
         const floor = this.currentFloor + 1;
         const isFinalBoss = floor === 10;
+        this.state = 'EVENT';
+        audio.stopBGM();
+
+        let bossName = "";
+        let bossDesc = "";
+        let bossImg = `assets/boss${floor}.png`;
+        let bossStats = { hp: 150 * floor + Math.pow(1.3, floor) * 100, atk: 20 + floor * 15, agi: 10 + floor * 4, exp: 500 * floor * floor };
 
         if (isFinalBoss) {
-            // Final Boss Staging
-            this.state = 'EVENT';
-            audio.stopBGM();
-
-            await UI.showBlackout(this, "空気が一変する...", 2000, async () => {
-                audio.playBGM('bgm_boss');
-
-                const bossName = "アビスロード";
-                const karma = this.karma;
-                let dialogue = "";
-
-                if (karma > 50) {
-                    dialogue = "「ほう……。その身に宿した光、眩しすぎるな。だが、ここはそのような輝きが届く場所ではないぞ。」";
-                } else if (karma < -50) {
-                    dialogue = "「ククク……。お前の中にある闇、心地よいぞ。我が渦の一部として、永遠に溺れるがいい。」";
-                } else {
-                    dialogue = "「虚ろな魂よ。目的もなく彷徨う者に、この渦を止めることはできぬ。」";
-                }
-
-                // Show Boss Dialogue using Event Screen
-                const eventScreen = document.getElementById('event-screen');
-                const eventTitle = document.getElementById('event-title');
-                const eventImg = document.getElementById('event-img');
-                const eventDesc = document.getElementById('event-desc');
-                const eventOptions = document.getElementById('event-options');
-
-                eventTitle.textContent = "渦の支配者";
-                eventImg.src = "assets/boss10.png";
-                eventImg.style.display = 'block';
-                eventImg.style.filter = 'drop-shadow(0 0 20px #f00)';
-                eventDesc.innerHTML = `渦の中から一人の老人が現れた。\n老人は静かに、しかし威圧感を持って語りだす。\n\n${dialogue}`;
-                eventOptions.innerHTML = '';
-
-                const btn = document.createElement('button');
-                btn.className = 'btn';
-                btn.textContent = '戦闘開始 (A)';
-                btn.onclick = () => {
-                    this.closeEvent();
-                    const finalBoss = {
-                        id: 'monster-0',
-                        name: bossName,
-                        hp: 8500, maxHp: 8500, currentHp: 8500,
-                        atk: 280, agi: 60, exp: 30000, level: 10,
-                        svg: `<img src="assets/boss10.png" style="width:100%; height:100%; object-fit:contain; transform:scale(1.8);" />`
-                    };
-                    this.startCustomBattle([finalBoss], { isBoss: true });
-                };
-                eventOptions.appendChild(btn);
-                eventScreen.style.display = 'flex';
-
-                // Add "old man" description
-                UI.addLog("渦の中から一人の老人が現れた。老人は渦の支配者のようだ。");
-            });
+            bossName = "アビスロード";
+            bossImg = "assets/boss10.png";
+            bossStats = { hp: 8500, atk: 280, agi: 60, exp: 30000 };
+            const karma = this.karma;
+            let dialogue = "";
+            if (karma > 50) dialogue = "「ほう……。その身に宿した光、眩しすぎるな。だが、ここはそのような輝きが届く場所ではないぞ。」";
+            else if (karma < -50) dialogue = "「ククク……。お前の中にある闇、心地よいぞ。我が渦の一部として、永遠に溺れるがいい。」";
+            else dialogue = "「虚ろな魂よ。目的もなく彷徨う者に、この渦を止めることはできぬ。」";
+            bossDesc = `渦の中から一人の老人が現れた。\n老人は静かに、しかし威圧感を持って語りだす。\n\n${dialogue}`;
         } else {
-            // Mid Bosses
-            const midBoss = {
-                id: 'monster-0',
-                name: `フロア守護者 (B${floor}F)`,
-                hp: 150 * floor + Math.pow(1.3, floor) * 100,
-                maxHp: 150 * floor + Math.pow(1.3, floor) * 100,
-                currentHp: 150 * floor + Math.pow(1.3, floor) * 100,
-                atk: 20 + floor * 15,
-                agi: 10 + floor * 4,
-                exp: 500 * floor * floor,
-                level: floor,
-                svg: `<img src="assets/boss${floor}.png" style="width:100%; height:100%; object-fit:contain; transform:scale(1.5);" />`
+            const floorBosses = {
+                1: { name: "マーフィーズゴースト", desc: "奇妙なピエロのような衣装の人間型の生き物が接近してくる。よく見るとそれは腐乱しかけた人間であった。それは何も言わずにこちらへ襲い掛かってきた。" },
+                2: { name: "ガスクラウド", desc: "霧の中から微かに光る二つの眼が見えた。その霧が物理的な質量を持ち、毒々しい重圧を放つ雲となって襲い掛かってくる！" },
+                3: { name: "ドラゴンフライ", desc: "羽ばたきの音が頭上から聞こえる。巨大な蜻蛉のような魔物が炎を吐き散らしながら急降下してきた！" },
+                4: { name: "クリーピングコイン", desc: "通路の隅にコインが山積みにされている。一攫千金を夢見て近づくと、コインが脈打ち、飢えた魔物となって牙を剥いた！" },
+                5: { name: "グレーターデーモン", desc: "空間が裂け、禍々しい角を持つ巨漢が現れた。その冷徹な眼差しは、冒険者の魂を品定めするかのように細められた。" },
+                6: { name: "ヴァンパイアロード", desc: "豪奢な寝台。そこには夜を統べる貴公子が佇んでいた。彼は優雅にグラスを掲げ、食事の時間を告げた。" },
+                7: { name: "キマイラ", desc: "獅子の咆哮、山羊の呻き、蛇の威嚇。三つの意思を宿した怪異が、吐息から炎を漏らしながら飛びかかってきた！" },
+                8: { name: "サイデル", desc: "底知れぬ闇の中から、いくつもの影が蠢いている。それは実体を持たぬ幽体、あるいは過去の冒険者の成れの果てか。" },
+                9: { name: "フラック", desc: "道化のような色彩豊かな衣装に身を包んだ怪人が現れた。彼は高く笑い、致命的な魔力の波動を指先から放った！" }
             };
-            this.startCustomBattle([midBoss], { isMidBoss: true });
-            audio.playBGM('bgm_boss');
-            UI.addLog(`B${floor}F の守護者が現れた！`);
+            const b = floorBosses[floor];
+            bossName = b.name; bossDesc = b.desc;
         }
+
+        await UI.showBlackout(this, floor === 10 ? "空気が一変する..." : "ただならぬ気配が漂う...", 1500, async () => {
+            audio.playBGM('bgm_boss');
+
+            const eventScreen = document.getElementById('event-screen');
+            const eventTitle = document.getElementById('event-title');
+            const eventImg = document.getElementById('event-img');
+            const eventDesc = document.getElementById('event-desc');
+            const eventOptions = document.getElementById('event-options');
+
+            eventTitle.textContent = isFinalBoss ? "渦の支配者" : `${floor}F 守護者`;
+            eventImg.src = bossImg;
+            eventImg.style.display = 'block';
+            if (isFinalBoss) eventImg.style.filter = 'drop-shadow(0 0 20px #f00)';
+            eventDesc.innerHTML = bossDesc;
+            eventOptions.innerHTML = '';
+
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = '戦闘開始 (A)';
+            btn.onclick = () => {
+                this.closeEvent();
+                const boss = {
+                    id: 'monster-0',
+                    name: bossName,
+                    hp: bossStats.hp, maxHp: bossStats.hp, currentHp: bossStats.hp,
+                    atk: bossStats.atk, agi: bossStats.agi, exp: bossStats.exp, level: floor,
+                    svg: `<img src="${bossImg}" style="width:100%; height:100%; object-fit:contain; transform:scale(${isFinalBoss ? 1.8 : 1.5});" />`
+                };
+                this.startCustomBattle([boss], { isBoss: isFinalBoss, isMidBoss: !isFinalBoss, keepBGM: true });
+            };
+            eventOptions.appendChild(btn);
+            eventScreen.style.display = 'flex';
+            UI.addLog(`${bossName}が現れた！`);
+        });
     }
 
     battleAction(type) {
