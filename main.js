@@ -10,7 +10,12 @@ const assets = {
     stair_down: { img: new Image(), loaded: false }
 };
 
-['wall', 'floor', 'ceiling', 'stair_up', 'stair_down'].forEach(k => {
+// Boss images 1-10
+for (let i = 1; i <= 10; i++) {
+    assets[`boss${i}`] = { img: new Image(), loaded: false };
+}
+
+Object.keys(assets).forEach(k => {
     assets[k].img.onload = () => { assets[k].loaded = true; if (window.game) window.game.render(); };
     assets[k].img.src = `assets/${k}.png`;
 });
@@ -520,7 +525,7 @@ class Game {
                     atk: bossStats.atk, agi: bossStats.agi, exp: bossStats.exp, level: floor,
                     svg: `<img src="${bossImg}" style="width:100%; height:100%; object-fit:contain; transform:scale(${isFinalBoss ? 1.8 : 1.5});" />`
                 };
-                this.startCustomBattle([boss], { isBoss: isFinalBoss, isMidBoss: !isFinalBoss, keepBGM: true });
+                this.startCustomBattle([boss], { isBoss: isFinalBoss, isMidBoss: !isFinalBoss, isMidBossFloor: floor, keepBGM: true });
             };
             eventOptions.appendChild(btn);
             eventScreen.style.display = 'flex';
@@ -543,6 +548,11 @@ class Game {
         const bt = this.currentBattle;
         if (!bt) { console.error("No current battle!"); return; }
         if (bt.isBoss) { this.handleEnding(); return; }
+        if (bt.isMidBoss) {
+            const floor = bt.isMidBossFloor || (this.currentFloor + 1);
+            this.npcFlags[`boss${floor}FDefeated`] = true;
+            UI.addLog(`このフロアの守護者を倒した証を得た！`);
+        }
         let totalExp = 0; bt.monsters.forEach(m => totalExp += m.exp);
         const alive = this.party.filter(p => p.hp > 0);
         if (alive.length > 0) {

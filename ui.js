@@ -150,7 +150,26 @@ const UI = {
             } else {
                 const tile = (oy >= 0 && oy < map.length && ox >= 0 && ox < map[oy].length) ? map[oy][ox] : 0;
                 const darkness = Math.max(0, Math.min(0.8, dist * 0.15));
-                if (tile === 3 || tile === 8) {
+                if (tile === 8) {
+                    const p = getProj(dist + 0.5, offsetX);
+                    const bossFloor = game.currentFloor + 1;
+                    const bossKey = `boss${bossFloor}`;
+                    if (assets[bossKey] && assets[bossKey].loaded) {
+                        ctx.save();
+                        // Apply dark filter for silhouette
+                        ctx.filter = 'brightness(0) contrast(1)';
+                        ctx.globalAlpha = 0.8;
+                        ctx.drawImage(assets[bossKey].img, p.x - p.w / 2, p.y - p.h, p.w, p.h * 2);
+                        ctx.restore();
+                        if (darkness > 0) { ctx.fillStyle = `rgba(0, 0, 0, ${darkness})`; ctx.fillRect(p.x - p.w / 2, p.y - p.h, p.w, p.h * 2); }
+                    } else {
+                        // Fallback if boss image not loaded
+                        if (assets.stair_down.loaded) {
+                            ctx.drawImage(assets.stair_down.img, p.x - p.w / 2, p.y - p.h, p.w, p.h * 2);
+                            if (darkness > 0) { ctx.fillStyle = `rgba(0, 0, 0, ${darkness})`; ctx.fillRect(p.x - p.w / 2, p.y - p.h, p.w, p.h * 2); }
+                        }
+                    }
+                } else if (tile === 3) {
                     const p = getProj(dist + 0.5, offsetX);
                     if (assets.stair_down.loaded) {
                         ctx.drawImage(assets.stair_down.img, p.x - p.w / 2, p.y - p.h, p.w, p.h * 2);

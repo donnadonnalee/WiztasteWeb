@@ -11,6 +11,14 @@ const Events = {
             }
         }
 
+        // Boss defeat check (except for special cases if any)
+        if (floor >= 1 && floor <= 9) {
+            if (!game.npcFlags[`boss${floor}FDefeated`]) {
+                this.showPreBossMessage(game, floor);
+                return;
+            }
+        }
+
         game.state = 'EVENT';
         const exploreMenu = document.getElementById('explore-menu');
         if (exploreMenu) exploreMenu.style.display = 'none';
@@ -519,5 +527,44 @@ const Events = {
         }
         game.exitBattle(); // Ensure BGM and UI reset
         game.saveGame();
+    },
+
+    showPreBossMessage: function (game, floor) {
+        const messages = {
+            1: "「一瞬、何かがかすかな光に反射したようだ。しかし、亡霊の冷気がそれを覆い隠している……」",
+            2: "「霧の向こうに、座禅を組む老人の影が見える。しかし、立ち込める毒雲が行く手を阻んでいる……」",
+            3: "アルトリウス「やあ、新参かい。上から火を吹く化け物が降りてくるから、今は身を隠しておけよ。死にたくなければね。」",
+            4: "「周囲でゴブリンの声が聞こえる。まだ子供ですすり泣いているような声だ。しかし、不気味な硬貨の擦れる音がその声を掻き消していく……」",
+            5: "「血の匂いが漂ってくる……。重傷を負った者が近くにいるようだ。しかし、上位悪魔の威圧感が、一歩踏み出すことを本能的に拒ませる。」",
+            6: "「巨大なゴブリンが何かを探して彷徨っている。しかし、そこへ優雅な足音と死の香りが近づいてきた……。夜の王が、食事を邪魔されるのを嫌っているようだ。」",
+            7: "「狂ったような男の笑い声が聞こえる……。しかし、それ以上に恐ろしい咆哮が響き渡った。複数の獣が混ざり合った異形の影が、すべてを喰らい尽くそうとしている。」",
+            8: "「闇の中に、静かに佇む老賢者の気配がある。しかし、周囲を彷徨う怨霊たちの群れが、対話を許さない。まずはこの死の静寂を打ち破らねばならないようだ。」",
+            9: "「透き通った騎士の姿が見える。彼は何かを指し示している……。しかし、極彩色の道化の影が、彼の導きを嘲笑うかのように魔力を爆発させた。」"
+        };
+
+        const msg = messages[floor] || "「ただならぬ気配が漂っている……。今は奥へ進むべきではないようだ。」";
+
+        game.state = 'EVENT';
+        const exploreMenu = document.getElementById('explore-menu');
+        if (exploreMenu) exploreMenu.style.display = 'none';
+
+        const screen = document.getElementById('event-screen');
+        const title = document.getElementById('event-title');
+        const desc = document.getElementById('event-desc');
+        const img = document.getElementById('event-img');
+        const options = document.getElementById('event-options');
+
+        if (screen) screen.style.display = 'flex';
+        if (title) title.textContent = "警告";
+        if (desc) desc.innerHTML = `<div style="text-align:center; padding:20px;">${msg}</div>`;
+        if (img) img.style.display = 'none';
+        if (options) {
+            options.innerHTML = '';
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = '立ち去る (A)';
+            btn.onclick = () => game.closeEvent();
+            options.appendChild(btn);
+        }
     }
 };
