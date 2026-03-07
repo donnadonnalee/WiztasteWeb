@@ -252,6 +252,38 @@ const Battle = {
                 UI.addLog(`${target.name}に${dmg}のダメージ！ ${actor.name}は${heal}回復した！`);
                 UI.showPartyHitEffect(pIdx, dmg);
                 audio.playSE('se_damage');
+            } else if (skill.type === 'breath') {
+                audio.playSE('se_fire');
+                game.party.forEach((p, idx) => {
+                    if (p.hp > 0) {
+                        const dmg = Math.max(1, Math.floor((p.hp * skill.mult) - game.getEffectiveStat(p, 'vit') / 4) + Math.floor(Math.random() * 5));
+                        p.hp = Math.max(0, p.hp - dmg);
+                        UI.addLog(`${p.name}は猛毒のブレスで${dmg}のダメージ！`);
+                        UI.showPartyHitEffect(idx, dmg);
+                    }
+                });
+            } else if (skill.type === 'death') {
+                audio.playSE('se_heavy_attack');
+                if (Math.random() < 0.3) {
+                    target.hp = 0;
+                    UI.addLog(`致命的な一撃！ ${target.name}は息絶えた！`);
+                } else {
+                    const dmg = Math.floor(actor.atk * 1.5);
+                    target.hp = Math.max(0, target.hp - dmg);
+                    UI.addLog(`痛恨の一撃！ ${target.name}に${dmg}のダメージ！`);
+                }
+                UI.showPartyHitEffect(pIdx, 999);
+            } else if (skill.type === 'drain_level') {
+                audio.playSE('se_drain');
+                const dmg = Math.floor(actor.atk);
+                target.hp = Math.max(0, target.hp - dmg);
+                UI.addLog(`${target.name}に${dmg}のダメージ！`);
+                UI.showPartyHitEffect(pIdx, dmg);
+                if (target.hp > 0 && Math.random() < 0.4) {
+                    target.level = Math.max(1, target.level - 1);
+                    target.hp = Math.floor(target.hp / 2);
+                    UI.addLog(`恐るべきエナジードレイン！ ${target.name}のレベルが吸い取られた！`);
+                }
             } else if (skill.type === 'summon') {
                 this.handleEnemySummon(game, actor);
             }

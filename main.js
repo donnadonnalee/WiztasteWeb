@@ -401,8 +401,28 @@ class Game {
     checkTile() {
         const floor = LEVELS[this.currentFloor];
         const tile = floor[this.playerPos.y][this.playerPos.x];
-        if (tile === 3) this.changeFloor(1);
-        else if (tile === 2) this.changeFloor(-1);
+        if (tile === 3) {
+            if (this.currentFloor === 9) { // 10F handling
+                if (!this.npcFlags.boss10FDefeated) {
+                    UI.addLog("階段のようなものがあるが、いまはこのフロアの渦を討伐することに専念しよう。");
+                    // push player back
+                    const { dir } = this.playerPos;
+                    this.playerPos.x -= [0, 1, 0, -1][dir];
+                    this.playerPos.y -= [-1, 0, 1, 0][dir];
+                } else {
+                    this.showDeepWarningEvent();
+                }
+            } else {
+                this.changeFloor(1);
+            }
+        }
+        else if (tile === 2) {
+            if (this.currentFloor === 9 && this.npcFlags.boss10FDefeated) {
+                this.handleEnding();
+            } else {
+                this.changeFloor(-1);
+            }
+        }
         else if (tile === 5) { UI.addLog("テレポーターだ！"); this.teleport(); }
         else if (tile === 7) { UI.addLog("床が回転した！"); this.playerPos.dir = Math.floor(Math.random() * 4); }
         else if (tile === 6) { UI.addLog("暗闇だ..."); }
@@ -412,11 +432,66 @@ class Game {
         else this.checkEncounter();
     }
 
+    showDeepWarningEvent() {
+        this.state = 'EVENT';
+        audio.stopBGM();
+
+        const eventScreen = document.getElementById('event-screen');
+        const eventTitle = document.getElementById('event-title');
+        const eventImg = document.getElementById('event-img');
+        const eventDesc = document.getElementById('event-desc');
+        const eventOptions = document.getElementById('event-options');
+
+        eventTitle.textContent = "深淵への入り口";
+        eventImg.style.display = 'none'; // No specific image for now
+
+        eventDesc.innerHTML = `<div style="text-align:center;">
+            <p>アビスロードは倒れたが、渦の最深奥部からは未だ底知れぬ瘴気が漏れ出している……。</p>
+            <p><strong>【警告：ここから先は未知の領域です】</strong></p>
+            <p style="font-size: 12px; color: #ffaa55;">
+            ・敵は際限なく強くなり、取得経験値は減少します。<br>
+            ・上り階段は生成されず、地上へ引き返すことはできません。<br>
+            ・全滅した場合、<strong>所持品と装備品を50%ロストし、レベルが半減</strong>します。<br>
+            ・全滅後、到達階層が裏ランキングとして記録され、1Fから再スタートとなります。
+            </p>
+            <p>……それでも進みますか？</p>
+            </div>`;
+
+        eventOptions.innerHTML = '';
+
+        const btnYes = document.createElement('button');
+        btnYes.className = 'btn';
+        btnYes.textContent = 'はい（進む）';
+        btnYes.onclick = () => {
+            this.closeEvent();
+            this.changeFloor(1);
+        };
+        eventOptions.appendChild(btnYes);
+
+        const btnNo = document.createElement('button');
+        btnNo.className = 'btn';
+        btnNo.textContent = 'いいえ（戻る）';
+        btnNo.onclick = () => {
+            UI.addLog("あなたは引き返すことを選んだ。");
+            const { dir } = this.playerPos;
+            this.playerPos.x -= [0, 1, 0, -1][dir];
+            this.playerPos.y -= [-1, 0, 1, 0][dir];
+            this.closeEvent();
+        };
+        eventOptions.appendChild(btnNo);
+
+        eventScreen.style.display = 'flex';
+    }
+
     changeFloor(delta) {
         if (this.currentFloor === 0 && delta === -1) { UI.addLog("地上への階段だ。しかし今は戻れない。"); return; }
         this.currentFloor += delta;
         UI.addLog(`地下 ${this.currentFloor + 1} 階へ。`);
         document.getElementById('floor-indicator').textContent = `B${this.currentFloor + 1}F`;
+        if (!LEVELS[this.currentFloor]) {
+            LEVELS[this.currentFloor] = generateMaze(MAP_SIZE, this.currentFloor);
+            this.visited.push(Array(MAP_SIZE).fill().map(() => Array(MAP_SIZE).fill(false)));
+        }
         let found = false, next = LEVELS[this.currentFloor], target = delta === 1 ? 2 : 3;
         for (let r = 0; r < next.length; r++) { for (let c = 0; c < next[r].length; c++) { if (next[r][c] === target) { this.playerPos.x = c; this.playerPos.y = r; found = true; break; } } if (found) break; }
         if (!found) { this.playerPos.x = 1; this.playerPos.y = 1; }
@@ -428,13 +503,41 @@ class Game {
     startBattle(isHard = false) {
         this.state = 'BATTLE';
         audio.playBGM('bgm_battle');
-        let floorMonsters = isHard ? MONSTERS.filter(m => m.level === Math.min(10, this.currentFloor + 3)) : MONSTERS.filter(m => m.level === this.currentFloor + 1);
+
+        let floorMonsters;
+        let scaleMult = 1;
+        let expMult = 1;
+
+        if (this.currentFloor >= 10) { // 11F+
+            // Deep endless mode: select from ALL available monsters and scale them up
+            floorMonsters = MONSTERS;
+            const deepLevel = this.currentFloor - 9; // 1 = 11F, 2 = 12F, etc.
+            scaleMult = Math.pow(1.2, deepLevel);
+            expMult = Math.max(0.1, 0.5 * Math.pow(0.9, deepLevel));
+        } else {
+            floorMonsters = isHard ? MONSTERS.filter(m => !m.deepOnly && m.level === Math.min(10, this.currentFloor + 3)) : MONSTERS.filter(m => !m.deepOnly && m.level === this.currentFloor + 1);
+        }
+
         let num = 1, r = Math.random(); if (r > 0.6) num = 2; if (r > 0.9) num = 3;
         this.currentBattle = { monsters: [], turnOrder: [], phase: 'INPUT', isBoss: false };
         let moHtml = '';
         for (let i = 0; i < num; i++) {
             const data = floorMonsters[Math.floor(Math.random() * floorMonsters.length)] || MONSTERS[0];
-            const m = { ...data, currentHp: data.hp, id: `monster-${i}`, originalName: data.name };
+
+            // Apply deep endless scaling
+            let mHp = data.hp;
+            let mAtk = data.atk;
+            let mAgi = data.agi;
+            let mExp = data.exp;
+
+            if (this.currentFloor >= 10) {
+                mHp = Math.floor(mHp * scaleMult);
+                mAtk = Math.floor(mAtk * scaleMult);
+                mAgi = Math.floor(mAgi * scaleMult);
+                mExp = Math.floor(mExp * expMult);
+            }
+
+            const m = { ...data, hp: mHp, maxHp: mHp, currentHp: mHp, atk: mAtk, agi: mAgi, exp: mExp, id: `monster-${i}`, originalName: data.name };
             this.currentBattle.monsters.push(m);
             moHtml += `<div class="monster-img-container" id="monster-img-${i}">${m.svg}</div>`;
         }
@@ -547,7 +650,10 @@ class Game {
         if (!won) { this.exitBattle(); return; }
         const bt = this.currentBattle;
         if (!bt) { console.error("No current battle!"); return; }
-        if (bt.isBoss) { this.handleEnding(); return; }
+        if (bt.isBoss) {
+            this.npcFlags[`boss10FDefeated`] = true;
+            UI.addLog(`アビスロードを討伐した！しかし、渦の最深部からは未だ瘴気が漏れ出している...`);
+        }
         if (bt.isMidBoss) {
             const floor = bt.isMidBossFloor || (this.currentFloor + 1);
             this.npcFlags[`boss${floor}FDefeated`] = true;
@@ -661,33 +767,183 @@ class Game {
         this.state = 'GAMEOVER'; audio.playBGM('bgm_dead');
 
         const ghosts = this.party.filter(p => p.baseVit < 0);
+        const isDeepFloor = this.currentFloor >= 10; // 11F or deeper
 
-        await UI.showBlackout(this, "全滅した...", 3000, () => {
-            this.playerPos = { x: 1, y: 1, dir: 1 }; this.currentFloor = 0;
+        await UI.showBlackout(this, isDeepFloor ? "深い闇の中で力尽きた..." : "全滅した...", 3000, () => {
+            this.playerPos = { x: 1, y: 1, dir: 1 };
+            const previousFloor = this.currentFloor;
+            this.currentFloor = 0;
 
-            if (ghosts.length > 0) {
+            if (isDeepFloor) {
+                // F11+ Deep penalty: 50% level loss, 50% item loss (both inventory and equipped)
                 this.party.forEach(p => {
-                    if (p.baseVit < 0) {
-                        p.hp = 0;
-                        p.isGhost = true;
-                    } else {
-                        // Alive members HP becomes 1-9
-                        p.hp = Math.floor(Math.random() * 9) + 1;
-                        p.mp = this.getEffectiveMaxMp(p);
-                    }
+                    p.level = Math.max(1, Math.floor(p.level / 2));
+                    // Re-calculate base stats down approximation (crude but functional for level scaling)
+                    p.str = Math.max(p.baseStr, p.str - p.level * 2);
+                    p.int = Math.max(p.baseInt, p.int - p.level * 2);
+                    p.vit = Math.max(p.baseVit, p.vit - p.level * 2);
+                    p.agi = Math.max(p.baseAgi, p.agi - p.level * 2);
+                    p.luk = Math.max(p.baseLuk, p.luk - p.level * 2);
+
+                    p.maxHp = Math.max(p.baseVit * 2, p.maxHp - p.level * 10);
+                    p.maxMp = Math.max(p.baseInt * 2, p.maxMp - p.level * 5);
+
+                    // Unequip items losing check
+                    ['weapon', 'armor', 'accessory'].forEach(slot => {
+                        if (p.equipment[slot] && Math.random() < 0.5) {
+                            UI.addLog(`${p.name}が装備していた${p.equipment[slot].name}は闇に呑まれた...`);
+                            p.equipment[slot] = null;
+                        }
+                    });
+
+                    p.hp = Math.floor(Math.random() * 9) + 1; // 1-9 hp
+                    p.mp = this.getEffectiveMaxMp(p);
                     p.deadLogged = false;
                 });
-                ghosts.forEach(g => UI.addLog(`「${g.name}が呼ぶ声がした……」`));
-            } else {
-                this.party.forEach(p => { p.hp = this.getEffectiveMaxHp(p); p.mp = this.getEffectiveMaxMp(p); p.deadLogged = false; });
-            }
 
-            document.getElementById('floor-indicator').textContent = 'B1F';
-            this.exitBattle();
-            UI.addLog("気が付いたら迷宮の入り口に戻っていた。アビスロードを倒すまで町には戻れないようだ");
+                let remainingInventory = [];
+                this.inventory.forEach(item => {
+                    if (Math.random() >= 0.5) remainingInventory.push(item);
+                    else UI.addLog(`${item.name}は闇に呑まれた...`);
+                });
+                this.inventory = remainingInventory;
+
+                UI.addLog("パーティは疲弊し、多くの持ち物を失って地上へ弾き出された……");
+                this.exitBattle();
+                document.getElementById('floor-indicator').textContent = 'B1F';
+                this.showDeepRanking(previousFloor);
+
+            } else {
+                if (ghosts.length > 0) {
+                    this.party.forEach(p => {
+                        if (p.baseVit < 0) {
+                            p.hp = 0;
+                            p.isGhost = true;
+                        } else {
+                            // Alive members HP becomes 1-9
+                            p.hp = Math.floor(Math.random() * 9) + 1;
+                            p.mp = this.getEffectiveMaxMp(p);
+                        }
+                        p.deadLogged = false;
+                    });
+                    ghosts.forEach(g => UI.addLog(`「${g.name}が呼ぶ声がした……」`));
+                } else {
+                    this.party.forEach(p => { p.hp = this.getEffectiveMaxHp(p); p.mp = this.getEffectiveMaxMp(p); p.deadLogged = false; });
+                }
+
+                document.getElementById('floor-indicator').textContent = 'B1F';
+                this.exitBattle();
+                UI.addLog("気が付いたら迷宮の入り口に戻っていた。アビスロードを倒すまで町には戻れないようだ");
+            }
         });
     }
 
+    showDeepRanking(finalFloor) {
+        document.getElementById('explore-menu').style.display = 'none';
+        document.getElementById('deep-ranking-screen').style.display = 'flex';
+        document.getElementById('deep-floor-display').textContent = `B${finalFloor + 1}F`;
+        audio.playBGM('bgm_dead');
+
+        const btnSubmit = document.getElementById('btn-submit-deep-score');
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'この記録を深淵に刻む';
+
+        btnSubmit.onclick = () => {
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = '送信中...';
+
+            if (window.firebaseInitialized) {
+                const dbRankRef = window.firebaseRef('deep_rankings');
+
+                // Collect party member summaries
+                const partyData = this.party.map(p => ({
+                    name: p.name,
+                    job: p.job,
+                    gender: p.gender,
+                    level: p.level,
+                    portrait: p.portrait
+                }));
+
+                window.firebasePush(dbRankRef, {
+                    floor: finalFloor + 1,
+                    karma: this.karma,
+                    party: partyData,
+                    timestamp: JSON.parse(JSON.stringify(new Date()))
+                }).then(() => {
+                    btnSubmit.textContent = '記録完了！';
+                }).catch(e => {
+                    btnSubmit.textContent = 'エラー発生';
+                    console.error(e);
+                });
+            } else {
+                btnSubmit.textContent = 'オフライン';
+            }
+        };
+
+        const btnRestart = document.getElementById('btn-deep-restart');
+        btnRestart.onclick = () => {
+            document.getElementById('deep-ranking-screen').style.display = 'none';
+            document.getElementById('explore-menu').style.display = 'flex';
+            audio.playBGM('bgm_explore');
+            this.state = 'EXPLORE';
+            this.saveGame();
+            this.render();
+        };
+
+        this.loadDeepRankings();
+    }
+
+    loadDeepRankings() {
+        if (!window.firebaseInitialized) return;
+        const dbRankRef = window.firebaseRef('deep_rankings');
+        // Sort by floor descending (Note: Firebase JS SDK orderByChild ascending by default)
+        // Since we want highest floor first, we have to fetch and sort locally if doing limitToLast, 
+        // or store negative floor to sort ascending. We'll fetch the top 20 by Floor and sort locally.
+        const q = window.firebaseQuery(window.firebaseOrderByChild(window.firebaseRef('deep_rankings'), 'floor'));
+
+        window.firebaseOnValue(q, (snapshot) => {
+            const rankings = [];
+            snapshot.forEach((childSnapshot) => {
+                rankings.push(childSnapshot.val());
+            });
+
+            // Sort descending by floor
+            rankings.sort((a, b) => b.floor - a.floor);
+            // Take top 10
+            const topRankings = rankings.slice(0, 10);
+
+            let html = '';
+            let rank = 1;
+
+            topRankings.forEach((data) => {
+                const safeFloor = parseInt(data.floor) || 0;
+                let partyHtml = '';
+                if (data.party && Array.isArray(data.party)) {
+                    data.party.forEach(p => {
+                        const safeName = typeof p.name === 'string' ? p.name.replace(/[&<>'"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[m])) : '不明';
+                        partyHtml += `
+                            <div style="display:flex; align-items:center; gap:5px; margin-right: 10px;">
+                                <img src="${p.portrait}" style="width:24px; height:24px; border:1px solid #555; background:#222; object-fit:cover;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect width=%221%22 height=%221%22 fill=%22%23333%22/></svg>'">
+                                <span style="font-size: 11px;">Lv${p.level} ${safeName}</span>
+                            </div>`;
+                    });
+                }
+
+                html += `
+                    <div style="padding: 10px; border-bottom: 1px solid #333; background: rgba(0,0,0,0.5);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
+                            <span style="color:#ffcc00; font-weight:bold;">${rank}位 : B${safeFloor}F 到達</span>
+                            <span style="color:#aaf; font-size:12px;">カルマ: ${data.karma || 0}</span>
+                        </div>
+                        <div style="display:flex; flex-wrap:wrap; justify-content:flex-start;">
+                            ${partyHtml}
+                        </div>
+                    </div>`;
+                rank++;
+            });
+            document.getElementById('deep-ranking-container').innerHTML = html || 'まだ記録がありません。';
+        });
+    }
 
     handleEnding() {
         this.clearTime = this.elapsedTimeAtSave + (Date.now() - (this.startTime || Date.now()));

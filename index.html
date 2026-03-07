@@ -121,6 +121,29 @@
                 <button class="btn" style="margin-top: 20px;" onclick="location.reload()">タイトルへ戻る</button>
             </div>
 
+            <!-- DEEP RANKING SCREEN -->
+            <div id="deep-ranking-screen" class="overlay-screen" style="display: none; background: rgba(10,0,0,0.95);">
+                <h1 style="color:#f55; text-shadow: 2px 2px 5px #f00;">DEEP Labyrinth Record</h1>
+                <p style="color:#fb8;">あなたは深い闇の中で力尽きた......</p>
+                <p style="margin-bottom: 20px;">到達階層: <span id="deep-floor-display"
+                        style="color:#5f5; font-size:24px; font-weight:bold;">B11F</span></p>
+
+                <div style="margin-top: 10px; text-align:center;">
+                    <button class="btn" id="btn-submit-deep-score"
+                        style="border-color:#f55; color:#f55;">この記録を深淵に刻む</button>
+                </div>
+
+                <div class="ranking-list" style="margin-top: 20px; max-height: 250px; overflow-y: auto;">
+                    <h3
+                        style="text-align:center; border-bottom:1px solid #f55; color:#f55; padding-bottom:5px; margin-bottom:10px;">
+                        DEEP SEEKERS</h3>
+                    <div id="deep-ranking-container" style="display: flex; flex-direction: column; gap: 8px;">Loading...
+                    </div>
+                </div>
+                <button class="btn" id="btn-deep-restart"
+                    style="margin-top: 20px; border-color:#5f5; color:#5f5;">地上からやり直す (1Fへ)</button>
+            </div>
+
             <!-- FADE OVERLAY -->
             <div id="fade-overlay" class="fade-overlay">
                 <div id="fade-text" class="fade-text"></div>

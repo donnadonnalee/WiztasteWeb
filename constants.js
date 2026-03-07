@@ -176,6 +176,18 @@ const ENEMY_SKILLS = {
     15: { name: '呪い', chance: 0.2, type: 'drain', desc: '呪いを放った！', mult: 1.4, se: 'se_magic', flashColor: 'rgba(150,0,255,0.5)' },
     16: { name: '痛恨の一撃', chance: 0.2, type: 'attack', desc: '渾身の一撃が叩き込まれた！', mult: 2.5, se: 'se_heavy_attack', flashColor: 'rgba(255,0,0,0.6)' },
     17: { name: '宣告', chance: 0.1, type: 'attack', desc: '死を宣告した！', mult: 3.4, se: 'se_magic', flashColor: 'rgba(0,0,0,0.8)' },
+    18: { name: '業火', chance: 0.4, type: 'aoe', desc: '地獄の業火がすべてを焼き尽くす！', mult: 1.2, se: 'se_fire', flashColor: 'rgba(255,0,0,0.6)' },
+    19: { name: '絶望の吸血', chance: 0.5, type: 'drain', desc: '凄まじい勢いで血を啜る！', mult: 1.5, se: 'se_drain', flashColor: 'rgba(255,0,0,0.8)' },
+    20: { name: '狂気の視線', chance: 0.3, type: 'pierce', desc: '狂気の視線に貫かれた！', mult: 1.5, se: 'se_magic', flashColor: 'rgba(150,0,150,0.5)' },
+    21: { name: '溶解液', chance: 0.4, type: 'pierce', desc: 'すべてを溶かす溶解液をまき散らす！', mult: 1.8, se: 'se_magic', flashColor: 'rgba(100,255,50,0.6)' },
+    22: { name: '竜の息吹', chance: 0.5, type: 'breath', desc: '想像を絶する熱線のブレス！', mult: 0.8, se: 'se_fire', flashColor: 'rgba(255,200,0,0.8)' },
+    23: { name: '大地震', chance: 0.3, type: 'aoe', desc: '大地を激しく揺るがした！', mult: 1.5, se: 'se_heavy_attack', flashColor: 'rgba(150,100,50,0.7)' },
+    24: { name: '甘い誘惑', chance: 0.4, type: 'drain_level', desc: '魅惑的な口づけで精気を奪う！', mult: 0.8, se: 'se_drain', flashColor: 'rgba(255,100,200,0.6)' },
+    25: { name: '毒の息', chance: 0.4, type: 'breath', desc: '猛烈な毒の息を吐き出した！', mult: 0.6, se: 'se_fire', flashColor: 'rgba(50,255,50,0.6)' },
+    26: { name: 'エナジードレイン', chance: 0.4, type: 'drain_level', desc: '生命の源を吸い取ってきた！', mult: 1.0, se: 'se_drain', flashColor: 'rgba(200,50,200,0.6)' },
+    27: { name: 'まばゆい光', chance: 0.3, type: 'aoe', desc: '強烈な光が視界を奪う！', mult: 0.5, se: 'se_magic', flashColor: 'rgba(255,255,200,0.8)' },
+    28: { name: '命を刈り取る手', chance: 0.3, type: 'drain', desc: '冷たい手で命を刈り取った！', mult: 1.5, se: 'se_drain', flashColor: 'rgba(0,0,100,0.5)' },
+    29: { name: '死の絶叫', chance: 0.3, type: 'death', desc: '呪われた絶叫が響き渡る！', mult: 1.0, se: 'se_heavy_attack', flashColor: 'rgba(200,0,0,0.7)' },
     'boss': { name: '絶望の波動', chance: 0.1, type: 'aoe', desc: '周囲の空気が重く震える...', mult: 2.0, se: 'se_heavy_attack', flashColor: 'rgba(255,255,255,0.8)' }
 };
 
@@ -205,7 +217,12 @@ function generateMaze(size, depth = 0) {
     let sx = 1, sy = 1, cx = Math.floor(rooms[0].x + rooms[0].w / 2), cy = Math.floor(rooms[0].y + rooms[0].h / 2);
     while (sx !== cx) { map[sy][sx] = 0; sx += (cx > sx) ? 1 : -1; }
     while (sy !== cy) { map[sy][sx] = 0; sy += (cy > sy) ? 1 : -1; }
-    map[1][1] = 2;
+
+    // No up stairs from 11F onwards (depth >= 10)
+    if (depth < 10) {
+        map[1][1] = 2;
+    }
+
     const lastRoom = rooms[rooms.length - 1];
     let stairX = lastRoom.x + Math.floor(Math.random() * lastRoom.w), stairY = lastRoom.y + Math.floor(Math.random() * lastRoom.h);
     if (stairX === 1 && stairY === 1) stairX++;
@@ -265,3 +282,153 @@ function generateAllLevels() {
     }
 }
 generateAllLevels();
+
+// ==========================================
+// 11F以降（深層・アビス）専用モンスターの追加エリア
+// ==========================================
+// ここに手動で追加したモンスターは、深層（11F以降）でのみ出現します。
+// （deepOnly: true を設定しているため通常の1〜10Fには出現しません）
+
+MONSTERS.push({
+    name: "アークデーモン",
+    level: 12,
+    hp: 1800,
+    atk: 180,
+    agi: 70,
+    exp: 4500,
+    imgIndex: 18,
+    svg: `<img src="assets/monster_18.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; transform: scale(1.2); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
+
+MONSTERS.push({
+    name: "ブラッディ",
+    level: 11,
+    hp: 1200,
+    atk: 150,
+    agi: 90,
+    exp: 3500,
+    imgIndex: 19,
+    svg: `<img src="assets/monster_19.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; filter: hue-rotate(340deg) saturate(1.5); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
+
+MONSTERS.push({
+    name: "フィアー",
+    level: 12,
+    hp: 1500,
+    atk: 140,
+    agi: 100,
+    exp: 4000,
+    imgIndex: 20,
+    svg: `<img src="assets/monster_20.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; filter: brightness(0.8) contrast(1.2); transform: scale(1.1); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
+
+MONSTERS.push({
+    name: "ヴェノム",
+    level: 11,
+    hp: 2200,
+    atk: 130,
+    agi: 40,
+    exp: 3800,
+    imgIndex: 21,
+    svg: `<img src="assets/monster_21.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; filter: hue-rotate(90deg) saturate(1.5); transform: scale(1.3); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
+
+MONSTERS.push({
+    name: "アークドラゴン",
+    level: 14,
+    hp: 3000,
+    atk: 250,
+    agi: 80,
+    exp: 7000,
+    imgIndex: 22,
+    svg: `<img src="assets/monster_22.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; transform: scale(1.5); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
+
+MONSTERS.push({
+    name: "ギガント",
+    level: 13,
+    hp: 4000,
+    atk: 220,
+    agi: 30,
+    exp: 6000,
+    imgIndex: 23,
+    svg: `<img src="assets/monster_23.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; transform: scale(1.6); filter: brightness(0.9); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
+
+MONSTERS.push({
+    name: "サキュバス",
+    level: 12,
+    hp: 1600,
+    atk: 110,
+    agi: 120,
+    exp: 4500,
+    imgIndex: 24,
+    svg: `<img src="assets/monster_24.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; filter: hue-rotate(300deg) saturate(1.2); transform: scale(1.1); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
+
+MONSTERS.push({
+    name: "ポイズンジャイアント",
+    level: 14,
+    hp: 2500,
+    atk: 150,
+    agi: 50,
+    exp: 12000,
+    imgIndex: 25,
+    svg: `<img src="assets/monster_25.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; transform: scale(1.6); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
+
+MONSTERS.push({
+    name: "マイルフィック",
+    level: 15,
+    hp: 1800,
+    atk: 300,
+    agi: 100,
+    exp: 18000,
+    imgIndex: 26,
+    svg: `<img src="assets/monster_26.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; filter: hue-rotate(270deg) contrast(1.5) brightness(0.8); transform: scale(1.4); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
+
+MONSTERS.push({
+    name: "ウィル・オ・ウィスプ",
+    level: 13,
+    hp: 300,
+    atk: 80,
+    agi: 999, // Extremely hard to hit
+    exp: 50000, // Massive EXP
+    imgIndex: 27,
+    svg: `<img src="assets/monster_27.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; filter: hue-rotate(45deg) brightness(2.0); transform: scale(0.9); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
+
+MONSTERS.push({
+    name: "レイス",
+    level: 12,
+    hp: 1200,
+    atk: 140,
+    agi: 80,
+    exp: 8000,
+    imgIndex: 28,
+    svg: `<img src="assets/monster_28.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; filter: brightness(0.7) opacity(0.8); transform: scale(1.1); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
+
+MONSTERS.push({
+    name: "バンシー",
+    level: 13,
+    hp: 1500,
+    atk: 120,
+    agi: 90,
+    exp: 10000,
+    imgIndex: 29,
+    svg: `<img src="assets/monster_29.png" style="width:100%; height:100%; object-fit:contain; object-position:bottom; filter: hue-rotate(180deg) saturate(1.2); transform: scale(1.2); image-rendering: pixelated;" />`,
+    deepOnly: true
+});
