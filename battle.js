@@ -248,6 +248,7 @@ const Battle = {
                             if (resists.has(skill.status)) {
                                 UI.addLog(`${p.name}は装備の効果で${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}を防いだ！`);
                             } else {
+                                if (!p.statuses) p.statuses = { poison: false, paralysis: false, confusion: false };
                                 p.statuses[skill.status] = true;
                                 UI.addLog(`${p.name}は${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}に陥った！`);
                             }
@@ -275,6 +276,7 @@ const Battle = {
                             if (resists.has(skill.status)) {
                                 UI.addLog(`${p.name}は装備の効果で${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}を防いだ！`);
                             } else {
+                                if (!p.statuses) p.statuses = { poison: false, paralysis: false, confusion: false };
                                 p.statuses[skill.status] = true;
                                 UI.addLog(`${p.name}は${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}に侵された！`);
                             }
@@ -314,6 +316,7 @@ const Battle = {
                     if (resists.has(skill.status)) {
                         UI.addLog(`${target.name}は装備の効果で${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}を防いだ！`);
                     } else {
+                        if (!target.statuses) target.statuses = { poison: false, paralysis: false, confusion: false };
                         target.statuses[skill.status] = true;
                         UI.addLog(`${target.name}は${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}に陥った！`);
                     }

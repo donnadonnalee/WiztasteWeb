@@ -163,6 +163,10 @@ class Game {
             LEVELS.length = 0;
             data.levels.forEach(l => LEVELS.push(l));
         }
+        // Migration: Ensure all characters have statuses
+        this.party.forEach(p => {
+            if (!p.statuses) p.statuses = { poison: false, paralysis: false, confusion: false };
+        });
         this.startTime = Date.now();
         this.state = 'EXPLORE';
         document.getElementById('char-create-screen').style.display = 'none';
