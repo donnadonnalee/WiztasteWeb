@@ -128,7 +128,8 @@ class Game {
             baseStr: str, baseInt: int, baseVit: vit, baseAgi: agi, baseLuk: job.luk,
             bonusLeft: 0, level: 1, exp: 0, gold: 0,
             equipment: { weapon: null, armor: null, accessory: null },
-            inventory: []
+            inventory: [],
+            statuses: { poison: false, paralysis: false, confusion: false }
         };
     }
 
@@ -360,6 +361,23 @@ class Game {
                 this.playerPos.x = nx; this.playerPos.y = ny;
                 this.updateMirrorEffect();
                 this.checkTile();
+
+                // Status check on step
+                this.party.forEach(p => {
+                    if (p.hp > 0 && p.statuses?.poison) {
+                        const poiDmg = Math.max(1, Math.floor(this.getEffectiveMaxHp(p) * 0.03));
+                        p.hp = Math.max(1, p.hp - poiDmg);
+                        UI.addLog(`${p.name}は毒に苦しんでいる...(${poiDmg}ダメージ)`);
+
+                        // Recovery chance per step? Request said 30% for recovery.
+                        // Usually recovery is per turn, but can be per step on map.
+                        if (Math.random() < 0.05) { // Lower chance on map to make it threatening
+                            p.statuses.poison = false;
+                            UI.addLog(`${p.name}の毒が消えた。`);
+                        }
+                    }
+                });
+
             }
         } else if (action === 'left') this.playerPos.dir = (dir + 3) % 4;
         else if (action === 'right') this.playerPos.dir = (dir + 1) % 4;
@@ -537,7 +555,7 @@ class Game {
                 mExp = Math.floor(mExp * expMult);
             }
 
-            const m = { ...data, hp: mHp, maxHp: mHp, currentHp: mHp, atk: mAtk, agi: mAgi, exp: mExp, id: `monster-${i}`, originalName: data.name };
+            const m = { ...data, hp: mHp, maxHp: mHp, currentHp: mHp, atk: mAtk, agi: mAgi, exp: mExp, id: `monster-${i}`, originalName: data.name, statuses: { poison: false, paralysis: false, confusion: false } };
             this.currentBattle.monsters.push(m);
             moHtml += `<div class="monster-img-container" id="monster-img-${i}">${m.svg}</div>`;
         }
@@ -1260,7 +1278,38 @@ class Game {
     generateLoot() {
         const pool = ITEMS.filter(i => i.level <= this.currentFloor + 1);
         const item = { ...pool[Math.floor(Math.random() * pool.length)] };
-        if (item.type !== 'consumable') { const p = ITEM_PREFIXES[Math.floor(Math.random() * ITEM_PREFIXES.length)]; item.name = p.name + item.name; if (item.atk) item.atk = Math.round(item.atk * p.mult); }
+        if (item.type !== 'consumable') {
+            const p = ITEM_PREFIXES[Math.floor(Math.random() * ITEM_PREFIXES.length)];
+            item.name = p.name + item.name;
+            if (item.atk) item.atk = Math.round(item.atk * p.mult);
+
+            // Add random status effects/resistances
+            const possibleStatuses = ['poison', 'paralysis', 'confusion'];
+            const labels = { poison: '毒', paralysis: '麻痺', confusion: '混乱' };
+            const addedInflict = [];
+            const addedResist = [];
+
+            if (item.type === 'weapon' || item.type === 'accessory') {
+                possibleStatuses.forEach(s => {
+                    if (Math.random() < 0.15) addedInflict.push(s);
+                });
+            }
+            if (item.type === 'armor' || item.type === 'accessory') {
+                possibleStatuses.forEach(s => {
+                    if (Math.random() < 0.2) addedResist.push(s);
+                });
+            }
+
+            if (addedInflict.length > 0) item.inflictStatuses = addedInflict;
+            if (addedResist.length > 0) item.resistStatuses = addedResist;
+
+            const allEffects = [...addedInflict, ...addedResist];
+            const uniqueEffects = [...new Set(allEffects)];
+            if (uniqueEffects.length > 0) {
+                const suffix = uniqueEffects.map(s => labels[s]).join('・');
+                item.name += ` (${suffix})`;
+            }
+        }
         return item;
     }
 

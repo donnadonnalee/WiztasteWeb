@@ -233,6 +233,11 @@ const UI = {
                         <strong>${p.name}</strong> 
                         <span style="font-size:10px; color:#aaa;">Lv${p.level} ${p.job}</span>
                     </div>
+                    <div class="status-indicators" style="font-size:10px; margin-bottom: 2px;">
+                        ${p.statuses?.poison ? '<span style="color:#0f0; margin-right:4px;">[毒]</span>' : ''}
+                        ${p.statuses?.paralysis ? '<span style="color:#ff0; margin-right:4px;">[麻]</span>' : ''}
+                        ${p.statuses?.confusion ? '<span style="color:#f0f; margin-right:4px;">[混]</span>' : ''}
+                    </div>
                     ${isGhost ? `
                     <div class="ghost-status" style="text-align:center; padding: 5px 0;">[ 亡霊 ]</div>
                     ` : `
@@ -278,6 +283,26 @@ const UI = {
                         } else {
                             el.classList.remove('monster-dead');
                             el.style.display = 'block';
+                            // Status display
+                            let statusEl = document.getElementById(`monster-status-${i}`);
+                            if (!statusEl) {
+                                statusEl = document.createElement('div');
+                                statusEl.id = `monster-status-${i}`;
+                                statusEl.className = 'monster-status-display';
+                                statusEl.style.position = 'absolute';
+                                statusEl.style.bottom = '-20px';
+                                statusEl.style.width = '100%';
+                                statusEl.style.textAlign = 'center';
+                                statusEl.style.fontSize = '12px';
+                                statusEl.style.textShadow = '1px 1px 2px #000';
+                                statusEl.style.zIndex = '100';
+                                el.appendChild(statusEl);
+                            }
+                            statusEl.innerHTML = `
+                                ${m.statuses?.poison ? '<span style="color:#0f0; margin-right:4px;">[毒]</span>' : ''}
+                                ${m.statuses?.paralysis ? '<span style="color:#ff0; margin-right:4px;">[麻]</span>' : ''}
+                                ${m.statuses?.confusion ? '<span style="color:#f0f; margin-right:4px;">[混]</span>' : ''}
+                            `;
                         }
                     }
                 });

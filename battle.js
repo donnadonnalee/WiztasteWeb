@@ -242,6 +242,16 @@ const Battle = {
                         p.hp = Math.max(0, p.hp - dmg);
                         UI.addLog(`${p.name}に${dmg}のダメージ！`);
                         UI.showPartyHitEffect(idx, dmg);
+                        // Status chance for AOE
+                        if (p.hp > 0 && skill.status && Math.random() < skill.statusChance) {
+                            const resists = this.getPartyMemberResists(p);
+                            if (resists.has(skill.status)) {
+                                UI.addLog(`${p.name}は装備の効果で${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}を防いだ！`);
+                            } else {
+                                p.statuses[skill.status] = true;
+                                UI.addLog(`${p.name}は${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}に陥った！`);
+                            }
+                        }
                     }
                 });
             } else if (skill.type === 'drain') {
@@ -258,8 +268,17 @@ const Battle = {
                     if (p.hp > 0) {
                         const dmg = Math.max(1, Math.floor((p.hp * skill.mult) - game.getEffectiveStat(p, 'vit') / 4) + Math.floor(Math.random() * 5));
                         p.hp = Math.max(0, p.hp - dmg);
-                        UI.addLog(`${p.name}は猛毒のブレスで${dmg}のダメージ！`);
+                        UI.addLog(`${p.name}のブレス攻撃！${dmg}のダメージ！`);
                         UI.showPartyHitEffect(idx, dmg);
+                        if (p.hp > 0 && skill.status && Math.random() < skill.statusChance) {
+                            const resists = this.getPartyMemberResists(p);
+                            if (resists.has(skill.status)) {
+                                UI.addLog(`${p.name}は装備の効果で${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}を防いだ！`);
+                            } else {
+                                p.statuses[skill.status] = true;
+                                UI.addLog(`${p.name}は${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}に侵された！`);
+                            }
+                        }
                     }
                 });
             } else if (skill.type === 'death') {
@@ -287,6 +306,19 @@ const Battle = {
             } else if (skill.type === 'summon') {
                 this.handleEnemySummon(game, actor);
             }
+
+            // Apply status to single target skills (attack, pierce, drain, death, drain_level)
+            if (target && target.hp > 0 && skill.status && skill.type !== 'aoe' && skill.type !== 'breath') {
+                if (Math.random() < skill.statusChance) {
+                    const resists = this.getPartyMemberResists(target);
+                    if (resists.has(skill.status)) {
+                        UI.addLog(`${target.name}は装備の効果で${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}を防いだ！`);
+                    } else {
+                        target.statuses[skill.status] = true;
+                        UI.addLog(`${target.name}は${skill.status === 'poison' ? '毒' : (skill.status === 'paralysis' ? '麻痺' : '混乱')}に陥った！`);
+                    }
+                }
+            }
         } else {
             const target = aliveParty[Math.floor(Math.random() * aliveParty.length)];
             const pIdx = game.party.indexOf(target);
@@ -297,6 +329,17 @@ const Battle = {
             audio.playSE('se_damage');
         }
         game.party.forEach(p => { if (p.hp <= 0 && !p.deadLogged) { p.deadLogged = true; UI.addLog(`${p.name}は倒れた...`); } });
+    },
+
+    getPartyMemberResists: function (p) {
+        const resists = new Set();
+        ['armor', 'accessory'].forEach(slot => {
+            const item = p.equipment[slot];
+            if (item && item.resistStatuses) {
+                item.resistStatuses.forEach(s => resists.add(s));
+            }
+        });
+        return resists;
     },
 
     handleEnemySummon: function (game, actor) {
@@ -315,5 +358,32 @@ const Battle = {
             mo.appendChild(container);
             UI.addLog(`新たな${baseName}が現れた！`);
         } else UI.addLog("しかし仲間を呼ぶスペースがない！");
+    },
+
+    executePlayerAttack: function (game, actor, monster) {
+        audio.playSE('se_attack');
+        const dmg = Math.max(1, game.getEffectiveStat(actor, 'str') + Math.floor(Math.random() * 5) - 2);
+        monster.currentHp -= dmg;
+        UI.addLog(`${actor.name}の攻撃！ ${monster.name}に${dmg}のダメージ！`);
+        UI.showHitEffect(monster.id, dmg);
+
+        // Equipment-based status infliction
+        if (monster.currentHp > 0) {
+            const inflictSet = new Set();
+            ['weapon', 'accessory'].forEach(slot => {
+                const item = actor.equipment[slot];
+                if (item && item.inflictStatuses) {
+                    item.inflictStatuses.forEach(s => inflictSet.add(s));
+                }
+            });
+
+            inflictSet.forEach(status => {
+                if (Math.random() < 0.3) {
+                    monster.statuses[status] = true;
+                    const labels = { poison: '毒', paralysis: '麻痺', confusion: '混乱' };
+                    UI.addLog(`${monster.name}を${labels[status]}状態にした！`);
+                }
+            });
+        }
     }
 };
