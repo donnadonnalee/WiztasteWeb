@@ -25,9 +25,23 @@ const Battle = {
             if (action.isPlayer && action.actor.hp <= 0) continue;
             if (!action.isPlayer && action.actor.currentHp <= 0) continue;
 
-            // Skip if dead
-            if (action.isPlayer && action.actor.hp <= 0) continue;
-            if (!action.isPlayer && action.actor.currentHp <= 0) continue;
+            // Status: Paralysis recovery check (approx 20% chance)
+            if (action.actor.statuses?.paralysis) {
+                if (Math.random() < 0.20) {
+                    action.actor.statuses.paralysis = false;
+                    UI.addLog(`${action.actor.name}の身体のしびれが取れた！`);
+                }
+            }
+
+            // Status: Paralysis skip turn check (75% chance to fail action)
+            if (action.actor.statuses?.paralysis) {
+                if (Math.random() < 0.75) {
+                    UI.addLog(`${action.actor.name}は身体がしびれて動けない！`);
+                    await new Promise(r => setTimeout(r, 600));
+                    continue;
+                }
+            }
+
 
             if (action.isPlayer) {
                 let targetIdx = Math.floor(Math.random() * aliveMonsters.length);

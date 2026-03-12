@@ -380,6 +380,13 @@ class Game {
                             UI.addLog(`${p.name}の毒が消えた。`);
                         }
                     }
+                    if (p.hp > 0 && p.statuses?.paralysis) {
+                        // Paralysis recovery chance per step (approx 5%)
+                        if (Math.random() < 0.05) {
+                            p.statuses.paralysis = false;
+                            UI.addLog(`${p.name}のしびれが和らいだ。`);
+                        }
+                    }
                 });
 
             }
@@ -1187,7 +1194,14 @@ class Game {
             }
         } else {
             const target = this.party[charIdx];
-            if (item.hpRestore) { target.hp = Math.min(this.getEffectiveMaxHp(target), target.hp + item.hpRestore); UI.addLog(`${target.name}は${item.name}を使った。`); }
+            if (item.hpRestore) { 
+                target.hp = Math.min(this.getEffectiveMaxHp(target), target.hp + item.hpRestore); 
+                UI.addLog(`${target.name}は${item.name}を使った。`); 
+                if (item.id === 4) { // Elixir cures all statuses
+                    target.statuses = { poison: false, paralysis: false, confusion: false };
+                    UI.addLog(`${target.name}の健康状態が完全に回復した！`);
+                }
+            }
             if (item.mpRestore) { target.mp = Math.min(this.getEffectiveMaxMp(target), target.mp + item.mpRestore); UI.addLog(`${target.name}は${item.name}を使った。`); }
         }
         if (!item.infinite) this.inventory.splice(itemIdx, 1);
