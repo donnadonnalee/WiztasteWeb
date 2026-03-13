@@ -393,6 +393,7 @@ class Game {
                             p.statuses.paralysis = false;
                             UI.addLog(`${p.name}のしびれが和らいだ。`);
                         }
+                    }
                     if (p.hp > 0 && p.statuses?.confusion) {
                         // Confusion recovery chance per step (approx 5%)
                         if (Math.random() < 0.05) {
