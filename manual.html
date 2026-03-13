@@ -57,6 +57,10 @@
                         <h3>キャラクター抽選とボーナス</h3>
                         <p>冒険の始まりは、酒場に集まった4人の志願者を選ぶことから始まります。満足のいくステータスや職業が出るまで、何度でも<strong>「再抽選（Rキー）」</strong>が可能です。
                         </p>
+                        <div class="system-image">
+                            <img src="assets/char_creation.png" alt="キャラクター作成画面"
+                                style="width:100%; border:1px solid #555; margin: 10px 0;" />
+                        </div>
                         <p><span class="reward-item">重要：</span>
                             各キャラクターのステータス横にある「+」ボタンでボーナスポイントを割り振れます。VITは最大HP、INTは最大MPに直結し、各ステータスは装備可能条件にも関係するため、バランスを考えて慎重に割り当てましょう。
                         </p>
@@ -66,6 +70,10 @@
                     <div class="system-box">
                         <h3>3Dダンジョン探索</h3>
                         <p>名作ウィザードリィを彷彿とさせる、主観視点での探索です。マップは挑戦のたびにその姿を変え、壁の奥には<strong>「隠し扉」</strong>が潜んでいることもあります。</p>
+                        <div class="system-image">
+                            <img src="assets/exploration.png" alt="探索画面"
+                                style="width:100%; border:1px solid #555; margin: 10px 0;" />
+                        </div>
                         <ul>
                             <li><strong>テレポーター</strong>：迷宮内の別の場所へランダムに転送されます。</li>
                             <li><strong>回転床</strong>：一歩踏み出すと向きが強制的に変えられます。</li>
@@ -76,6 +84,10 @@
                     <div class="system-box">
                         <h3>戦略的なコマンド戦闘</h3>
                         <p>敵と遭遇するとコマンド選択式の戦闘になります。各職業には固有のスキルがあり、HPやMPを消費して強力な一撃や支援を繰り出すことができます。</p>
+                        <div class="system-image">
+                            <img src="assets/battle.png" alt="戦闘画面"
+                                style="width:100%; border:1px solid #555; margin: 10px 0;" />
+                        </div>
                     </div>
 
                     <!-- Gear & Camp -->
@@ -83,6 +95,10 @@
                         <h3>キャンプと装備の掟</h3>
                         <p>「Cキー」でキャンプを開き、アイテムの使用や装備の変更が行えます。装備品には<strong>「必要ステータス」</strong>が設定されており、これを満たさないと真価を発揮できません。
                         </p>
+                        <div class="system-image">
+                            <img src="assets/camp.png" alt="キャンプ画面"
+                                style="width:100%; border:1px solid #555; margin: 10px 0;" />
+                        </div>
                         <p><small>※初期のボーナス割り振りが、将来強力な武具を扱えるかどうかの鍵を握ります。</small></p>
                     </div>
 
@@ -149,6 +165,10 @@
                                 <div class="gender-info">
                                     <div class="gender-label">男性 / MALE</div>
                                     <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">勇猛の叫び</span>
+                                        <p class="skill-desc">次の戦闘の１ターン目、ATKを1.5倍にする（MP5）</p>
+                                    </div>
+                                    <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">全力振り</span>
                                         <p class="skill-desc">大ダメージを与える強力な一撃。</p>
                                     </div>
@@ -158,6 +178,10 @@
                                 <img src="assets/face_戦士_female.jpeg" alt="Warrior Female" class="gender-portrait" />
                                 <div class="gender-info">
                                     <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">勇猛の叫び</span>
+                                        <p class="skill-desc">次の戦闘の１ターン目、ATKを1.5倍にする（MP5）</p>
+                                    </div>
                                     <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">全力振り</span>
                                         <p class="skill-desc">大ダメージを与える強力な一撃。</p>
@@ -179,6 +203,10 @@
                                 <div class="gender-info">
                                     <div class="gender-label">男性 / MALE</div>
                                     <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">隠密の眼</span>
+                                        <p class="skill-desc">罠、隠し扉、ギミックをマップに可視化する（MP10）</p>
+                                    </div>
+                                    <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">不意打ち</span>
                                         <p class="skill-desc">素早さを活かした奇襲攻撃。</p>
                                     </div>
@@ -188,6 +216,10 @@
                                 <img src="assets/face_盗賊_female.jpeg" alt="Thief Female" class="gender-portrait" />
                                 <div class="gender-info">
                                     <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">隠密の眼</span>
+                                        <p class="skill-desc">罠、隠し扉、ギミックをマップに可視化する（MP10）</p>
+                                    </div>
                                     <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">不意打ち</span>
                                         <p class="skill-desc">素早さを活かした奇襲攻撃。</p>
@@ -209,6 +241,10 @@
                                 <div class="gender-info">
                                     <div class="gender-label">男性 / MALE</div>
                                     <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">回復魔法</span>
+                                        <p class="skill-desc">味方一人のHPを大きく回復する（MP4）</p>
+                                    </div>
+                                    <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">ヒール</span>
                                         <p class="skill-desc">味方一人のHPを大きく回復する。</p>
                                     </div>
@@ -218,6 +254,10 @@
                                 <img src="assets/face_僧侶_female.jpeg" alt="Cleric Female" class="gender-portrait" />
                                 <div class="gender-info">
                                     <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">回復魔法</span>
+                                        <p class="skill-desc">味方一人のHPを大きく回復する（MP4）</p>
+                                    </div>
                                     <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">ヒール</span>
                                         <p class="skill-desc">味方一人のHPを大きく回復する。</p>
@@ -269,6 +309,10 @@
                                 <div class="gender-info">
                                     <div class="gender-label">男性 / MALE</div>
                                     <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">明鏡止水</span>
+                                        <p class="skill-desc">次の戦闘、ATKとDEFを２倍にする（MP30）</p>
+                                    </div>
+                                    <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">燕返し</span>
                                         <p class="skill-desc">二回連続でダメージを与える。</p>
                                     </div>
@@ -278,6 +322,10 @@
                                 <img src="assets/face_侍_female.jpeg" alt="Samurai Female" class="gender-portrait" />
                                 <div class="gender-info">
                                     <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">明鏡止水</span>
+                                        <p class="skill-desc">次の戦闘、ATKとDEFを２倍にする（MP30）</p>
+                                    </div>
                                     <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">燕返し</span>
                                         <p class="skill-desc">二回連続でダメージを与える。</p>
@@ -300,6 +348,10 @@
                                 <div class="gender-info">
                                     <div class="gender-label">男性 / MALE</div>
                                     <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">点穴</span>
+                                        <p class="skill-desc">次の戦闘、敵のDEFを無視して攻撃する（MP15）</p>
+                                    </div>
+                                    <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">気功波</span>
                                         <p class="skill-desc">敵の防御を無視してダメージを与える。</p>
                                     </div>
@@ -310,6 +362,10 @@
                                     class="gender-portrait" />
                                 <div class="gender-info">
                                     <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">点穴</span>
+                                        <p class="skill-desc">次の戦闘、敵のDEFを無視して攻撃する（MP15）</p>
+                                    </div>
                                     <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">気功波</span>
                                         <p class="skill-desc">敵の防御を無視してダメージを与える。</p>
@@ -331,6 +387,10 @@
                                 <div class="gender-info">
                                     <div class="gender-label">男性 / MALE</div>
                                     <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">狙撃準備</span>
+                                        <p class="skill-desc">次の戦闘、先制攻撃を１回行う（MP10）</p>
+                                    </div>
+                                    <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">狙い撃ち</span>
                                         <p class="skill-desc">急所を突く高威力の射撃。</p>
                                     </div>
@@ -340,6 +400,10 @@
                                 <img src="assets/face_狩人_female.jpeg" alt="Archer Female" class="gender-portrait" />
                                 <div class="gender-info">
                                     <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">狙撃準備</span>
+                                        <p class="skill-desc">次の戦闘、先制攻撃を１回行う（MP10）</p>
+                                    </div>
                                     <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">狙い撃ち</span>
                                         <p class="skill-desc">急所を突く高威力の射撃。</p>
@@ -361,6 +425,10 @@
                                 <div class="gender-info">
                                     <div class="gender-label">男性 / MALE</div>
                                     <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">精神統一</span>
+                                        <p class="skill-desc">味方一人を回復する（MP4）</p>
+                                    </div>
+                                    <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">精神統一</span>
                                         <p class="skill-desc">味方を回復しつつ、敵へ追撃を行う。</p>
                                     </div>
@@ -370,6 +438,10 @@
                                 <img src="assets/face_モンク_female.jpeg" alt="Monk Female" class="gender-portrait" />
                                 <div class="gender-info">
                                     <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">精神統一</span>
+                                        <p class="skill-desc">味方一人を回復する（MP4）</p>
+                                    </div>
                                     <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">精神統一</span>
                                         <p class="skill-desc">味方を回復しつつ、敵へ追撃を行う。</p>
@@ -391,6 +463,10 @@
                                 <div class="gender-info">
                                     <div class="gender-label">男性 / MALE</div>
                                     <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">聖別の儀</span>
+                                        <p class="skill-desc">味方一人を大きく回復する（MP4）</p>
+                                    </div>
+                                    <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">ホーリーライト</span>
                                         <p class="skill-desc">味方を回復し、敵全員に神聖ダメージ。</p>
                                     </div>
@@ -400,6 +476,10 @@
                                 <img src="assets/face_ビショップ_female.jpeg" alt="Bishop Female" class="gender-portrait" />
                                 <div class="gender-info">
                                     <div class="gender-label">女性 / FEMALE</div>
+                                    <div class="gender-skill">
+                                        <span class="skill-tag">CAMP</span> <span class="skill-name">聖別の儀</span>
+                                        <p class="skill-desc">味方一人を大きく回復する（MP4）</p>
+                                    </div>
                                     <div class="gender-skill">
                                         <span class="skill-tag">SKILL</span> <span class="skill-name">ホーリーライト</span>
                                         <p class="skill-desc">味方を回復し、敵全員に神聖ダメージ。</p>
@@ -1255,7 +1335,7 @@
                     <!-- Arch Demon (18) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_18.png" alt="アークデーモン" class="deep-monster-sprite">
+                            <img src="assets/monster_d0.png" alt="アークデーモン" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>アークデーモン</h3>
@@ -1272,7 +1352,7 @@
                     <!-- Bloody (19) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_19.png" alt="ブラッディ" class="deep-monster-sprite">
+                            <img src="assets/monster_d1.png" alt="ブラッディ" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>ブラッディ</h3>
@@ -1289,7 +1369,7 @@
                     <!-- Fear (20) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_20.png" alt="フィアー" class="deep-monster-sprite">
+                            <img src="assets/monster_d2.png" alt="フィアー" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>フィアー</h3>
@@ -1306,7 +1386,7 @@
                     <!-- Venom (21) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_21.png" alt="ヴェノム" class="deep-monster-sprite">
+                            <img src="assets/monster_d3.png" alt="ヴェノム" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>ヴェノム</h3>
@@ -1323,7 +1403,7 @@
                     <!-- Arch Dragon (22) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_22.png" alt="アークドラゴン" class="deep-monster-sprite">
+                            <img src="assets/monster_d4.png" alt="アークドラゴン" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>アークドラゴン</h3>
@@ -1340,7 +1420,7 @@
                     <!-- Gigant (23) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_23.png" alt="ギガント" class="deep-monster-sprite">
+                            <img src="assets/monster_d5.png" alt="ギガント" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>ギガント</h3>
@@ -1357,7 +1437,7 @@
                     <!-- Succubus (24) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_24.png" alt="サキュバス" class="deep-monster-sprite">
+                            <img src="assets/monster_d6.png" alt="サキュバス" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>サキュバス</h3>
@@ -1374,7 +1454,7 @@
                     <!-- Poison Giant (25) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_25.png" alt="ポイズンジャイアント" class="deep-monster-sprite">
+                            <img src="assets/monster_d7.png" alt="ポイズンジャイアント" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>ポイズンジャイアント</h3>
@@ -1391,7 +1471,7 @@
                     <!-- Maelphic (26) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_26.png" alt="マイルフィック" class="deep-monster-sprite">
+                            <img src="assets/monster_d8.png" alt="マイルフィック" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>マイルフィック</h3>
@@ -1408,7 +1488,7 @@
                     <!-- Will o Wisp (27) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_27.png" alt="ウィル・オ・ウィスプ" class="deep-monster-sprite">
+                            <img src="assets/monster_d9.png" alt="ウィル・オ・ウィスプ" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>ウィル・オ・ウィスプ</h3>
@@ -1425,7 +1505,7 @@
                     <!-- Wraith (28) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_28.png" alt="レイス" class="deep-monster-sprite">
+                            <img src="assets/monster_d10.png" alt="レイス" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>レイス</h3>
@@ -1442,7 +1522,7 @@
                     <!-- Banshee (29) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_29.png" alt="バンシー" class="deep-monster-sprite">
+                            <img src="assets/monster_d11.png" alt="バンシー" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>バンシー</h3>
@@ -1459,7 +1539,7 @@
                     <!-- Giant Skeleton (30) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_30.png" alt="ジャイアントスケルトン" class="deep-monster-sprite">
+                            <img src="assets/monster_d12.png" alt="ジャイアントスケルトン" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>ジャイアントスケルトン</h3>
@@ -1476,7 +1556,7 @@
                     <!-- Giant Zombie (31) -->
                     <div class="monster-card">
                         <div class="deep-monster-visual">
-                            <img src="assets/monster_31.png" alt="ジャイアントゾンビ" class="deep-monster-sprite">
+                            <img src="assets/monster_d13.png" alt="ジャイアントゾンビ" class="deep-monster-sprite">
                         </div>
                         <div class="monster-info">
                             <h3>ジャイアントゾンビ</h3>
@@ -1490,8 +1570,60 @@
                             <p class="skill-desc">あらゆるものを腐らせる液体を放ち、標的の生命力を根こそぎ奪い取る。</p>
                         </div>
                     </div>
-                </div>
 
+                    <!-- Hell Master (d14) -->
+                    <div class="monster-card">
+                        <div class="deep-monster-visual">
+                            <img src="assets/monster_d14.png" alt="ヘルマスター" class="deep-monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>ヘルマスター</h3>
+                            <p class="monster-lore">深淵の更なる深みに君臨する、悪魔たちの王。その絶対的な威圧感は、対峙する者の戦意を根こそぎ奪い去る。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">絶望の波動</span>
+                            </div>
+                            <p class="skill-desc">負の感情が物理的な衝撃となって襲いかかる、不可避の全体攻撃。</p>
+                        </div>
+                    </div>
+                    <!-- Vorpal Bunny (d15) -->
+                    <div class="monster-card">
+                        <div class="deep-monster-visual">
+                            <img src="assets/monster_d15.png" alt="ヴォーパルバニー" class="deep-monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>ヴォーパルバニー</h3>
+                            <p class="monster-lore">愛くるしい姿に騙されてはならない。その素早い動きから繰り出される一撃は、鋼の喉元さえも易々と切り裂く。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">クリティカルヒット</span>
+                            </div>
+                            <p class="skill-desc">急所を正確に射抜き、相手の命を一瞬で刈り取る致命的な打撃。</p>
+                        </div>
+                    </div>
+                    <!-- Lycurgus (d16) -->
+                    <div class="monster-card">
+                        <div class="deep-monster-visual">
+                            <img src="assets/monster_d16.png" alt="ライカーガス" class="deep-monster-sprite">
+                        </div>
+                        <div class="monster-info">
+                            <h3>ライカーガス</h3>
+                            <p class="monster-lore">かつて迷宮を支配しようとした暴君のなれの果て。その死を拒絶した魂は、今もなお侵入者を呪い続けている。</p>
+                        </div>
+                        <div class="monster-skill">
+                            <div class="skill-header">
+                                <span class="skill-tag">Skill</span>
+                                <span class="skill-name">カース</span>
+                            </div>
+                            <p class="skill-desc">生命の輝きを奪い、深淵の闇へと引きずり込む強力な弱体化魔法。</p>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </section>
 
