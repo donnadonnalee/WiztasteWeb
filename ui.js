@@ -199,10 +199,10 @@ const UI = {
                 if (!visited[y] || !visited[y][x]) continue;
                 const mc = map[y][x];
                 if (mc === 1) ctx.fillStyle = '#666'; // Wall
-                else if (mc === 4) ctx.fillStyle = '#ffaa00'; // Hidden Door (Orange)
-                else if (mc === 5) ctx.fillStyle = '#aa00ff'; // Teleporter (Purple)
-                else if (mc === 7) ctx.fillStyle = '#00ff00'; // Rotating Floor (Green)
-                else if (mc === 6) ctx.fillStyle = '#222';    // Dark Zone
+                else if (mc === 4) ctx.fillStyle = isThiefSkillActive ? '#ffaa00' : '#666'; // Hidden Door
+                else if (mc === 5) ctx.fillStyle = isThiefSkillActive ? '#aa00ff' : '#113311'; // Teleporter
+                else if (mc === 7) ctx.fillStyle = isThiefSkillActive ? '#00ff00' : '#113311'; // Rotating Floor
+                else if (mc === 6) ctx.fillStyle = isThiefSkillActive ? '#222' : '#113311';    // Dark Zone
                 else if (mc === 3) ctx.fillStyle = '#ff00ff'; // Downstairs
                 else if (mc === 2) ctx.fillStyle = '#00ffff'; // Upstairs
                 else if (mc === 8) ctx.fillStyle = '#ff0000'; // Boss
