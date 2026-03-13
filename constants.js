@@ -79,22 +79,53 @@ const ITEMS = [
     { id: 85, name: 'カレイドスコープ', type: 'accessory', level: 10, int: 20, luk: 20, desc: '多種多様な魔力(INT+20, LUK+20)' },
     { id: 86, name: '世界樹の種', type: 'accessory', level: 10, hp: 100, def: 10, desc: '生命の根源(HP+100, DEF+10)' },
     // Cursed Items (High risk, high reward)
-    { id: 101, name: 'カースロッド', type: 'weapon', level: 5, atk: 25, int: -80, desc: '魔力を吸い取る呪いの杖(ATK+25, INT-80)' },
-    { id: 102, name: 'カースプレート', type: 'armor', level: 5, def: 40, agi: -30, desc: '重すぎる呪いの鉄鎧(DEF+40, AGI-30)' },
+    { id: 85, name: 'カレイドスコープ', type: 'accessory', level: 10, int: 20, luk: 20, desc: '多種多様な魔力(INT+20, LUK+20)' },
+    { id: 86, name: '世界樹の種', type: 'accessory', level: 10, hp: 100, def: 10, desc: '生命の根源(HP+100, DEF+10)' },
+    // Higher Level & Rare Weapons
+    { id: 150, name: '霊剣テイルフィング', type: 'weapon', level: 10, atk: 60, luk: -20, req: { str: 60 }, desc: '勝利と引き換えに死を招く魔剣(ATK+60, LUK-20)' },
+    { id: 151, name: '万象の杖', type: 'weapon', level: 10, atk: 10, int: 50, vit: 10, req: { int: 85 }, desc: '森羅万象を操る杖(ATK+10, INT+50, VIT+10)' },
+    { id: 152, name: '蜻蛉切', type: 'weapon', level: 10, atk: 50, agi: 30, str: 10, req: { str: 50, agi: 40 }, desc: '触れたものを両断する名槍(ATK+50, AGI+30, STR+10)' },
+    { id: 153, name: '破邪の大剣', type: 'weapon', level: 10, atk: 55, vit: 15, req: { str: 80 }, desc: '邪悪を断つ黄金の剣(ATK+55, VIT+15)' },
+    { id: 154, name: '賢者の宝典', type: 'weapon', level: 10, int: 80, def: -10, req: { int: 100 }, desc: '智恵の極致が記された書(INT+80, DEF-10)' },
+    { id: 155, name: 'グングニル', type: 'weapon', level: 10, atk: 70, agi: 10, req: { str: 90 }, desc: '必中の神槍(ATK+70, AGI+10)' },
+    // Higher Level & Rare Armors
+    { id: 180, name: '鳳凰の羽衣', type: 'armor', level: 10, def: 25, vit: 20, hp: 50, req: { vit: 40, int: 40 }, desc: '再生の力を秘めた羽衣(DEF+25, VIT+20, HP+50)' },
+    { id: 181, name: '北斗の七星鎧', type: 'armor', level: 10, def: 50, luk: 20, req: { str: 70 }, desc: '星の加護を受ける重鎧(DEF+50, LUK+20)' },
+    { id: 182, name: '降魔の具足', type: 'armor', level: 10, def: 30, agi: 25, req: { agi: 60 }, desc: '魔を退ける軽装(DEF+30, AGI+25)' },
+    { id: 183, name: '竜神の盾', type: 'armor', level: 10, def: 45, vit: 30, req: { str: 80, vit: 70 }, desc: '竜の鱗を重ねた盾(DEF+45, VIT+30)' },
+    { id: 184, name: '聖者のローブ', type: 'armor', level: 10, def: 35, int: 30, mp: 40, req: { int: 70 }, desc: '神聖な守りの法衣(DEF+35, INT+30, MP+40)' },
+    // Higher Level Accessories
+    { id: 210, name: '明星のピアス', type: 'accessory', level: 8, int: 15, agi: 10, desc: '明けの明星の輝き(INT+15, AGI+10)' },
+    { id: 211, name: '天使の羽飾り', type: 'accessory', level: 9, agi: 20, luk: 10, desc: '天に昇る軽快さ(AGI+20, LUK+10)' },
+    { id: 212, name: '真実の瞳', type: 'accessory', level: 10, int: 25, luk: 25, desc: '偽りを見抜く叡智(INT+25, LUK+25)' },
+    { id: 213, name: '覇者のマント', type: 'accessory', level: 10, str: 20, vit: 20, atk: 10, desc: '戦場を統べる覇気(STR+20, VIT+20, ATK+10)' },
+    // Unique & Specialized Cursed Items (Risk & Reward)
+    { id: 101, name: '冥府の杖', type: 'weapon', level: 5, atk: 25, int: -80, desc: '魔力を吸い取る黄泉の杖(ATK+25, INT-80)' },
+    { id: 102, name: '禁忌の重鎧', type: 'armor', level: 5, def: 40, agi: -30, desc: '重すぎる禁じられた鎧(DEF+40, AGI-30)' },
     { id: 103, name: 'ブラッドソード', type: 'weapon', level: 7, atk: 50, vit: -20, desc: '生命を糧とする魔剣(ATK+50, VIT-20)' },
     { id: 104, name: '狂人の短剣', type: 'weapon', level: 6, atk: 30, agi: 20, luk: -50, desc: '狂気の短剣(ATK+30, AGI+20, LUK-50)' },
     { id: 105, name: '愚者の法衣', type: 'armor', level: 4, def: 15, int: 30, str: -20, desc: '知恵と引き換えに力を失う法衣(DEF+15, INT+30, STR-20)' },
     { id: 106, name: '死の籠手', type: 'accessory', level: 5, atk: 20, vit: -15, luk: -20, desc: '死を招く籠手(ATK+20, VIT-15, LUK-20)' },
     { id: 107, name: '封印の古弓', type: 'weapon', level: 8, atk: 45, agi: -15, desc: '封印された古弓(ATK+45, AGI-15)' },
     { id: 108, name: '獄炎の杖', type: 'weapon', level: 9, atk: 5, int: 60, vit: -30, desc: '持ち主を焼く獄炎の杖(ATK+5, INT+60, VIT-30)' },
-    { id: 109, name: '呪いの指輪', type: 'accessory', level: 3, str: 15, int: 15, vit: -10, agi: -10, desc: '能力を歪める指輪(STR+15, INT+15, VIT-10, AGI-10)' },
+    { id: 109, name: '魔性の指輪', type: 'accessory', level: 3, str: 15, int: 15, vit: -10, agi: -10, desc: '能力を歪める指輪(STR+15, INT+15, VIT-10, AGI-10)' },
     { id: 110, name: '強欲の魔石', type: 'accessory', level: 5, luk: 100, str: -30, vit: -30, desc: '強欲の魔石(LUK+100, STR-30, VIT-30)' },
     { id: 111, name: '亡霊の盾', type: 'armor', level: 8, def: 50, vit: -20, desc: '実体のない盾(DEF+50, VIT-20)' },
-    { id: 112, name: '狂戦士の仮面', type: 'accessory', level: 7, atk: 40, def: -20, desc: '理性を失う仮面(ATK+40, DEF-20)' }
+    { id: 112, name: '狂戦士の仮面', type: 'accessory', level: 7, atk: 40, def: -20, desc: '理性を失う仮面(ATK+40, DEF-20)' },
+    { id: 240, name: '魂喰らいの鎌', type: 'weapon', level: 10, atk: 99, vit: -50, hp: -100, req: { str: 50 }, desc: '魂を喰らい力を増す鎌(ATK+99, VIT-50, HP-100)' },
+    { id: 241, name: '怠惰の宝珠', type: 'accessory', level: 10, int: 100, agi: -50, desc: '思考を深化させ足を止める球(INT+100, AGI-50)' },
+    { id: 242, name: '血塗られた盾', type: 'armor', level: 8, def: 70, hp: -50, vit: -10, req: { str: 40 }, desc: '血で磨かれた不吉な盾(DEF+70, HP-50, VIT-10)' },
+    { id: 243, name: '茨の冠', type: 'accessory', level: 9, int: 50, hp: -40, vit: -10, desc: '苦痛を魔力に変える冠(INT+50, HP-40, VIT-10)' },
+    { id: 244, name: '重力の手袋', type: 'accessory', level: 8, def: 40, agi: -40, desc: '地を這う重さを纏う手袋(DEF+40, AGI-40)' },
+    { id: 245, name: '虚無の指輪', type: 'accessory', level: 10, str: 15, int: 15, vit: 15, agi: 15, luk: 15, hp: -150, desc: '生命を代償に全能を得る(ALL+15, HP-150)' },
+    { id: 246, name: '死神の呼び声', type: 'weapon', level: 10, atk: 120, luk: -90, req: { str: 100 }, desc: '死の香りが漂う得物(ATK+120, LUK-90)' },
+    { id: 247, name: '傲慢の兜', type: 'armor', level: 9, def: 40, atk: 40, int: -50, req: { str: 60 }, desc: '力のみを信奉する兜(DEF+40, ATK+40, INT-50)' },
+    { id: 248, name: '暴食の胃袋', type: 'accessory', level: 8, vit: 40, hp: 200, agi: -30, desc: '無限の食欲が肉体を強める(VIT+40, HP+200, AGI-30)' }
 ];
 
 const ITEM_PREFIXES = [
-    { name: '呪われた', mult: -1.0, weight: 5 },
+    { name: '深淵の', mult: -3.0, weight: 1 },
+    { name: '呪われた', mult: -1.5, weight: 4 },
     { name: 'ボロボロの', mult: 0.5, weight: 20 },
     { name: '', mult: 1.0, weight: 45 },
     { name: '上質の', mult: 1.5, weight: 20 },

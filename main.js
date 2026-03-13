@@ -166,17 +166,22 @@ class Game {
             LEVELS.length = 0;
             data.levels.forEach(l => LEVELS.push(l));
         }
-        // Migration: Ensure all characters have statuses and refresh item descriptions
+        // Migration: Ensure all characters have statuses and refresh item descriptions/names
+        const renameMap = { 'カースロッド': '冥府の杖', 'カースプレート': '禁忌の重鎧', '呪いの指輪': '魔性の指輪' };
+        const migrateItem = (item) => {
+            if (!item) return;
+            if (renameMap[item.name]) item.name = renameMap[item.name];
+            this.refreshDescription(item);
+        };
+
         this.party.forEach(p => {
             if (!p.statuses) p.statuses = { poison: false, paralysis: false, confusion: false };
             if (!p.battleBuffs) p.battleBuffs = {};
             if (p.equipment) {
-                Object.values(p.equipment).forEach(item => {
-                    if (item) this.refreshDescription(item);
-                });
+                Object.values(p.equipment).forEach(item => migrateItem(item));
             }
         });
-        this.inventory.forEach(item => this.refreshDescription(item));
+        this.inventory.forEach(item => migrateItem(item));
         this.startTime = Date.now();
         this.state = 'EXPLORE';
         document.getElementById('char-create-screen').style.display = 'none';
