@@ -811,6 +811,7 @@ class Game {
         if (bm) bm.style.display = 'none';
         if (em) em.style.display = 'flex';
         audio.playBGM('bgm_explore');
+        this.party.forEach(p => p.battleBuffs = {});
         this.currentBattle = null;
         this.updateUI();
         this.saveGame();
