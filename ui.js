@@ -624,15 +624,22 @@ const UI = {
                 }
             }
 
+            let currentEquipHtml = '';
+            if (action === 'equip') {
+                const currentItem = p.equipment[item.type];
+                currentEquipHtml = `
+                    <div style="font-size: 10px; color: #888; margin-top: 2px;">
+                        現在の装備: ${currentItem ? currentItem.name : 'なし'}
+                    </div>`;
+            }
+
             if (!color) color = '#d3d3d3';
             html += `<button class="btn" style="width:90%; max-width:400px; padding:10px; color:${color}; border-color:${color}; text-align:left; display:block;" ${disabled} onclick="window.game.executeItemAction(${cidx}, ${itemIdx}, '${action}')">
                             <div style="display:flex; justify-content:space-between;">
                                 <strong>${p.name}</strong> <span style="font-size:11px;">${p.job}</span>
                                 <span style="color:#f55; font-size:11px;">${errorMsg}</span>
                             </div>
-                            <div style="font-size: 10px; color: #888; margin-top: 2px;">
-                                現在の装備: ${currentItem ? currentItem.name : 'なし'}
-                            </div>
+                            ${currentEquipHtml}
                             ${statChanges}
                         </button>`;
         });
