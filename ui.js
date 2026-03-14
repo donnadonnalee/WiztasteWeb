@@ -630,6 +630,9 @@ const UI = {
                                 <strong>${p.name}</strong> <span style="font-size:11px;">${p.job}</span>
                                 <span style="color:#f55; font-size:11px;">${errorMsg}</span>
                             </div>
+                            <div style="font-size: 10px; color: #888; margin-top: 2px;">
+                                現在の装備: ${currentItem ? currentItem.name : 'なし'}
+                            </div>
                             ${statChanges}
                         </button>`;
         });

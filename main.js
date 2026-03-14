@@ -352,6 +352,10 @@ class Game {
             else if (key === 'd') document.getElementById('camp-char-2')?.scrollIntoView();
             else if (key === 'f') document.getElementById('camp-char-3')?.scrollIntoView();
             else if (key === 'i') document.getElementById('camp-inventory')?.scrollIntoView();
+            else if (this.discardingItemIdx !== -1) {
+                if (key === 'y') this.dropItem(this.discardingItemIdx, true);
+                else if (key === 'n') this.dropItem(-1);
+            }
         } else if (this.state === 'BATTLE' && this.currentBattle?.phase === 'INPUT') {
             switch (e.key.toLowerCase()) {
                 case 'a': this.battleAction('attack'); break;
