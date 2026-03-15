@@ -265,8 +265,22 @@ canvas#view-canvas {
     overflow-y: auto;
     background: #000;
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
 }
+
+.party-member.targeting {
+    cursor: pointer;
+    border-color: #ffcc00;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+    animation: targeting-pulsate 1.5s infinite;
+}
+
+@keyframes targeting-pulsate {
+    0% { border-color: #ffcc00; box-shadow: 0 0 5px rgba(255, 204, 0, 0.3); }
+    50% { border-color: #fff; box-shadow: 0 0 15px rgba(255, 204, 0, 0.8); }
+    100% { border-color: #ffcc00; box-shadow: 0 0 5px rgba(255, 204, 0, 0.3); }
+}
+
 
 /* Controls */
 #controls {

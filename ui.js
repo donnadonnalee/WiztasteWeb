@@ -272,7 +272,19 @@ const UI = {
             const div = document.createElement('div');
             div.id = `party-member-${i}`;
             const isGhost = p.isGhost === true;
-            div.className = `party-member ${game.state === 'BATTLE' && game.turnIndex === i ? 'active' : ''} ${isGhost ? 'ghost-member' : ''}`;
+            const isTargeting = (game.campMode === 'SELECT_TARGET' || game.campMode === 'SELECT_CHARACTER');
+            div.className = `party-member 
+                ${game.state === 'BATTLE' && game.turnIndex === i ? 'active' : ''} 
+                ${isGhost ? 'ghost-member' : ''} 
+                ${isTargeting ? 'targeting' : ''}`;
+            
+            if (isTargeting) {
+                const action = game.campMode === 'SELECT_TARGET' ? 'use' : 'equip';
+                div.onclick = () => {
+                    window.game.executeItemAction(i, game.pendingItemIdx, action);
+                };
+            }
+            
             div.style.position = 'relative';
             div.style.overflow = 'hidden';
 
@@ -294,6 +306,31 @@ const UI = {
                         ${p.battleBuffs?.atk200Def200 ? '<span style="color:#ffcc00; margin-right:4px;">[不]</span>' : ''}
                         ${p.battleBuffs?.ignoreDef ? '<span style="color:#00ffff; margin-right:4px;">[点]</span>' : ''}
                     </div>
+                    ${(() => {
+                        if (game.campMode === 'SELECT_CHARACTER') {
+                            const item = game.inventory[game.pendingItemIdx];
+                            if (item && item.type) {
+                                const currentEquip = p.equipment[item.type];
+                                let preview = '';
+                                const stats = ['atk', 'def', 'str', 'int', 'vit', 'agi', 'luk'];
+                                stats.forEach(s => {
+                                    let oldV, newV;
+                                    if (s === 'atk') { oldV = game.getAtk(p); const old = p.equipment[item.type]; p.equipment[item.type] = item; newV = game.getAtk(p); p.equipment[item.type] = old; }
+                                    else if (s === 'def') { oldV = game.getDef(p); const old = p.equipment[item.type]; p.equipment[item.type] = item; newV = game.getDef(p); p.equipment[item.type] = old; }
+                                    else { oldV = game.getEffectiveStat(p, s); const old = p.equipment[item.type]; p.equipment[item.type] = item; newV = game.getEffectiveStat(p, s); p.equipment[item.type] = old; }
+                                    if (oldV !== newV) {
+                                        const diff = newV - oldV;
+                                        preview += `<span style="margin-right:4px; color:${diff > 0 ? '#5f5' : '#f55'}">${s.toUpperCase()}${diff > 0 ? '+' : ''}${diff}</span>`;
+                                    }
+                                });
+                                return `<div style="font-size:9px; background:rgba(0,0,0,0.5); padding:2px; margin-bottom:2px;">
+                                            装備中: ${currentEquip ? currentEquip.name : 'なし'}<br>
+                                            ${preview || '<span style="color:#888;">変化なし</span>'}
+                                        </div>`;
+                            }
+                        }
+                        return '';
+                    })()}
                     ${isGhost ? `
                     <div class="ghost-status" style="text-align:center; padding: 5px 0;">[ 亡霊 ]</div>
                     ` : `
@@ -557,94 +594,18 @@ const UI = {
         const campMenu = document.getElementById('camp-menu');
         if (!campMenu) return;
 
-        let html = `<div class="camp-header">${action === 'use' ? '誰が使う？' : '誰が装備する？'} - ${item.name}</div>`;
-        html += `<div style="text-align:center; margin-bottom:15px; color:#aaa; font-size:12px;">${item.desc}</div>`;
+        let html = `<div class="camp-header">${action === 'use' ? '対象を選択' : '装備対象を選択'}</div>`;
+        html += `<div style="text-align:center; margin:20px 0; color:#fff; font-size:16px; line-height:1.6;">
+                    ${item.name}を使用します。<br>
+                    右側のメンバーカードを直接クリックして<br>対象を選んでください。
+                 </div>`;
+        if (action === 'equip') {
+            html += `<div style="text-align:center; margin-bottom:15px; color:#aaa; font-size:12px;">※現在装備中のアイテムもカードに表示されます</div>`;
+        }
 
-        html += '<div style="display:flex; flex-direction:column; gap:8px; align-items:center; width:100%;">';
-        game.party.forEach((p, cidx) => {
-            let disabled = '';
-            let color = '';
-            let errorMsg = '';
-            let statChanges = '';
-
-            if (p.hp <= 0 || p.isGhost) {
-                disabled = 'disabled';
-                color = '#444';
-            } else if (action === 'equip') {
-                if (item.req) {
-                    for (const [stat, reqVal] of Object.entries(item.req)) {
-                        let pStat = p['base' + stat.charAt(0).toUpperCase() + stat.slice(1)] || p[stat];
-                        if (pStat < reqVal) {
-                            disabled = 'disabled';
-                            color = '#844';
-                            errorMsg = `(不足: ${stat.toUpperCase()} ${reqVal})`;
-                            break;
-                        }
-                    }
-                }
-
-                // Stat Preview
-                const currentItem = p.equipment[item.type];
-                const statsToPreview = ['atk', 'def', 'str', 'int', 'vit', 'agi', 'luk'];
-                const changes = [];
-
-                statsToPreview.forEach(s => {
-                    let oldVal, newVal;
-                    if (s === 'atk') {
-                        oldVal = game.getAtk(p);
-                        // Simulate equip
-                        const originalEquip = p.equipment[item.type];
-                        p.equipment[item.type] = item;
-                        newVal = game.getAtk(p);
-                        p.equipment[item.type] = originalEquip;
-                    } else if (s === 'def') {
-                        oldVal = game.getDef(p);
-                        const originalEquip = p.equipment[item.type];
-                        p.equipment[item.type] = item;
-                        newVal = game.getDef(p);
-                        p.equipment[item.type] = originalEquip;
-                    } else {
-                        oldVal = game.getEffectiveStat(p, s);
-                        const originalEquip = p.equipment[item.type];
-                        p.equipment[item.type] = item;
-                        newVal = game.getEffectiveStat(p, s);
-                        p.equipment[item.type] = originalEquip;
-                    }
-
-                    if (oldVal !== newVal) {
-                        const diff = newVal - oldVal;
-                        changes.push(`<span style="margin-right:8px;">${s.toUpperCase()}: ${oldVal} → <span style="color:${diff > 0 ? '#5f5' : '#f55'}">${newVal} (${diff > 0 ? '+' : ''}${diff})</span></span>`);
-                    }
-                });
-
-                if (changes.length > 0) {
-                    statChanges = `<div style="font-size:10px; margin-top:5px; background:rgba(0,0,0,0.3); padding:4px; border-radius:4px; width:100%;">${changes.join('')}</div>`;
-                } else {
-                    statChanges = `<div style="font-size:10px; color:#888; margin-top:5px;">変化なし</div>`;
-                }
-            }
-
-            let currentEquipHtml = '';
-            if (action === 'equip') {
-                const currentItem = p.equipment[item.type];
-                currentEquipHtml = `
-                    <div style="font-size: 10px; color: #888; margin-top: 2px;">
-                        現在の装備: ${currentItem ? currentItem.name : 'なし'}
-                    </div>`;
-            }
-
-            if (!color) color = '#d3d3d3';
-            html += `<button class="btn" style="width:90%; max-width:400px; padding:10px; color:${color}; border-color:${color}; text-align:left; display:block;" ${disabled} onclick="window.game.executeItemAction(${cidx}, ${itemIdx}, '${action}')">
-                            <div style="display:flex; justify-content:space-between;">
-                                <strong>${p.name}</strong> <span style="font-size:11px;">${p.job}</span>
-                                <span style="color:#f55; font-size:11px;">${errorMsg}</span>
-                            </div>
-                            ${currentEquipHtml}
-                            ${statChanges}
-                        </button>`;
-        });
-        html += `</div>`;
-        html += `<button class="btn" style="margin-top:20px; border-color:#888;" onclick="UI.updateCampUI(window.game)">キャンセル</button>`;
+        html += `<div style="display:flex; justify-content:center; width:100%; margin-top:20px;">
+                    <button class="btn" style="border-color:#888; padding: 10px 30px;" onclick="window.game.campMode = null; UI.updateUI(window.game);">キャンセル</button>
+                 </div>`;
         campMenu.innerHTML = html;
     },
 
@@ -653,7 +614,8 @@ const UI = {
         if (!logWin) return;
         const entry = document.createElement('div');
         entry.textContent = `> ${msg}`;
-        logWin.prepend(entry);
+        logWin.appendChild(entry);
+        logWin.scrollTop = logWin.scrollHeight;
     },
 
     showBlackout: async function (game, text, duration, callback) {
