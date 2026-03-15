@@ -554,7 +554,27 @@ class Game {
         let found = false, next = LEVELS[this.currentFloor], target = delta === 1 ? 2 : 3;
         for (let r = 0; r < next.length; r++) { for (let c = 0; c < next[r].length; c++) { if (next[r][c] === target) { this.playerPos.x = c; this.playerPos.y = r; found = true; break; } } if (found) break; }
         if (!found) { this.playerPos.x = 1; this.playerPos.y = 1; }
+        
+        // Abyss NPC spawning (30% chance per floor)
+        if (this.currentFloor >= 10 && !this.npcFlags[`abyssNPCSpawned${this.currentFloor}`]) {
+            this.npcFlags[`abyssNPCSpawned${this.currentFloor}`] = true;
+            if (Math.random() < 0.3) {
+                const map = LEVELS[this.currentFloor];
+                let spots = [];
+                for (let r = 1; r < MAP_SIZE - 1; r++) {
+                    for (let c = 1; c < MAP_SIZE - 1; c++) {
+                        if (map[r][c] === 0 && !(r === this.playerPos.y && c === this.playerPos.x)) spots.push({ r, c });
+                    }
+                }
+                if (spots.length > 0) {
+                    const s = spots[Math.floor(Math.random() * spots.length)];
+                    map[s.r][s.c] = 9;
+                }
+            }
+        }
+
         this.updateVisited();
+        this.updateUI(); // Ensure minimap and UI are fully refreshed
     }
 
     checkEncounter() { if (Math.random() < 0.12) this.startBattle(); }
@@ -684,6 +704,7 @@ class Game {
                 const boss = {
                     id: 'monster-0',
                     name: bossName,
+                    imgIndex: isFinalBoss ? 'boss' : `b${floor}`, // Link to ENEMY_SKILLS
                     hp: bossStats.hp, maxHp: bossStats.hp, currentHp: bossStats.hp,
                     atk: bossStats.atk, agi: bossStats.agi, exp: bossStats.exp, level: floor,
                     svg: `<img src="${bossImg}" style="width:100%; height:100%; object-fit:contain; transform:scale(${isFinalBoss ? 1.8 : 1.5});" />`
@@ -857,8 +878,9 @@ class Game {
 
                     // Unequip items losing check
                     ['weapon', 'armor', 'accessory'].forEach(slot => {
-                        if (p.equipment[slot] && Math.random() < 0.5) {
-                            UI.addLog(`${p.name}が装備していた${p.equipment[slot].name}は闇に呑まれた...`);
+                        const item = p.equipment[slot];
+                        if (item && !item.protected && Math.random() < 0.5) {
+                            UI.addLog(`${p.name}が装備していた${item.name}は闇に呑まれた...`);
                             p.equipment[slot] = null;
                         }
                     });
@@ -870,7 +892,7 @@ class Game {
 
                 let remainingInventory = [];
                 this.inventory.forEach(item => {
-                    if (Math.random() >= 0.5) remainingInventory.push(item);
+                    if (item.protected || Math.random() >= 0.5) remainingInventory.push(item);
                     else UI.addLog(`${item.name}は闇に呑まれた...`);
                 });
                 this.inventory = remainingInventory;
@@ -1282,6 +1304,11 @@ class Game {
             }
         } else {
             const target = this.party[charIdx];
+            if (target.hp <= 0) {
+                UI.addLog(`${target.name}は力尽きている！`);
+                this.campMode = null; this.updateUI();
+                return;
+            }
             if (item.hpRestore) { 
                 target.hp = Math.min(this.getEffectiveMaxHp(target), target.hp + item.hpRestore); 
                 UI.addLog(`${target.name}は${item.name}を使った。`); 

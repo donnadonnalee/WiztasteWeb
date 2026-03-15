@@ -3,7 +3,12 @@
  */
 const Events = {
     triggerEvent: function (game, floor) {
-        if (floor !== 2) {
+        if (floor > 10) {
+            if (game.npcFlags[`abyssNPCUsed${game.currentFloor}`]) {
+                UI.addLog("誰もいない。もう去ってしまったようだ……。");
+                return;
+            }
+        } else if (floor !== 2) {
             const flagName = `event${floor}FDone`;
             if (game.npcFlags[flagName] && !(floor === 4 && game.npcFlags.friendGoblin && !game.npcFlags.rewardedGoblin)) {
                 UI.addLog("静寂。ここにはもう誰もいないようだ……。");
@@ -55,6 +60,7 @@ const Events = {
         else if (floor === 7) this.handleEvent7F(game, title, desc, options);
         else if (floor === 8) this.handleEvent8F(game, title, desc, options);
         else if (floor === 9) this.handleEvent9F(game, title, desc, options);
+        else if (floor > 10) this.handleAbyssNPC(game, title, desc, options);
 
         // Add keyboard hints to event options
         const hints = ['(A)', '(S)', '(D)', '(F)'];
@@ -566,5 +572,124 @@ const Events = {
             btn.onclick = () => game.closeEvent();
             options.appendChild(btn);
         }
+    }
+};
+
+Events.handleAbyssNPC = function (game, title, desc, options) {
+    // Choose one of three NPCs randomly based on the floor seed or game random
+    const npcType = Math.floor(Math.random() * 3);
+    const img = document.getElementById('event-img');
+
+    if (npcType === 0) { // Guardian of Vicissitude
+        title.textContent = "変転の守護者";
+        if (img) { img.src = "assets/event_d1.png"; img.style.display = "block"; }
+        desc.innerHTML = "「汝、その魂の器は限界を迎えつつある。器を変え、更なる深淵へ挑む準備はできているか？」<br><br>※現在のステータスを維持したまま、職業を変更できます。";
+        
+        Object.keys(CLASSES).forEach(key => {
+            const job = CLASSES[key];
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = job.name;
+            btn.onclick = () => {
+                Events.showJobChangeTarget(game, job.name);
+            };
+            options.appendChild(btn);
+        });
+    } else if (npcType === 1) { // Resurrector
+        title.textContent = "蘇生師";
+        if (img) { img.src = "assets/event_d2.png"; img.style.display = "block"; }
+        desc.innerHTML = "「命の灯火、未だ消えず……。だが対価は重いぞ。魔力の全てを捧げ、死の淵より引き戻そう。」<br><br>※パーティ全員のMPを0にする代わりに、死亡したメンバー全員をHP 1-9 で蘇生させます。";
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = "契約する";
+        btn.onclick = () => {
+            let revivedCount = 0;
+            game.party.forEach(p => {
+                p.mp = 0;
+                if (p.hp <= 0) {
+                    p.hp = Math.floor(Math.random() * 9) + 1;
+                    p.deadLogged = false;
+                    revivedCount++;
+                }
+            });
+            if (revivedCount > 0) {
+                UI.addLog("蘇生師の禁術により、魂が呼び戻された！");
+            } else {
+                UI.addLog("誰も死んでいなかったが、魔力だけが吸い取られた……。");
+            }
+            game.npcFlags[`abyssNPCUsed${game.currentFloor}`] = true;
+            game.closeEvent();
+        };
+        options.appendChild(btn);
+    } else { // Relic Collector
+        title.textContent = "遺物の収集家";
+        if (img) { img.src = "assets/event_d3.png"; img.style.display = "block"; }
+        desc.innerHTML = "「大事な物を預かろうか？……この場所で、唯一、変わらぬ絆を刻んでやろう。」<br><br>※所持品の中から一つ選び、全滅しても失われない『不吉な刻印』を施します。";
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = "依頼する";
+        btn.onclick = () => {
+            Events.showItemProtectionUI(game);
+        };
+        options.appendChild(btn);
+    }
+
+    const btnLeave = document.createElement('button');
+    btnLeave.className = 'btn';
+    btnLeave.style.borderColor = '#888';
+    btnLeave.textContent = "立ち去る";
+    btnLeave.onclick = () => game.closeEvent();
+    options.appendChild(btnLeave);
+};
+
+Events.showJobChangeTarget = function (game, newJob) {
+    const title = document.getElementById('event-title');
+    const desc = document.getElementById('event-desc');
+    const options = document.getElementById('event-options');
+    
+    title.textContent = "変転の儀式";
+    desc.innerHTML = `どのメンバーの職業を ${newJob} に変更しますか？`;
+    options.innerHTML = '';
+
+    game.party.forEach((p, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = `${p.name} (${p.job})`;
+        btn.onclick = () => {
+            UI.addLog(`${p.name}は ${newJob} へと転生した。`);
+            p.job = newJob;
+            game.npcFlags[`abyssNPCUsed${game.currentFloor}`] = true;
+            game.closeEvent();
+        };
+        options.appendChild(btn);
+    });
+};
+
+Events.showItemProtectionUI = function (game) {
+    const title = document.getElementById('event-title');
+    const desc = document.getElementById('event-desc');
+    const options = document.getElementById('event-options');
+    
+    title.textContent = "遺物の刻印";
+    desc.innerHTML = "刻印を施すアイテムを一つ選んでください。";
+    options.innerHTML = '';
+
+    const validItems = game.inventory.filter(item => !item.protected);
+    if (validItems.length === 0) {
+        desc.innerHTML = "刻印できるアイテムがありません。";
+    } else {
+        validItems.forEach((item, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = item.name;
+            btn.onclick = () => {
+                item.protected = true;
+                item.name = "★" + item.name;
+                UI.addLog(`${item.name}に不滅の刻印が施された！`);
+                game.npcFlags[`abyssNPCUsed${game.currentFloor}`] = true;
+                game.closeEvent();
+            };
+            options.appendChild(btn);
+        });
     }
 };

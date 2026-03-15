@@ -238,7 +238,16 @@ const ENEMY_SKILLS = {
     'd14': { name: '絶望の波動', chance: 0.1, type: 'aoe', desc: '周囲の空気が重く震える...', mult: 2.0, se: 'se_heavy_attack', flashColor: 'rgba(255,255,255,0.8)', status: 'confusion', statusChance: 0.1 },
     'd15': { name: 'クリティカルヒット', chance: 0.2, type: 'death', desc: '鋭い牙を首に突き立てた！', mult: 5.0, se: 'se_heavy_attack', flashColor: 'rgba(255,0,0,0.8)' },
     'd16': { name: 'カース', chance: 0.15, type: 'aoe', desc: '呪いの波動が広がった！', mult: 1.0, se: 'se_magic', flashColor: 'rgba(255,0,0,0.8)', status: 'confusion', statusChance: 0.5 },
-    'boss': { name: '絶望の波動', chance: 0.1, type: 'aoe', desc: '周囲の空気が重く震える...', mult: 2.0, se: 'se_heavy_attack', flashColor: 'rgba(255,255,255,0.8)', status: 'confusion', statusChance: 0.1 }
+    'boss': { name: '絶望の波動', chance: 0.1, type: 'aoe', desc: '周囲の空気が重く震える...', mult: 2.0, se: 'se_heavy_attack', flashColor: 'rgba(255,255,255,0.8)', status: 'confusion', statusChance: 0.1 },
+    'b1': { name: '魂の束縛', chance: 0.4, type: 'drain', desc: '冷たい手が魂を絡め取る！', mult: 1.2, se: 'se_magic', flashColor: 'rgba(100,100,255,0.4)', status: 'paralysis', statusChance: 0.5 },
+    'b2': { name: '高密度毒雲', chance: 0.5, type: 'aoe', desc: '逃げ場のない毒の霧が立ち込める！', mult: 0.8, se: 'se_magic', flashColor: 'rgba(100,255,100,0.5)', status: 'poison', statusChance: 0.8 },
+    'b3': { name: '火炎', chance: 0.5, type: 'breath', desc: '灼熱の炎が吹き荒れる！', mult: 0.6, se: 'se_fire', flashColor: 'rgba(255,100,0,0.6)' },
+    'b4': { name: '増殖', chance: 0.4, type: 'summon', desc: 'コインの山から新たな個体が這い出した！', se: 'se_summoned', flashColor: 'rgba(255,255,0,0.3)' },
+    'b5': { name: 'アビスブラスト', chance: 0.4, type: 'aoe', desc: '異界の波動が全てを粉砕する！', mult: 1.2, se: 'se_magic', flashColor: 'rgba(150,0,255,0.6)', status: 'confusion', statusChance: 0.3 },
+    'b6': { name: '真祖の口づけ', chance: 0.5, type: 'drain_level', desc: '冒険者の記憶と力を吸い尽くす！', mult: 1.0, se: 'se_drain', flashColor: 'rgba(255,0,0,0.7)' },
+    'b7': { name: '三頭の咆哮', chance: 0.4, type: 'aoe', desc: '三つの頭から異なる魔力が爆裂する！', mult: 1.5, se: 'se_heavy_attack', flashColor: 'rgba(255,255,255,0.6)' },
+    'b8': { name: '幽界への誘い', chance: 0.4, type: 'aoe', desc: '死者の囁きが理性を奪う！', mult: 1.0, se: 'se_magic', flashColor: 'rgba(0,255,255,0.5)', status: 'confusion', statusChance: 0.6 },
+    'b9': { name: 'デス', chance: 0.3, type: 'death', desc: '死の言葉が響き渡る！', mult: 1.0, se: 'se_magic', flashColor: 'rgba(0,0,0,0.9)' }
 };
 
 function generateMaze(size, depth = 0) {
