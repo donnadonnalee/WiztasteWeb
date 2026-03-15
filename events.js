@@ -576,8 +576,8 @@ const Events = {
 };
 
 Events.handleAbyssNPC = function (game, title, desc, options) {
-    // Choose one of three NPCs randomly based on the floor seed or game random
-    const npcType = Math.floor(Math.random() * 3);
+    // Choose one of four NPCs randomly based on the floor seed or game random
+    const npcType = Math.floor(Math.random() * 4);
     const img = document.getElementById('event-img');
 
     if (npcType === 0) { // Guardian of Vicissitude
@@ -621,7 +621,7 @@ Events.handleAbyssNPC = function (game, title, desc, options) {
             game.closeEvent();
         };
         options.appendChild(btn);
-    } else { // Relic Collector
+    } else if (npcType === 2) { // Relic Collector
         title.textContent = "遺物の収集家";
         if (img) { img.src = "assets/event_d3.png"; img.style.display = "block"; }
         desc.innerHTML = "「大事な物を預かろうか？……この場所で、唯一、変わらぬ絆を刻んでやろう。」<br><br>※所持品の中から一つ選び、全滅しても失われない『不吉な刻印』を施します。";
@@ -630,6 +630,17 @@ Events.handleAbyssNPC = function (game, title, desc, options) {
         btn.textContent = "依頼する";
         btn.onclick = () => {
             Events.showItemProtectionUI(game);
+        };
+        options.appendChild(btn);
+    } else { // Arbiter of Knowledge
+        title.textContent = "知識の裁定者";
+        if (img) { img.src = "assets/event_d4.png"; img.style.display = "block"; }
+        desc.innerHTML = "「深淵の智恵、汝に相応しいか試そう……。代償として、その記憶の一部を塗り替えてやろう。」<br><br>※メンバー一柱を選び、強力な『深淵スキル』を授けます。";
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = "智を乞う";
+        btn.onclick = () => {
+            Events.showAbyssSkillSelection(game);
         };
         options.appendChild(btn);
     }
@@ -692,4 +703,55 @@ Events.showItemProtectionUI = function (game) {
             options.appendChild(btn);
         });
     }
+};
+
+Events.showAbyssSkillSelection = function (game) {
+    const title = document.getElementById('event-title');
+    const desc = document.getElementById('event-desc');
+    const options = document.getElementById('event-options');
+    
+    title.textContent = "深淵の智恵";
+    desc.innerHTML = "授かるスキルを選択してください。";
+    options.innerHTML = '';
+
+    Object.keys(ABYSS_SKILLS).forEach(key => {
+        const s = ABYSS_SKILLS[key];
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.style.borderColor = '#f5f';
+        btn.textContent = s.name;
+        btn.onclick = () => {
+            Events.showAbyssSkillTarget(game, key);
+        };
+        options.appendChild(btn);
+    });
+};
+
+Events.showAbyssSkillTarget = function (game, skillKey) {
+    const title = document.getElementById('event-title');
+    const desc = document.getElementById('event-desc');
+    const options = document.getElementById('event-options');
+    const skill = ABYSS_SKILLS[skillKey];
+
+    title.textContent = "スキルの受与";
+    desc.innerHTML = `誰に「${skill.name}」を授けますか？<br><br>※対象: ${skill.desc}`;
+    options.innerHTML = '';
+
+    game.party.forEach((p, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = p.name;
+        btn.onclick = () => {
+            if (!p.abyssSkills) p.abyssSkills = [];
+            if (!p.abyssSkills.includes(skillKey)) {
+                p.abyssSkills.push(skillKey);
+                UI.addLog(`${p.name}は「${skill.name}」を習得した！`);
+            } else {
+                UI.addLog(`${p.name}は既にその深遠なる智恵を身に宿している。`);
+            }
+            game.npcFlags[`abyssNPCUsed${game.currentFloor}`] = true;
+            game.closeEvent();
+        };
+        options.appendChild(btn);
+    });
 };

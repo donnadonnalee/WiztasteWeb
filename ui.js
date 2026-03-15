@@ -489,6 +489,7 @@ const UI = {
                                 </div>
                                 <div style="color:#888; font-size:10px; margin-top:4px;">${p.desc}</div>
                                 <div style="color:#aaf; font-size:10px; margin-top:1px;">[スキル] ${p.skillDesc}</div>
+                                <div style="color:#f5f; font-size:10px; margin-top:1px;">${p.abyssSkills ? p.abyssSkills.map(s => `[深淵] ${ABYSS_SKILLS[s].name}`).join(' ') : ''}</div>
                                 <div class="camp-buffs" style="margin-top:2px; display:flex; gap:4px; flex-wrap:wrap;">
                                     ${p.battleBuffs.atk150FirstTurn ? '<span style="background:#f55; color:#fff; padding:1px 3px; font-size:9px; border-radius:2px;">攻UP(初撃)</span>' : ''}
                                     ${p.battleBuffs.preemptiveStrike ? '<span style="background:#55f; color:#fff; padding:1px 3px; font-size:9px; border-radius:2px;">先制待機</span>' : ''}
@@ -511,7 +512,14 @@ const UI = {
                             'モンク': { name: '精神統一', mp: 4 }
                         };
                         const skill = skills[p.job];
-                        return skill ? `<button class="btn" style="padding:4px 8px; font-size:10px; border-color:#aaf;" onclick="window.game.castCampMagic(${idx})">${skill.name}(${skill.mp}MP)</button>` : '';
+                        let abyssBtn = '';
+                        if (p.abyssSkills) {
+                            p.abyssSkills.forEach(sk => {
+                                const s = ABYSS_SKILLS[sk];
+                                abyssBtn += `<button class="btn" style="padding:4px 8px; font-size:10px; border-color:#f5f; margin-right:4px;" onclick="window.game.castAbyssSkill(${idx}, '${sk}')">${s.name}(${s.mp}MP)</button>`;
+                            });
+                        }
+                        return (skill ? `<button class="btn" style="padding:4px 8px; font-size:10px; border-color:#aaf; margin-right:4px;" onclick="window.game.castCampMagic(${idx})">${skill.name}(${skill.mp}MP)</button>` : '') + abyssBtn;
                     })()}
                                 ${p.equipment.weapon ? `<button class="btn" style="padding:4px 8px; font-size:10px; border-color:#833;" onclick="window.game.unequipItem(${idx}, 'weapon')">[${p.equipment.weapon.name}]を外す</button>` : ''}
                                 ${p.equipment.armor ? `<button class="btn" style="padding:4px 8px; font-size:10px; border-color:#833;" onclick="window.game.unequipItem(${idx}, 'armor')">[${p.equipment.armor.name}]を外す</button>` : ''}

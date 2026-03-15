@@ -8,7 +8,7 @@ const CLASSES = {
     WARRIOR: { name: '戦士', hp: 30, mp: 0, str: 15, int: 5, vit: 15, agi: 8, luk: 5, desc: '高いHPと防御力を誇る前衛の要。', skillDesc: '勇猛の叫び：次の戦闘の初撃ダメージが上昇する。' },
     THIEF: { name: '盗賊', hp: 20, mp: 10, str: 10, int: 8, vit: 8, agi: 15, luk: 15, desc: '素早さと運が高く、宝箱の扱いに長けている。', skillDesc: '隠密の眼: 階層内の罠や秘密をすべて見抜く。' },
     CLERIC: { name: '僧侶', hp: 22, mp: 12, str: 8, int: 12, vit: 10, agi: 10, luk: 10, desc: '神聖な魔法でパーティの傷を癒やす。', skillDesc: 'ヒール: 味方一人のHPを大きく回復する。' },
-    MAGE: { name: '魔術師', hp: 15, mp: 25, str: 5, int: 18, vit: 5, agi: 12, luk: 8, desc: '強力な魔術を操り、敵軍を一掃する。', skillDesc: 'ファイヤーボール: 敵全体に魔法ダメージを与える。' },
+    MAGE: { name: '魔術師', hp: 15, mp: 25, str: 5, int: 18, vit: 5, agi: 12, luk: 8, desc: '強力な魔術を操り、敵軍を一掃するする。', skillDesc: '物質変換: MPを消費して、ランダムな消耗品を生成する。' },
     SAMURAI: { name: '侍', hp: 25, mp: 12, str: 16, int: 8, vit: 12, agi: 14, luk: 8, desc: '刀を極め、強力な連撃を放つ。', skillDesc: '明鏡止水: 次の戦闘の間、攻撃と防御を飛躍させる。' },
     MARTIAL_ARTIST: { name: '武闘家', hp: 28, mp: 0, str: 14, int: 6, vit: 14, agi: 16, luk: 6, desc: '強靭な肉体を持ち、防御無視の技を繰り出す。', skillDesc: '点穴: 次の戦闘の間、敵の防御力を完全に無視して攻撃。' },
     ARCHER: { name: '狩人', hp: 20, mp: 10, str: 12, int: 8, vit: 10, agi: 18, luk: 12, desc: '弓矢の達人。狙いすました一撃で敵を射抜く。', skillDesc: '狙撃準備: 次の戦闘開始時、先制攻撃を行う。' },
@@ -122,6 +122,12 @@ const ITEMS = [
     { id: 247, name: '傲慢の兜', type: 'armor', level: 9, def: 40, atk: 40, int: -50, req: { str: 60 }, desc: '力のみを信奉する兜(DEF+40, ATK+40, INT-50)' },
     { id: 248, name: '暴食の胃袋', type: 'accessory', level: 8, vit: 40, hp: 200, agi: -30, desc: '無限の食欲が肉体を強める(VIT+40, HP+200, AGI-30)' }
 ];
+
+const ABYSS_SKILLS = {
+    'clairvoyance': { name: '深淵の千里眼', mp: 50, desc: '階層の全貌と魔物の位置を暴く。' },
+    'causality': { name: '因果の逆転', mp: 999, desc: '全ての魔力を捧げ、生命を極限まで呼び戻す。' },
+    'voidveil': { name: '虚空の隠れ蓑', mp: 40, desc: '一定の間、一切の魔物との遭遇を断つ。' }
+};
 
 const ITEM_PREFIXES = [
     { name: '深淵の', mult: -3.0, weight: 1 },

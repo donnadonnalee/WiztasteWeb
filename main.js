@@ -577,7 +577,13 @@ class Game {
         this.updateUI(); // Ensure minimap and UI are fully refreshed
     }
 
-    checkEncounter() { if (Math.random() < 0.12) this.startBattle(); }
+    checkEncounter() { 
+        if (this.veilSteps > 0) {
+            this.veilSteps--;
+            return;
+        }
+        if (Math.random() < 0.12) this.startBattle(); 
+    }
 
     startBattle(isHard = false) {
         this.state = 'BATTLE';
@@ -1209,11 +1215,46 @@ class Game {
             caster.mp -= 30;
             caster.battleBuffs.atk200Def200 = true;
             UI.addLog(`${caster.name}は精神を統一した。次の戦闘の間、圧倒的な力を発揮する。`);
-        } else if (job === '武闘家') {
-            if (caster.mp < 15) { UI.addLog("MPが足りない。"); return; }
-            caster.mp -= 15;
             caster.battleBuffs.ignoreDef = true;
             UI.addLog(`${caster.name}は気の流れを見極めた。次の戦闘の間、敵の防御を無視する。`);
+        } else if (job === '魔術師') {
+            if (caster.mp < 15) { UI.addLog("MPが足りない。"); return; }
+            caster.mp -= 15;
+            const items = ITEMS.filter(i => i.type === 'consumable' && i.level <= this.currentFloor + 1);
+            const newItem = { ...items[Math.floor(Math.random() * items.length)] };
+            this.inventory.push(newItem);
+            UI.addLog(`${caster.name}の物質変換！${newItem.name}を錬成した。`);
+        }
+        this.updateUI();
+    }
+
+    castAbyssSkill(charIdx, skillKey) {
+        const char = this.party[charIdx];
+        const skill = ABYSS_SKILLS[skillKey];
+        if (!char || !skill) return;
+
+        let mpCost = skill.mp;
+        if (skillKey === 'causality') mpCost = char.mp; // Consume all MP
+        if (char.mp < mpCost || (skillKey === 'causality' && char.mp <= 0)) {
+            UI.addLog("魔力が足りない。");
+            return;
+        }
+
+        char.mp -= mpCost;
+        if (skillKey === 'clairvoyance') {
+            const map = LEVELS[this.currentFloor];
+            for (let y = 0; y < MAP_SIZE; y++) {
+                for (let x = 0; x < MAP_SIZE; x++) {
+                    this.visited[this.currentFloor][y][x] = true;
+                }
+            }
+            UI.addLog(`${char.name}の「深淵の千里眼」！ この階層の全てが白日の下に晒された。`);
+        } else if (skillKey === 'causality') {
+            char.hp = this.getEffectiveMaxHp(char);
+            UI.addLog(`${char.name}の「因果の逆転」！ 全ての魔力が生命力へと還元された。`);
+        } else if (skillKey === 'voidveil') {
+            this.veilSteps = 20;
+            UI.addLog(`${char.name}の「虚空の隠れ蓑」！ 存在の気配が虚無へと消えた。（20歩の間、敵と遭遇しない）`);
         }
         this.updateUI();
     }
